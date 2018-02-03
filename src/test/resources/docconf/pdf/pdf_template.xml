@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<documents>
+	<!--  id 同nohi-doc中doc  
+		  template 对应excel模板
+		  data: 对应数据的存取对象 
+		  docType:文档类型EXCEL
+    -->
+	<document id="pdf_template" name="测试pdf模板导出数据" 
+			  template="template/pdf/pdf_template.pdf"
+			  data="nohi.doc.pdf.vo.PdfVO"
+			  docType="PDF"
+	>
+		<!-- 常用域,单元
+			 type：PDF单元类型，field-字段文本类型  TABLE－列表类型
+			 name: 对应PDF单元name
+			 property: 存取值对应的字段属性，例str1定是nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
+	       	 dataType:　数据类型 String(默认) int Integer Double BigDecimal date
+	         pattern: 格式化类型，导入时读取的格式，导出数据时，导出的格式
+	       				例：日期pattern="yyyy-MM-dd",数值:pattern="#,###.00"  12,345,678.90
+	         codeType: 代码值类型 CurrencyCd对应nohi_encode_conf.xml中的类型
+		-->
+		<unit type="text" name="Text1" property="int_1"  dataType="int" >基本整形</unit>
+		<unit type="text" name="Text2" property="integer_1"  dataType="Integer" >整形</unit>
+		<unit type="text" name="Text3" property="string_1"  dataType="String" >字符串</unit>
+		<unit type="text" name="Text4" property="double_1"  dataType="double" >小double</unit>
+		<unit type="text" name="Text5" property="double_2"  dataType="Double" >大Double</unit>
+		<unit type="text" name="Text6" property="bd" dataType="BigDecimal" pattern="#000.00">大数据类型</unit>
+		<unit type="text" name="Text7" property="date" pattern="yyyy-MM-dd" dataType="date" >日期类型</unit>
+		<unit type="text" name="Text8" property="codeCd" dataType="String" codeType="CurrencyCd">测试代码值</unit>
+		
+		<!-- 内部对象 -->
+		<unit type="text" name="Text9"  property="innerObject.string_1"   dataType="String" >内部对象字符串</unit>
+		<unit type="text" name="Text10" property="innerObject.int_1"      dataType="int" >内部对象整形</unit>
+		<unit type="text" name="Text11" property="innerObject.integer_1"  dataType="Integer" >内部对象整形</unit>
+		
+		<!-- 列表类型 
+			property: 对应的列表。例testList定是nohi.doc.pdf.vo.PdfVO中的字段属性，并有get set方法
+			itemClass: list值类型
+		-->
+		<unit type="TABLE" name="table1" property="testList" itemClass="nohi.doc.pdf.vo.PdfInnerVO">
+			<unit type="text" name="Text20" property="int_1"  dataType="int" >基本整形</unit>
+			<unit type="text" name="Text21" property="integer_1"  dataType="Integer" >整形</unit>
+			<unit type="text" name="Text22" property="string_1"  dataType="String" >字符串</unit>
+			<unit type="text" name="Text23" property="double_1"  dataType="double" >小double</unit>
+			<unit type="text" name="Text24" property="double_2"  dataType="Double" >大Double</unit>
+			<unit type="text" name="Text25" property="bd" dataType="BigDecimal" pattern="#000.00">大数据类型</unit>
+			<unit type="text" name="Text26" property="date" pattern="yyyy-MM-dd" dataType="date" >日期类型</unit>
+			<unit type="text" name="Text27" property="codeCd" dataType="String" codeType="CurrencyCd">测试代码值</unit>
+		</unit>
+		
+		<unit type="TABLE" name="table2" property="testList" itemClass="nohi.doc.pdf.vo.PdfInnerVO">
+			<unit type="text" name="Text30" property="int_1"  dataType="int" >基本整形</unit>
+			<unit type="text" name="Text31" property="integer_1"  dataType="Integer" >整形</unit>
+			<unit type="text" name="Text32" property="string_1"  dataType="String" >字符串</unit>
+			<unit type="text" name="Text33" property="double_1"  dataType="double" >小double</unit>
+			<unit type="text" name="Text34" property="double_2"  dataType="Double" >大Double</unit>
+			<unit type="text" name="Text35" property="bd" dataType="BigDecimal" pattern="#000.00">大数据类型</unit>
+			<unit type="text" name="Text36" property="date" pattern="yyyy-MM-dd" dataType="date" >日期类型</unit>
+			<unit type="text" name="Text37" property="codeCd" dataType="String" codeType="CurrencyCd">测试代码值</unit>
+		</unit>
+		
+		
+	</document>
+</documents>

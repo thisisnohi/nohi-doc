@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<documents>
+	<!--  id 同nohi-doc中doc  
+		  template 对应excel模板
+		  data: 对应数据的存取对象 
+		  docType:文档类型EXCEL
+    -->
+	<document id="TEST2" name="测试Excel"
+			  template="template/excel/excel_test_template.xlsx"
+			  data="nohi.doc.excel.vo.TestDocVO"
+			  docType="EXCEL"
+	>
+		
+	    <!-- 
+	    	 sheet
+	    	 	type　目前没有用到
+	    	 	name 对应Excel中sheet的名称，一定要对应，否则找不到相应的sheet
+	    	 	dynamicsheetname　只有在导出sheet时才会用到
+	     -->
+		<sheet type="single" name="测试sheet" dynamicsheetname="sheetName">
+			<!-- type：该块类型，field-字段类型  TABLE－列表类型
+				 row：行 , 从0开始   -->
+			<block type="field" row="1" >
+			    <!-- 
+			       column: 列，从０开始。合并的单元格算开始位置即可
+			       property: 存取值对应的字段属性，例str1定是nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
+			       dataType:　数据类型 String(默认) int Integer Double BigDecimal date
+			       pattern: 格式化类型，导入时读取的格式，导出数据时，导出的格式
+			       			例：日期pattern="yyyy-MM-dd",数值:pattern="#,###.00" 
+			       codeType: 代码值类型 CurrencyCd对应nohi_encode_conf.xml中的类型
+			    	 -->
+				<col column="1" property="str1">字符串</col>
+				<col column="3" property="intV1" dataType= "Integer" >整形值</col>
+				<col column="5" property="ivo.innerStr" >内部对象字符串</col>
+				<col column="7" property="ivo.innerInt" dataType= "Integer" >内部对象整形值</col>
+			</block>	
+			
+			<!-- 列表块 
+				 endRow 只有导入时用到，导入数据列表截止行,从０开始
+				 list:　列表对应属性,如　list对应nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
+				 itemClass: list值类型
+			-->
+			<block type="TABLE" row="3" endRow="7" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+				<col column="0" property="id" dataType= "int"  >序号</col>
+				<col column="1" property="name" dataType="String" >姓名</col>
+				<col column="2" property="age" dataType= "Integer" >年龄</col>
+				<col column="3" property="date" pattern="yyyy-MM-dd" dataType="date" >日期</col> <!-- codeType -->
+				<col column="4" property="amt" dataType="Double">金额</col>
+				<col column="5" property="bd" pattern="#,###.00" dataType="BigDecimal" >大金额</col>
+				<col column="6" property="test" dataType="String" codeType="CurrencyCd">测试代码值</col>
+			</block>
+			
+			<!-- rowpostion（行位置）: absolute(绝对位置,默认)/relative（相对位置，和addrows一起使用） 
+				 addrows 该块导出数据时在上一块最后占用位置的下方几行
+			-->
+			<block type="field" row="5" addrows="2" rowpostion="relative" >
+				<col column="1" property="str1">字符串</col>
+				<col column="6" property="ivo.innerInt" pattern="" dataType= "Integer" >内部对象整形值</col>
+			</block>	
+			
+			<block type="field" row="11" addrows="3" rowpostion="relative"  >
+				<col column="1" property="str1">字符串</col>
+				<col column="3" property="intV1" dataType= "Integer" >整形值</col>
+				<col column="5" property="ivo.innerStr" >内部对象字符串</col>
+				<col column="7" property="ivo.innerInt" dataType= "Integer" >内部对象整形值</col>
+			</block>
+			
+			<block type="field" row="15"  rowpostion="relative" addrows="4" >
+				<col column="1" property="map['a']">字符串</col>
+			</block>
+			
+			<block type="TABLE" row="17"  rowpostion="relative" addrows="1" 
+				 list="listMap" itemClass="java.util.Map"
+			>
+				<col column="0" property="['a']">字符串</col>
+				<col column="1" property="['b']">字符串</col>
+			</block>
+		</sheet>
+
+		<sheet type="single" name="测试sheet2" dynamicsheetname="sheetName">
+			<block type="TABLE" row="1" endRow="7" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+				<col column="0" property="id" dataType= "int"  >序号</col>
+				<col column="1" property="name" dataType="String" >姓名</col>
+				<col column="2" property="age" dataType= "Integer" >年龄</col>
+				<col column="3" property="date" pattern="yyyy-MM-dd" dataType="date" >日期</col> <!-- codeType -->
+				<col column="4" property="amt" dataType="Double">金额</col>
+				<col column="5" property="bd" pattern="#,###.00" dataType="BigDecimal" >大金额</col>
+				<col column="6" property="test" dataType="String" codeType="CurrencyCd">测试代码值</col>
+			</block>
+		</sheet>
+
+	</document>
+</documents>

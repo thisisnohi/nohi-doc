@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	文档主配置文件
+		主要配置所有用到的文档列表、及文档关联的具体属性配置文件
+ -->
+<nohi-doc>
+	
+    <store-file>
+        <!-- 
+        storeFileType-存储文件类型：FTP / LOCAL 
+             	  FTP时localPath没有作用
+             	  LOCAL时不需要配置ftp-server
+        -->
+		<storeFileType>LOCAL</storeFileType>     
+		<localPath>D:/tmpFile/local</localPath>
+    </store-file>
+    
+    <ftp-server>
+        <ftpUsername>weblogic</ftpUsername>
+		<ftpPassword>welcome1</ftpPassword>
+		<ftpAddress>66.0.42.91</ftpAddress>
+		<ftpPort>21</ftpPort>
+		<ftpRemotePath>/weblogic/local/document</ftpRemotePath>
+		<ftpSystem>Linux</ftpSystem>
+		<ftpCharset>UTF-8</ftpCharset>
+    </ftp-server>
+    
+	<doc-excel>
+		<!-- id: 文档唯一标识  name：文档对应的中文名 template：文档对应的模板 conf：文档对应的具体属性配置文件-->
+		<doc id="TEST" name="测试Excel" template="template/excel/excel_test_template.xls" conf="docconf/excel/excel_test_template.xml" />
+		<doc id="TEST2" name="测试Excel" template="template/excel/excel_test_template.xlsx" conf="docconf/excel/excel_test_template2.xml" />
+		<doc id="TEST_MARK" name="测试sheet2" template="template/excel/excel_test_template_mark.xlsx" conf="docconf/excel/excel_test_template_mark.xml" />
+
+		<doc id="TEST_IMPORT" name="测试Excel" template="" conf="docconf/excel/excel_test_template_import.xml" />
+
+	</doc-excel>
+	
+	<doc-pdf>
+		<!-- id: 文档唯一标识  name：文档对应的中文名 template：文档对应的模板 conf：文档对应的具体属性配置文件-->
+		<doc id="pdf_template" name="测试PDF模板导出" template="template/pdf/pdf_template.pdf" conf="docconf/pdf/pdf_template.xml" />
+	</doc-pdf>
+
+</nohi-doc>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<documents>
+	<!--  id 同nohi-doc中doc  
+		  template 对应excel模板
+		  data: 对应数据的存取对象 
+		  docType:文档类型EXCEL
+    -->
+	<document id="TEST_MARK" name="测试sheet2"
+			  template="template/excel/excel_test_template_mark.xlsx"
+			  data="nohi.doc.excel.vo.TestDocVO"
+			  docType="EXCEL"
+	>
+		<sheet type="single" name="测试sheet2" dynamicsheetname="sheetName">
+			<block type="TABLE" row="1" endRow="7" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+				<col column="0" property="id" dataType= "int"  >序号</col>
+				<col column="1" property="name" dataType="String" >姓名</col>
+				<col column="2" property="age" dataType= "Integer" >年龄</col>
+				<col column="3" property="date" pattern="yyyy-MM-dd" dataType="date" >日期</col> <!-- codeType -->
+				<col column="4" property="amt" dataType="Double">金额</col>
+				<col column="5" property="bd" pattern="#,###.00" dataType="BigDecimal" >大金额</col>
+				<col column="6" property="test" dataType="String" codeType="CurrencyCd">测试代码值</col>
+			</block>
+		</sheet>
+
+	</document>
+</documents>
