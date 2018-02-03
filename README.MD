@@ -1,5 +1,6 @@
 
-#NOHI-DOC1.1
+#nohi-doc 1.1
+    
     1,主要功能是excel导入、导出
       PDF导出：需要用Adobe Acrobat工具制作导出模板的域，只能制作格式化的导出,列表只能固定行数。
               如果想制作动态pdf,可以搜索wkhtmltox通过页面导出。
