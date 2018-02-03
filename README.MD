@@ -12,6 +12,7 @@
     这次说明主要为了学习github使用。简单说明
     基本功能参见test/java/nohi/doc/下excel pdf 中的测试类   
 #配置说明
+
      doc.properties  classpath下必需的主配置属性文件
         appConf=nohi-doc.xml   主文档配置文件
         encodeConf=docconf/nohi_encode_conf.xml   数据字典码值映射文件
@@ -23,7 +24,9 @@
         doc-pdf    pdf配置
                 
 #EXCEL
+
   ##导入:
+  
         DocVO doc = new DocVO();
         doc.setDocId("TEST_IMPORT");  //对应 主文档配置文件nohi-doc.xml中 <doc id="TEST_IMPORT" ..>
         doc.setDocType("EXCEL");      //文件类型
@@ -37,6 +40,7 @@
 
 
   ##导出：
+  
         配置内容同导入
 
         DocVO doc = new DocVO();
@@ -47,6 +51,7 @@
             datavo.setSheetName("测试sheet_" + re + "abc"); //指定sheet名称
 
 #PDF
+
     pdf只支持导出
         pdf模板需要adobe acrobat编辑pdf，里面增加text的编辑域什么的.
         此功能相对单一，模板固定，无法自动扩展列表条数，列表如果很多，无法显示全部。
