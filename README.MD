@@ -1,5 +1,5 @@
 
-#nohi-doc 1.1
+# nohi-doc 1.1
     
     1,主要功能是excel导入、导出
       PDF导出：需要用Adobe Acrobat工具制作导出模板的域，只能制作格式化的导出,列表只能固定行数。
@@ -11,7 +11,7 @@
 
     这次说明主要为了学习github使用。简单说明
     基本功能参见test/java/nohi/doc/下excel pdf 中的测试类   
-#配置说明
+# 配置说明
 
      doc.properties  classpath下必需的主配置属性文件
         appConf=nohi-doc.xml   主文档配置文件
@@ -23,7 +23,7 @@
         doc-excel  excel配置
         doc-pdf    pdf配置
                 
-#EXCEL
+# EXCEL
 
   ##导入:
   
@@ -39,7 +39,7 @@
             >
 
 
-  ##导出：
+  ## 导出：
   
         配置内容同导入
 
@@ -50,7 +50,7 @@
             支持导出多个sheet,  比如，导出模板中为公司基本信息，有十家需要导出，导出的excel中会用十个sheet页。
             datavo.setSheetName("测试sheet_" + re + "abc"); //指定sheet名称
 
-#PDF
+# PDF
 
     pdf只支持导出
         pdf模板需要adobe acrobat编辑pdf，里面增加text的编辑域什么的.
