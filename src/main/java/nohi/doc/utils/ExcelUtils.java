@@ -495,7 +495,7 @@ public class ExcelUtils {
 					int to_row = to.getRowIndex();
 					int to_col = to.getColumnIndex();
 					Matcher m = pattern.matcher( formula );
-					if (m.find( )) {
+					while (m.find()) {
 						String str = m.group( 0 );
 						String ziMu = null;
 						String indexStr = null;
