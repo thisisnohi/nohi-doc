@@ -4,11 +4,14 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.html.simpleparser.StyleSheet;
 import com.itextpdf.text.pdf.*;
+import org.junit.Test;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TestPdf {
 	// http://prdownloads.sourceforge.net/itext/iTextAsian.jar
@@ -195,6 +198,23 @@ public class TestPdf {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	@Test
+	public void test(){
+		String str = "<str>aaa</str>aaa<str>aaa</str>";
+		Pattern p = Pattern.compile("<str>(.*?)</str>");
+		Matcher m = p.matcher(str);
+		while (m.find()){
+			System.out.println(m.groupCount());
+			System.out.println(m.group(0));
+		}
+	}
+
+	@Test
+	public void test1(){
+
+
+
 	}
 
 }
