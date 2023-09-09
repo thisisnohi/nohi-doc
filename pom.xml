@@ -6,7 +6,7 @@
 
   <groupId>nohi</groupId>
   <artifactId>nohi-doc</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -15,12 +15,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <version>4.13.1</version>
     </dependency>
     <dependency>
       <groupId>commons-net</groupId>
       <artifactId>commons-net</artifactId>
-      <version>3.1</version>
+      <version>3.9.0</version>
     </dependency>
     <dependency>
       <groupId>com.itextpdf</groupId>
@@ -43,6 +43,7 @@
       <artifactId>poi</artifactId>
       <version>3.9</version>
     </dependency>
+
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi-ooxml</artifactId>
@@ -64,36 +65,19 @@
     <dependency>
       <groupId>com.alibaba</groupId>
       <artifactId>fastjson</artifactId>
-      <version>1.2.72</version>
+      <version>1.2.83</version>
     </dependency>
   </dependencies>
 
   <build>
-    <finalName>nohi-doc</finalName>
     <plugins>
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <!-- 此处指定main方法入口的class -->
-              <mainClass>nohi.DocMain</mainClass>
-            </manifest>
-          </archive>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
