@@ -1,15 +1,15 @@
 package nohi.doc.service.impl;
 
-import java.io.File;
-import java.io.InputStream;
-
+import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
-import nohi.doc.meta.DocTemplateMeta;
+import nohi.doc.config.meta.DocumentMeta;
 import nohi.doc.service.IDocService;
-import nohi.doc.service.NOHIDocServices;
+import nohi.doc.service.NohiDocServices;
 import nohi.doc.vo.DocVO;
 import nohi.utils.DocCommonUtils;
-import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.InputStream;
 
 
 
@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
  * @author NOHI
  * @create date: 2013-2-15
  */
+@Slf4j
 public class DocService implements IDocService{
-	private Logger log = Logger.getLogger(DocService.class);
 
 	public DocVO exportDoc(DocVO doc) throws Exception {
 		//0 检验输入数据
@@ -30,7 +30,7 @@ public class DocService implements IDocService{
 		log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
 
 		//1 取得文档模板
-		DocTemplateMeta template = NOHIDocServices.getTemplate(doc.getDocId());
+		DocumentMeta template = NohiDocServices.getTemplate(doc.getDocId());
 		if (null == template) {
 			log.info("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
 			return doc;
@@ -74,7 +74,7 @@ public class DocService implements IDocService{
 
 
 		//1 取得文档模板
-		DocTemplateMeta template = NOHIDocServices.getTemplate(doc.getDocId());
+		DocumentMeta template = NohiDocServices.getTemplate(doc.getDocId());
 		if (null == template) {
 			log.error("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
 			throw new Exception("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
@@ -104,7 +104,7 @@ public class DocService implements IDocService{
 
 
 		//1 取得文档模板
-		DocTemplateMeta template = NOHIDocServices.getTemplate(doc.getDocId());
+		DocumentMeta template = NohiDocServices.getTemplate(doc.getDocId());
 		if (null == template) {
 			log.info("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
 			return null;

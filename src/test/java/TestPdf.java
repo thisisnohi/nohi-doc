@@ -4,7 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.html.simpleparser.HTMLWorker;
 import com.itextpdf.text.html.simpleparser.StyleSheet;
 import com.itextpdf.text.pdf.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.MalformedURLException;

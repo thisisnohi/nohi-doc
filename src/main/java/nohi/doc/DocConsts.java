@@ -1,11 +1,12 @@
 
 package nohi.doc;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 import java.util.Properties;
 
+@Slf4j
 public class DocConsts {
 
 	public static void main(String[] args){
@@ -13,7 +14,6 @@ public class DocConsts {
 		System.out.println("defaultConf:" + defaultConf + ",encodeConf:" + encodeConf);
 	}
 
-	private static Logger log = Logger.getLogger(DocConsts.class);
 
 	public static String defaultConf = "nohi-doc.xml";
 	public static String encodeConf = "docconf/nohi_encode_conf.xml";

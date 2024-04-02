@@ -7,7 +7,7 @@ import nohi.doc.service.IDocService;
 import nohi.doc.service.impl.DocService;
 import nohi.doc.vo.DocVO;
 import nohi.utils.BasicValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 

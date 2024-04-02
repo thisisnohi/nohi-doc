@@ -1,19 +1,8 @@
 package nohi.doc.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-
 import nohi.doc.DocConsts;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import java.util.Map;
 
 
 /**
@@ -54,7 +43,6 @@ public class CodeEncode {
 	/**
 	 * 根据代码值，映射值取得键值,getMappingValue的反向
 	 * @param codeType
-	 * @param codekey
 	 * @return
 	 */
 	public static String getDecodeMappingValue(String codeType , String codeValue){
@@ -74,51 +62,49 @@ public class CodeEncode {
 	/**
 	 * 读取文件
 	 *
-	 * @throws IOException
-	 * @throws JDOMException
 	 */
 	public static void readXML()  {
-		SAXBuilder builder = new SAXBuilder();
-
-		//得到输入流
-		InputStream file = XmlParase.class.getClassLoader().getResourceAsStream(filePath);
-		Document doc = null;
-		try {
-			doc = builder.build(file);
-		} catch (JDOMException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		Element root = doc.getRootElement();
-
-		codeTypeMap = new HashMap<String, Map<String,String>>();
-		decocodeTypeMap = new HashMap<String, Map<String,String>>();
-
-		List<Element> childRenlist = root.getChildren();
-		Element codeTypeE = null;
-
-		for (Iterator<Element> it = childRenlist.iterator(); it.hasNext();) {
-			codeTypeE = it.next();
-
-			String codeType = codeTypeE.getAttribute("type-name").getValue();
-
-			Map<String,String> codeValueMapping = new HashMap<String, String>();
-			Map<String,String> deCodeValueMapping = new HashMap<String, String>();
-			List<Element> eL = codeTypeE.getChildren();
-
-			for (Element e : eL) {
-				String loanCode = e.getAttribute("loan-code").getValue();
-				String mappingCode = e.getAttribute("mapping-code").getValue();
-				codeValueMapping.put(loanCode, mappingCode);
-				deCodeValueMapping.put(mappingCode, loanCode);
-			}
-
-			codeTypeMap.put(codeType,codeValueMapping);
-			decocodeTypeMap.put(codeType,deCodeValueMapping);
-		}
+//		SAXBuilder builder = new SAXBuilder();
+//
+//		//得到输入流
+//		InputStream file = CodeEncode.class.getClassLoader().getResourceAsStream(filePath);
+//		Document doc = null;
+//		try {
+//			doc = builder.build(file);
+//		} catch (JDOMException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+//		Element root = doc.getRootElement();
+//
+//		codeTypeMap = new HashMap<String, Map<String,String>>();
+//		decocodeTypeMap = new HashMap<String, Map<String,String>>();
+//
+//		List<Element> childRenlist = root.getChildren();
+//		Element codeTypeE = null;
+//
+//		for (Iterator<Element> it = childRenlist.iterator(); it.hasNext();) {
+//			codeTypeE = it.next();
+//
+//			String codeType = codeTypeE.getAttribute("type-name").getValue();
+//
+//			Map<String,String> codeValueMapping = new HashMap<String, String>();
+//			Map<String,String> deCodeValueMappingueMapping = new HashMap<String, String>();
+//			List<Element> eL = codeTypeE.getChildren();
+//
+//			for (Element e : eL) {
+//				String loanCode = e.getAttribute("loan-code").getValue();
+//				String mappingCode = e.getAttribute("mapping-code").getValue();
+//				codeValueMapping.put(loanCode, mappingCode);
+//				deCodeValueMapping.put(mappingCode, loanCode);
+//			}
+//
+//			codeTypeMap.put(codeType,codeValueMapping);
+//			decocodeTypeMap.put(codeType,deCodeValueMapping);
+//		}
 	}
 
 	public static void main(String[] args) throws Exception {

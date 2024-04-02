@@ -1,5 +1,8 @@
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -67,9 +70,9 @@ public class TestExcel {
 
 		// 设置背景色
 		HSSFCellStyle style = wb.createCellStyle();
-		style.setFillForegroundColor(new HSSFColor.BLACK().getIndex());
-		style.setFillBackgroundColor(new HSSFColor.ROSE().getIndex());
-		style.setFillPattern(HSSFCellStyle.SPARSE_DOTS);
+		style.setFillForegroundColor(HSSFColor.HSSFColorPredefined.BLACK.getColor());
+		style.setFillBackgroundColor(HSSFColor.HSSFColorPredefined.ROSE.getColor());
+		style.setFillPattern(FillPatternType.SPARSE_DOTS);
 		HSSFCell cell1 = row.createCell(6);
 		cell1.setCellStyle(style);
 		//cell1.setCellValue("X");
@@ -78,19 +81,19 @@ public class TestExcel {
 
 		// 设置背景色
 		HSSFCellStyle style1 = wb.createCellStyle();
-		style1.setFillForegroundColor(new HSSFColor.GREY_40_PERCENT().getIndex());
-		style1.setFillBackgroundColor(new HSSFColor.GREY_40_PERCENT().getIndex());
-		style1.setBorderBottom((short) 1);
-		style1.setBorderTop((short) 1);
-		style1.setBorderLeft((short) 1);
-		style1.setBorderRight((short) 1);
+		style1.setFillForegroundColor(HSSFColor.HSSFColorPredefined.GREY_40_PERCENT.getColor());
+		style1.setFillBackgroundColor(HSSFColor.HSSFColorPredefined.GREY_40_PERCENT.getColor());
+		style1.setBorderBottom(BorderStyle.valueOf((short) 1));
+		style1.setBorderTop(BorderStyle.valueOf((short) 1));
+		style1.setBorderLeft(BorderStyle.valueOf((short) 1));
+		style1.setBorderRight(BorderStyle.valueOf((short) 1));
 
 		/**
 		 * 注意这句代码， style1.setFillPattern, 如果你在你的程序中不设置fill pattern,那么
 		 * 你上面设置的前景色和背景色就显示不出来.网络上很多文章都没有设置fillpattern,
 		 * 不知道那些达人 的机器是不是比我的机器智能很多.
 		 */
-		style1.setFillPattern(HSSFCellStyle.SPARSE_DOTS);
+		style1.setFillPattern(FillPatternType.SPARSE_DOTS);
 		HSSFCell cell11 = row.createCell(7);
 		cell11.setCellValue("X11");
 		cell11.setCellStyle(style1);
@@ -104,7 +107,7 @@ public class TestExcel {
 		cell12.setCellStyle(st);
 
 		// 设置中西文结合字符串
-		row.createCell(9).setCellType(HSSFCell.CELL_TYPE_ERROR);
+		row.createCell(9).setCellType(CellType.ERROR);
 		// 建立错误cell
 
 		// Write the output to a file
@@ -132,64 +135,6 @@ public class TestExcel {
 		int rows = sheet.getLastRowNum();//行数, base 0
 		int cols = -1;
 		System.out.println("rows: " + (rows+1));
-		for (int i = 0 ; i <= rows ; i++) {//遍历行
-			row = sheet.getRow(i);//取得行
-
-			cols = row.getLastCellNum();//取得最后一列有序号 base 1
-			System.out.print("第["+ (i+1) +"]行有["+ (cols) +"]列(base 1): ");
-
-			for (int j = 0 ; j < cols ; j++) {//遍历列
-				cell = row.getCell(j);
-				Object value = null;
-				if (null != cell) {
-					switch (cell.getCellType()) {
-						case HSSFCell.CELL_TYPE_NUMERIC: // 数值型
-							if (HSSFDateUtil.isCellDateFormatted(cell)) {
-								//如果是date类型则 ，获取该cell的date值
-								value = HSSFDateUtil.getJavaDate(cell.getNumericCellValue()).toString();
-								System.out.print(value);
-							}else{//纯数字
-								value = cell.getNumericCellValue() + 1;//数字加一
-							}
-							System.out.print(value);
-							cell.setCellValue((Double)value);
-							break;
-	                    /* 此行表示单元格的内容为string类型 */
-						case HSSFCell.CELL_TYPE_STRING: // 字符串型
-							value = cell.getRichStringCellValue().toString();
-							System.out.print(value);
-							break;
-						case HSSFCell.CELL_TYPE_FORMULA://公式型
-							//读公式计算值
-							value = String.valueOf(cell.getNumericCellValue());
-							if(value.equals("NaN")){//如果获取的数据值为非法值,则转换为获取字符串
-								value = cell.getRichStringCellValue().toString();
-							}
-							//cell.getCellFormula();读公式
-							System.out.print(value);
-							break;
-						case HSSFCell.CELL_TYPE_BOOLEAN://布尔
-							value = " "+ cell.getBooleanCellValue();
-							System.out.print(value);
-							break;
-	                    /* 此行表示该单元格值为空 */
-						case HSSFCell.CELL_TYPE_BLANK: // 空值
-							value = "";
-							System.out.print(value);
-							break;
-						case HSSFCell.CELL_TYPE_ERROR: // 故障
-							value = "";
-							System.out.print(value);
-							break;
-						default:
-							value = cell.getRichStringCellValue().toString();
-							System.out.print(value);
-					}
-				}
-			}
-			System.out.println();
-		}
-
 
 		hwb.write(new FileOutputStream("d:/doc/2_test_excel_结果.xls"));
 	}

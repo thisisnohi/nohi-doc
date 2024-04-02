@@ -1,34 +1,34 @@
 package nohi.doc.service.impl;
 
-import java.io.*;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
-import nohi.doc.meta.DocPdfUnitMeta;
-import nohi.doc.meta.DocTemplateMeta;
+import nohi.doc.config.meta.ftp.DocPdfUnitMeta;
+import nohi.doc.config.meta.DocumentMeta;
 import nohi.doc.service.IDocService;
-import nohi.doc.service.NOHIDocServices;
+import nohi.doc.service.NohiDocServices;
 import nohi.doc.vo.DocVO;
 import nohi.ftp.service.FtpServer;
 import nohi.utils.Clazz;
 import nohi.utils.DocCommonUtils;
-import org.apache.log4j.Logger;
+
+import java.io.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * PDF服务类
  * @author NOHI
  * @crated date 2013-2-26
  */
+@Slf4j
 public class PdfService extends FtpServer implements IDocService{
-	private Logger log = Logger.getLogger(this.getClass());
 
 	public DocVO exportDoc(DocVO doc) throws Exception {
 		// TODO Auto-generated method stub
@@ -40,7 +40,7 @@ public class PdfService extends FtpServer implements IDocService{
 		log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
 
 		//1 取得文档模板
-		DocTemplateMeta template = NOHIDocServices.getTemplate(doc.getDocId());
+		DocumentMeta template = NohiDocServices.getTemplate(doc.getDocId());
 		if (null == template) {
 			log.info("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
 			return doc;
@@ -117,12 +117,8 @@ public class PdfService extends FtpServer implements IDocService{
 			ps.close();
 
 			//文件路径
-			if (DocConsts.NOHI_DOC_STORE_FILE_TYPE_LOCAL.equals(NOHIDocServices.getStoreFileType())) {
-				doc.setFilePath(getStoreFileName(doc));
-				os = new  FileOutputStream(doc.getFilePath());
-			}else {
-				os = storeFile2FTPserver(doc);
-			}
+			doc.setFilePath(getStoreFileName(doc));
+			os = new  FileOutputStream(doc.getFilePath());
 			os.write(bos.toByteArray());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -145,7 +141,7 @@ public class PdfService extends FtpServer implements IDocService{
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				log.error(e);
+				log.error(e.getMessage());
 			}
 			closeFtp();
 		}

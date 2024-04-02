@@ -1,14 +1,5 @@
 package nohi.doc.excel;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import nohi.doc.DocConsts;
 import nohi.doc.excel.vo.InnerVO;
 import nohi.doc.excel.vo.TestDocVO;
@@ -17,12 +8,21 @@ import nohi.doc.service.IDocService;
 import nohi.doc.service.impl.DocService;
 import nohi.doc.vo.DocVO;
 import nohi.utils.DocCommonUtils;
+import org.apache.poi.hssf.usermodel.HSSFDataValidation;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -291,12 +291,12 @@ public class _02_ExcelDocExport {
 				return ;
 			}
 
-			if (sheet instanceof XSSFSheet) {
+			if (sheet instanceof HSSFSheet) {
 				System.out.println("=======XSSFSheet===========");
-				XSSFSheet xsheet = (XSSFSheet) sheet;
-				List<XSSFDataValidation> validations = xsheet.getDataValidations();
+				HSSFSheet xsheet = (HSSFSheet) sheet;
+				List<HSSFDataValidation> validations = xsheet.getDataValidations();
 				if ( null != validations ) {
-					for (XSSFDataValidation item : validations) {
+					for (DataValidation item : validations) {
 						CellRangeAddressList cral = item.getRegions();
 						CellRangeAddress[] craArray = cral.getCellRangeAddresses();
 						for (CellRangeAddress cra : craArray) {

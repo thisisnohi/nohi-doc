@@ -6,7 +6,7 @@ import nohi.doc.service.IDocService;
 import nohi.doc.service.impl.DocService;
 import nohi.doc.vo.DocVO;
 import nohi.utils.DocCommonUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

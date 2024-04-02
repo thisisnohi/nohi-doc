@@ -1,4 +1,4 @@
-package nohi.doc.meta;
+package nohi.doc.config.meta.ftp;
 
 /**
  * FTP服务器信息

@@ -1,11 +1,11 @@
 package nohi.doc;
 
 
+import lombok.extern.slf4j.Slf4j;
 import nohi.doc.excel.vo.TestDocVO;
 import nohi.doc.excel.vo.TestListVO;
 import nohi.utils.Clazz;
-import org.apache.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +17,8 @@ import java.util.Map;
 /**
  * @author NOHI
  */
+@Slf4j
 public class _02_SuportMap {
-	private static Logger log = Logger.getLogger(_02_SuportMap.class);
 
 	@Test
 	public void paraseMainDoc() throws Exception{

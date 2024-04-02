@@ -1,4 +1,4 @@
-package nohi.doc.meta;
+package nohi.doc.config.meta.ftp;
 
 import java.util.Map;
 
