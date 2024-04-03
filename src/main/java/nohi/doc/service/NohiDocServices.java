@@ -6,8 +6,6 @@ import nohi.doc.config.meta.DocumentMeta;
 import nohi.doc.config.xml.DocMeta;
 import nohi.doc.config.xml.NohiDocMeta;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,9 +19,9 @@ import java.util.Optional;
 @Slf4j
 public class NohiDocServices {
     /**
-     * 主配置文件路径
+     * 默认配置文件路径
      */
-    private static String confPath = DocConsts.defaultConf;
+    public static final String DEFAULT_CONF = DocConsts.defaultConf;
     /**
      * NohiDoc主配置文件
      */
@@ -35,38 +33,54 @@ public class NohiDocServices {
     private static Map<String, DocumentMeta> template;
 
 
-    public static NohiDocMeta getMainDoc() throws Exception {
+    /**
+     * 获取NohiDoc配置，如果没有实例，使用默认配置文件初始化
+     */
+    public static NohiDocMeta getMainDoc() {
         if (null == mainDoc) {
-            init(confPath);
+            synchronized (NohiDocServices.class) {
+                // 防止重复实例化
+                if (null == mainDoc) {
+                    mainDoc = init(DEFAULT_CONF);
+                }
+            }
         }
         return mainDoc;
     }
 
+    public static NohiDocMeta initMainDoc(String confPath) {
+        return init(confPath);
+    }
+
     /**
-     * 初始化
+     * 初始化-指定配置文件
      */
-    public static void init(String confPath) throws Exception {
-        parseConf(confPath);// 解析主配置文件
+    private static NohiDocMeta init(String confPath) {
+        // 解析主配置文件
+        return parseConf(confPath);
     }
 
     /**
      * 解析文件
      */
-    public static void parseConf(String confPath) throws JAXBException, IOException {
-        mainDoc = XmlParse.parseNohiDoc(confPath);
+    public static NohiDocMeta parseConf(String confPath) {
+        return XmlParse.parseNohiDoc(confPath);
     }
 
     /**
-     * 取得文档配置属性
+     * 取得Excel文档配置属性
      */
-    public static DocMeta getDocMeta(String docId) throws Exception {
+    public static DocMeta getDocMeta(String docId) {
         return getDocMetaByIdAndType(docId, null);
     }
 
     /**
      * 取得文档配置属性
+     *
+     * @param docId 文档ID
+     * @param type  类型，默认excel.   pdf/excel
      */
-    public static DocMeta getDocMetaByIdAndType(String docId, String type) throws Exception {
+    public static DocMeta getDocMetaByIdAndType(String docId, String type) {
         // 获取主页面实例
         NohiDocMeta doc = getMainDoc();
 
@@ -84,36 +98,26 @@ public class NohiDocServices {
     /**
      * 得到具体一个文档类型的具体属性
      *
-     * @param id 文档ID
+     * @param docId 文档ID
      * @return 文档配置信息
      * @throws Exception 异常
      */
-    public static DocumentMeta getTemplate(String id) throws Exception {
+    public static DocumentMeta getDocumentByDocId(String docId)  {
         DocumentMeta tmp = null;
-        if (null == template) {
-            DocMeta dm = getDocMeta(id);
+        if (null != template) {
+            tmp = template.get(docId);
+
+        }
+        if (null == tmp) {
+            DocMeta dm = getDocMeta(docId);
             if (null != dm) {
                 Map<String, DocumentMeta> map = XmlParse.parseTemplateConf(dm.getConf());
                 if (null != map) {
-                    tmp = map.get(id);
+                    tmp = map.get(docId);
                     template = map;
-                }
-
-            }
-        } else {
-            tmp = template.get(id);
-            if (null == tmp) {
-                DocMeta dm = getDocMeta(id);
-                if (null != dm) {
-                    Map<String, DocumentMeta> map = XmlParse.parseTemplateConf(dm.getConf());
-                    if (null != map) {
-                        tmp = map.get(id);
-                        template = map;
-                    }
                 }
             }
         }
-
         return tmp;
     }
 }

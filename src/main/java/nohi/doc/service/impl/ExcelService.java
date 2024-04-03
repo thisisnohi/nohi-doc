@@ -53,7 +53,7 @@ public class ExcelService extends FtpServer implements IDocService {
         log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
 
         //1 取得文档模板
-        template = NohiDocServices.getTemplate(doc.getDocId());
+        template = NohiDocServices.getDocumentByDocId(doc.getDocId());
         if (null == template) {
             log.info("文档模板为空,没有取得文档ID[" + doc.getDocId() + "]对应的配置文件");
             throw new Exception("文档模板为空,没有取得文档ID[" + doc.getDocId() + "]对应的配置文件");
@@ -441,7 +441,7 @@ public class ExcelService extends FtpServer implements IDocService {
         log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
 
         //1 取得文档模板
-        DocumentMeta template = NohiDocServices.getTemplate(doc.getDocId());
+        DocumentMeta template = NohiDocServices.getDocumentByDocId(doc.getDocId());
         if (null == template) {
             log.info("文档模板为空,没有取得文档ID[" + doc.getDocId() + "]对应的配置文件");
             throw new Exception("文档模板为空,没有取得文档ID[" + doc.getDocId() + "]对应的配置文件");
@@ -810,7 +810,7 @@ public class ExcelService extends FtpServer implements IDocService {
 
 
         //1 取得文档模板
-        DocumentMeta template = NohiDocServices.getTemplate(doc.getDocId());
+        DocumentMeta template = NohiDocServices.getDocumentByDocId(doc.getDocId());
         if (null == template) {
             log.info("文档模板为空,没有取得文档ID[" + doc.getDocId() + "]对应的配置文件");
             throw new Exception("文档模板为空,没有取得文档ID[" + doc.getDocId() + "]对应的配置文件");

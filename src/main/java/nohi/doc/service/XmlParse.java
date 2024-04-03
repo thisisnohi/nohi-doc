@@ -1,6 +1,7 @@
 package nohi.doc.service;
 
 import com.alibaba.fastjson.JSONObject;
+import jdk.internal.util.xml.impl.Input;
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
 import nohi.doc.config.meta.DocumentMeta;
@@ -53,17 +54,26 @@ public class XmlParse {
      *
      * @param confPath 配置文件路径
      */
-    public static NohiDocMeta parseNohiDoc(String confPath) throws IOException, JAXBException {
+    public static NohiDocMeta parseNohiDoc(String confPath) {
         if (null == confPath) {
             confPath = DocConsts.defaultConf;
         }
-        // 读取XML
-        String xml = FileUtils.readStringFromStream(Objects.requireNonNull(XmlParse.class.getClassLoader().getResourceAsStream(confPath)));
-        log.debug("xml: {}", xml);
-        // 解析
-        NohiDocMeta docMeta = XmlUtils.convertXml2Bean(xml, NohiDocMeta.class);
-        log.debug("docMeta: {}", JSONObject.toJSONString(docMeta));
-        return docMeta;
+
+        try (InputStream inputStream = XmlParse.class.getClassLoader().getResourceAsStream(confPath);) {
+            if (inputStream == null) {
+                throw new RuntimeException("配置文件不存在");
+            }
+            // 读取XML
+            String xml = FileUtils.readStringFromStream(inputStream);
+            log.debug("xml: {}", xml);
+            // 解析
+            NohiDocMeta docMeta = XmlUtils.convertXml2Bean(xml, NohiDocMeta.class);
+            log.debug("docMeta: {}", JSONObject.toJSONString(docMeta));
+            return docMeta;
+        } catch (IOException | JAXBException e) {
+            log.error("解析配置文件[{}] 异常:{}", confPath, e.getMessage());
+            throw new RuntimeException("解析配置文件异常" + e.getMessage());
+        }
     }
 
 
@@ -100,7 +110,7 @@ public class XmlParse {
      *
      * @param confPath 配置该报路径
      */
-    public static Map<String, DocumentMeta> parseTemplateConf(String confPath) throws Exception {
+    public static Map<String, DocumentMeta> parseTemplateConf(String confPath) {
         if (null == confPath) {
             log.warn("解析具体文档属性配置文件出错，没对应的配置文件");
             return null;
@@ -114,17 +124,25 @@ public class XmlParse {
         List<Element> docElements = root.getChildren();
         for (Element documentElement : docElements) {
             DocumentMeta documentMeta = new DocumentMeta();
-            // 解析 <document> 元素属性
-            parseAttributeToObject(documentMeta, documentElement.getAttributes());
+            try {
+                // 解析 <document> 元素属性
+                parseAttributeToObject(documentMeta, documentElement.getAttributes());
 
-            // 如果文档是Excel.需要解析Excel sheet
-            if (DocConsts.DOC_TYPE_EXCEL.equals(documentMeta.getDocType())) {
-                documentMeta.setSheetList(parseExcelSheet(documentElement));
-            } else if (DocConsts.DOC_TYPE_PDF.equals(documentMeta.getDocType())) {
-                documentMeta.setPdfUnitMap(parsePdf(documentElement));
+                // 如果文档是Excel.需要解析Excel sheet
+                if (DocConsts.DOC_TYPE_EXCEL.equals(documentMeta.getDocType())) {
+                    documentMeta.setSheetList(parseExcelSheet(documentElement));
+                } else if (DocConsts.DOC_TYPE_PDF.equals(documentMeta.getDocType())) {
+                    documentMeta.setPdfUnitMap(parsePdf(documentElement));
+                }
+            } catch (Exception e) {
+                log.error("解析节点:[{}] 异常:{}", documentElement, e.getMessage());
+                throw new RuntimeException("解析节点[" + documentElement + "]异常");
             }
 
-            //放入Map
+            if (templateMap.containsKey(documentMeta.getId())) {
+                log.warn("存在重复文档ID[{}]覆盖处理", documentMeta.getId());
+            }
+            // 放入Map
             templateMap.put(documentMeta.getId(), documentMeta);
         }
 
