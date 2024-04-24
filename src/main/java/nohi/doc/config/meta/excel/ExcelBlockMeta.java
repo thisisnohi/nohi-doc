@@ -29,19 +29,24 @@ public class ExcelBlockMeta {
     private BlockType type = BlockType.FIELD;
 
     /**
+     * 块区域名称
+     */
+    private String name;
+
+    /**
      * 块相对上一块位置
      */
-    private String addRows;
+    private Integer addRows;
     /**
      * 块开始行索引
      * 当前块的开始位置 = 上一块开始行 + addRows
      */
-    private String rowIndex;
+    private Integer rowIndex;
     /**
      * 块结束行索引(包含这行)
      * 静态块，此行可以省略
      */
-    private String endRowIndex;
+    private Integer endRowIndex;
     /**
      * 列表对象存储变量名
      * 1.导出时取值
@@ -61,10 +66,10 @@ public class ExcelBlockMeta {
     /**
      * 上一块最后占用的行
      */
-    private String lastModifyRowIndex;
+    private Integer lastModifyRowIndex;
     /**
      * 该块占用最后行的index
      */
-    private String thisModifyRowIndex;
+    private Integer thisModifyRowIndex;
 
 }

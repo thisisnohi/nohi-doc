@@ -12,7 +12,7 @@ public class ExcelColMeta {
     /**
      * 单元格索引
      */
-    private String column;
+    private Integer column;
     /**
      * 数据对象属性
      */
@@ -20,13 +20,13 @@ public class ExcelColMeta {
     /**
      * 字段类型
      */
-    private String dataType; // 字段类型
+    private String dataType;
     /**
      * 格式化
      */
-    private String pattern; // 格式标签
+    private String pattern;
     /**
      * 代码值
      */
-    private String codeType; // 代码值
+    private String codeType;
 }

@@ -8,6 +8,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
+/**
+ * Doc
+ * @author nohi
+ */
 @XmlRootElement(name = "doc")
 @XmlAccessorType(XmlAccessType.FIELD)  // 根据字段解析XML
 @Data

@@ -1,4 +1,4 @@
-package nohi.doc.service;
+package nohi.doc.service.config;
 
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
@@ -14,10 +14,10 @@ import java.util.Optional;
  * NOHI-doc 文档主服务
  *
  * @author NOHI
- * @version $Revision: 1.1 $ 建立日期 2013-2-7
+ * @date 2024/4/12
  */
 @Slf4j
-public class NohiDocServices {
+public class NohiDocService {
     /**
      * 默认配置文件路径
      */
@@ -38,7 +38,7 @@ public class NohiDocServices {
      */
     public static NohiDocMeta getMainDoc() {
         if (null == mainDoc) {
-            synchronized (NohiDocServices.class) {
+            synchronized (NohiDocService.class) {
                 // 防止重复实例化
                 if (null == mainDoc) {
                     mainDoc = init(DEFAULT_CONF);
@@ -64,7 +64,7 @@ public class NohiDocServices {
      * 解析文件
      */
     public static NohiDocMeta parseConf(String confPath) {
-        return XmlParse.parseNohiDoc(confPath);
+        return XmlParseService.parseNohiDoc(confPath);
     }
 
     /**
@@ -100,21 +100,24 @@ public class NohiDocServices {
      *
      * @param docId 文档ID
      * @return 文档配置信息
-     * @throws Exception 异常
      */
-    public static DocumentMeta getDocumentByDocId(String docId)  {
+    public static DocumentMeta getDocumentByDocId(String docId) {
         DocumentMeta tmp = null;
         if (null != template) {
             tmp = template.get(docId);
-
         }
         if (null == tmp) {
             DocMeta dm = getDocMeta(docId);
             if (null != dm) {
-                Map<String, DocumentMeta> map = XmlParse.parseTemplateConf(dm.getConf());
+                Map<String, DocumentMeta> map = XmlParseService.parseTemplateConf(dm.getConf());
                 if (null != map) {
                     tmp = map.get(docId);
-                    template = map;
+                    // 防止重复解析
+                    if (template == null) {
+                        template = map;
+                    } else {
+                        template.putAll(map);
+                    }
                 }
             }
         }

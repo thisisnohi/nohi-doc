@@ -81,7 +81,6 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>5.8.1</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- nohi 工具类 -->
@@ -89,6 +88,12 @@
       <groupId>nohi.online</groupId>
       <artifactId>java-utils</artifactId>
       <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>32.0.1-jre</version>
     </dependency>
 
   </dependencies>

@@ -21,7 +21,7 @@
     <sheet type="single" name="测试sheet" exportSheetName="sheetName">
       <!-- type：该块类型，field-字段类型  TABLE－列表类型
            row：行 , 从0开始   -->
-      <block type="field" rowIndex="1">
+      <block type="field" name="静态区" rowIndex="1">
         <!--
            column: 列，从０开始。合并的单元格算开始位置即可
            property: 存取值对应的字段属性，例str1定是nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
@@ -41,7 +41,7 @@
            list:　列表对应属性,如　list对应nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
            itemClass: list值类型
       -->
-      <block type="TABLE" rowIndex="3" endRowIndex="7" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+      <block type="TABLE" name="列表块" rowIndex="3" endRowIndex="7" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
         <col column="0" property="id" dataType="int">序号</col>
         <col column="1" property="name" dataType="String">姓名</col>
         <col column="2" property="age" dataType="Integer">年龄</col>
@@ -55,7 +55,7 @@
            addRows 该块导出数据时在上一块最后占用位置的下方几行
            row 当前块的开始位置 = 上一块开始行 + addRows
       -->
-      <block type="field" rowIndex="5" endRowIndex="2">
+      <block type="field" name="再静态区" rowIndex="5" endRowIndex="2">
         <col column="1" property="str1">字符串</col>
         <col column="6" property="ivo.innerInt" pattern="" dataType="Integer">内部对象整形值</col>
       </block>

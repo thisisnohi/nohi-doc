@@ -1,14 +1,15 @@
 package nohi.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import nohi.doc.config.meta.excel.ExcelBlockMeta;
 import nohi.doc.service.CodeEncode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,28 @@ import java.util.Map;
 
 @Slf4j
 public class Clazz {
+    public static final String METHOD_TYPE_GET = "get";
+    public static final String METHOD_TYPE_SET = "set";
+
+    /**
+     * 根据属性名，取得Get方法 / set方法
+     *
+     * @param methodType 方法类型 get / set
+     */
+    public static Method getMethod(Class obj, Field field, String methodType) {
+        Method method;
+        try {
+            if (METHOD_TYPE_SET.equals(methodType)) {
+                method = obj.getMethod(METHOD_TYPE_SET + covertFirstChar2Upper(field.getName()), field.getType());
+            } else {
+                method = obj.getMethod(METHOD_TYPE_GET + covertFirstChar2Upper(field.getName()));
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException("获取对象[" + obj + "]属性[" + field.getName() + "][" + methodType + "]方法异常", e);
+        }
+        return method;
+    }
 
 
     /**
@@ -97,7 +120,8 @@ public class Clazz {
     public static Object getMapValue(Object obj, String property) throws Exception {
         String key = property.substring(property.indexOf("[") + 1, property.indexOf("]"));
         key = key.replace("'", "");
-        if (obj instanceof Map) { //对象本身是一个Map
+        // 对象本身是一个Map
+        if (obj instanceof Map) {
             return ((Map<?, ?>) obj).get(key);
         } else if (obj instanceof List) {
             System.out.println("is list");
@@ -133,7 +157,7 @@ public class Clazz {
         } else if ("int".equalsIgnoreCase(dataType) || "Integer".equalsIgnoreCase(dataType)) {
             Integer in = (Integer) rs;
             tempStr = in.toString();
-        } else if ("double".equalsIgnoreCase(dataType) || "double".equalsIgnoreCase(dataType)) {
+        } else if ("double".equalsIgnoreCase(dataType)) {
             Double d = (Double) rs;
             DecimalFormat df = new DecimalFormat(pattern == null ? "0.00" : pattern);
             tempStr = df.format(d);
@@ -153,13 +177,60 @@ public class Clazz {
             tempStr = rs.toString();
         }
 
-        if (null != codeType && !"".equals(codeType.trim())) {
+        if (StringUtils.isNotBlank(codeType)) {
             String s = CodeEncode.getMappingValue(codeType, tempStr);
-            if (null != s && !"".equals(s)) {
+            if (StringUtils.isNotBlank(s)) {
                 tempStr = s;
             }
         }
 
         return tempStr;
+    }
+
+
+    /**
+     * 转换字符串 => 字段属性类型的值
+     *
+     * @param field   字段属性
+     * @param str     字符串值
+     * @param pattern 格式化对象
+     * @return 字段属性对应的对象
+     */
+    public static Object convertString2FieldType(Field field, String str, String pattern) {
+        if (null == field || null == str) {
+            return null;
+        }
+        String title = String.format("字段[%s]类型转换[%s]", field.getName(), str);
+
+        if (field.getType() == Integer.class || field.getType() == int.class) {
+            return new BigDecimal(str).intValue();
+        } else if (field.getType() == Double.class || field.getType() == double.class) {
+            return Double.valueOf(str);
+        } else if (field.getType() == Float.class || field.getType() == float.class) {
+            return Float.valueOf(str);
+        } else if (field.getType() == Boolean.class || field.getType() == boolean.class) {
+            return Boolean.valueOf(str);
+        } else if (field.getType() == BigDecimal.class) {
+            return new BigDecimal(str);
+        } else if (field.getType() == Date.class) {
+
+            SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "yyyyMMdd" : pattern);
+            try {
+                return sdf.parse(str);
+            } catch (ParseException e) {
+                log.error("{} 日期转换失败:{}", title, e.getMessage(), e);
+            }
+            return null;
+        } else if (field.getType() == Timestamp.class) {
+            SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "yyyyMMdd" : pattern);
+            try {
+                return new Timestamp(sdf.parse(str).getTime());
+            } catch (ParseException e) {
+                log.error("{} 日期转换失败:{}", title, e.getMessage(), e);
+            }
+            return null;
+        } else {
+            return str;
+        }
     }
 }

@@ -2,7 +2,6 @@ package nohi.ftp.service;
 
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.config.meta.ftp.FtpServiceInfo;
-import nohi.doc.service.NohiDocServices;
 import nohi.doc.vo.DocVO;
 import nohi.utils.DocCommonUtils;
 import org.apache.commons.net.ftp.FTP;
@@ -41,11 +40,6 @@ public class FtpServer {
      */
     public String getStoreFileName(DocVO doc) throws Exception {
         String path = null;
-        if (null != doc.getTmpDir() && !"".equals(doc.getTmpDir())) {
-            path = doc.getTmpDir();
-        } else {
-            path = null; //
-        }
         if (path != null && !path.endsWith("/")) {
             path += "/";
         }

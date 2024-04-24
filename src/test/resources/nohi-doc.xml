@@ -17,6 +17,7 @@
 
 	<doc-excel>
 		<!-- id: 文档唯一标识  name：文档对应的中文名 template：文档对应的模板 conf：文档对应的具体属性配置文件-->
+		<doc id="FIELD_01" name="解析静态块" conf="docconf/excel/excel_field_01.xml" />
 		<doc id="TEST" name="测试Excel" conf="docconf/excel/excel_test_template.xml" />
 	</doc-excel>
 

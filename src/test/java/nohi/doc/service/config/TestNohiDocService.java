@@ -1,4 +1,4 @@
-package nohi.doc.service;
+package nohi.doc.service.config;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -15,14 +15,14 @@ import org.junit.jupiter.api.Test;
  * @date 2024/04/03 11:22
  **/
 @Slf4j
-public class TestNohiDocServices {
+public class TestNohiDocService {
 
     /**
      * 解析默认配置文件
      */
     @Test
     public void parseNohiDocDefault() {
-        NohiDocMeta mainDoc = NohiDocServices.getMainDoc();
+        NohiDocMeta mainDoc = NohiDocService.getMainDoc();
         log.debug("返回内容：{}", JSONObject.toJSONString(mainDoc));
 
         Assertions.assertNotNull(mainDoc);
@@ -35,7 +35,7 @@ public class TestNohiDocServices {
      */
     @Test
     public void parseNohiDocByConfigPath() {
-        NohiDocMeta mainDoc = NohiDocServices.initMainDoc("nohi-doc.xml");
+        NohiDocMeta mainDoc = NohiDocService.initMainDoc("nohi-doc.xml");
         Assertions.assertNotNull(mainDoc);
         Assertions.assertNotNull(mainDoc.getExcel());
         Assertions.assertNotNull(mainDoc.getPdf());
@@ -47,7 +47,7 @@ public class TestNohiDocServices {
     @Test
     public void parseNohiDocByConfigPathFail() {
         Exception exception = Assertions.assertThrows(RuntimeException.class, () -> {
-            NohiDocServices.initMainDoc("nohi-doc1.xml");
+            NohiDocService.initMainDoc("nohi-doc1.xml");
         });
         log.info("assertThrows通过后，返回的异常实例：{}", exception.getMessage());
         Assertions.assertTrue(exception.getMessage().contains("配置文件不存在"));
@@ -58,13 +58,13 @@ public class TestNohiDocServices {
      */
     @Test
     public void getExcelDocument() {
-        NohiDocMeta mainDoc = NohiDocServices.getMainDoc();
+        NohiDocMeta mainDoc = NohiDocService.getMainDoc();
         Assertions.assertNotNull(mainDoc);
         Assertions.assertNotNull(mainDoc.getExcel());
         Assertions.assertNotNull(mainDoc.getPdf());
 
         String docId = "TEST";
-        DocumentMeta documentMeta = NohiDocServices.getDocumentByDocId(docId);
+        DocumentMeta documentMeta = NohiDocService.getDocumentByDocId(docId);
         log.debug("documentMeta:{}", JSONObject.toJSONString(documentMeta));
         Assertions.assertNotNull(documentMeta);
         Assertions.assertNotNull(documentMeta.getSheetList());
@@ -84,13 +84,13 @@ public class TestNohiDocServices {
      */
     @Test
     public void getExcelDocumentFail() {
-        NohiDocMeta mainDoc = NohiDocServices.getMainDoc();
+        NohiDocMeta mainDoc = NohiDocService.getMainDoc();
         Assertions.assertNotNull(mainDoc);
         Assertions.assertNotNull(mainDoc.getExcel());
         Assertions.assertNotNull(mainDoc.getPdf());
 
         String docId = "NOTHING";
-        DocumentMeta documentMeta = NohiDocServices.getDocumentByDocId(docId);
+        DocumentMeta documentMeta = NohiDocService.getDocumentByDocId(docId);
         log.debug("documentMeta:{}", null == documentMeta ? "null" : JSONObject.toJSONString(documentMeta));
         Assertions.assertNull(documentMeta);
     }

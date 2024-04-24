@@ -1,81 +1,39 @@
 package nohi.doc.excel.vo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.Data;
 
+import java.util.*;
+
+@Data
 public class TestDocVO {
 
-	private String sheetName;
-	private String str1;
-	private Integer intV1;
-	private InnerVO ivo; // 内部对象
-	private List<TestListVO> list;// 列表
+    /** 静态域 **/
+    // 字符串
+    private String str1;
+    private String str2;
+    // 整形
+    private Integer intV1;
+    private int intV2;
 
-	private Map map;
+    // double
+    private Double double1;
+    private double double2;
 
-	private List<Map> listMap;
+    // float
+    private Float floatV1;
+    private float floatV2;
 
-	public List<Map> getListMap() {
-		if (null == listMap) {
-			listMap = new ArrayList<Map>();
-		}
-		return listMap;
-	}
+    // 日期
+    private Date date1;
+    private Date date2;
 
-	public void setListMap(List<Map> listMap) {
-		this.listMap = listMap;
-	}
+    // 布尔
+    private Boolean booleanV1;
+    private boolean booleanV2;
 
-	public Map getMap() {
-		if (null ==map) {
-			map = new HashMap();
-		}
-		return map;
-	}
+    // 内部对象
+    private InnerVO innerObject; // 内部对象
 
-	public void setMap(Map map) {
-		this.map = map;
-	}
-
-	public String getSheetName() {
-		return sheetName;
-	}
-
-	public void setSheetName(String sheetName) {
-		this.sheetName = sheetName;
-	}
-
-	public InnerVO getIvo() {
-		return ivo;
-	}
-
-	public void setIvo(InnerVO ivo) {
-		this.ivo = ivo;
-	}
-
-	public String getStr1() {
-		return str1;
-	}
-
-	public void setStr1(String str1) {
-		this.str1 = str1;
-	}
-
-	public Integer getIntV1() {
-		return intV1;
-	}
-
-	public void setIntV1(Integer intV1) {
-		this.intV1 = intV1;
-	}
-
-	public List<TestListVO> getList() {
-		return list;
-	}
-
-	public void setList(List<TestListVO> list) {
-		this.list = list;
-	}
+    private String sheetName;
+    private List<TestListVO> list;// 列表
 }

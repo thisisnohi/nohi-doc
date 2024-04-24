@@ -2,127 +2,100 @@ package nohi.doc.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
-import nohi.doc.config.meta.DocumentMeta;
 import nohi.doc.service.IDocService;
-import nohi.doc.service.NohiDocServices;
 import nohi.doc.vo.DocVO;
-import nohi.utils.DocCommonUtils;
 
 import java.io.File;
 import java.io.InputStream;
 
 
-
 /**
  * 文档实现类
+ *
  * @author NOHI
  * @create date: 2013-2-15
  */
 @Slf4j
-public class DocService implements IDocService{
+public class DocService implements IDocService {
 
-	public DocVO exportDoc(DocVO doc) throws Exception {
-		//0 检验输入数据
-		if (null == doc) {
-			log.info("输入数据为空");
-			return doc;
-		}
-		log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
+    /**
+     * 导入文件
+     *
+     * @param doc 配置
+     */
+    @Override
+    public <T> DocVO<T> exportDoc(DocVO<T> doc) throws Exception {
+        //如果为Excel
+        if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())) {
+            ExcelXlsxService<T> excel = new ExcelXlsxService<>();
+            excel.exportDoc(doc);
+        } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
+//            PdfService excel = new PdfService();
+//            excel.exportDoc(doc);
+        }
+        log.debug("文件名[{}]", doc.getFilePath());
+        return doc;
+    }
 
-		//1 取得文档模板
-		DocumentMeta template = NohiDocServices.getDocumentByDocId(doc.getDocId());
-		if (null == template) {
-			log.info("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
-			return doc;
-		}
+    /**
+     * 文件导入
+     *
+     * @param doc       配置信息
+     * @param inputFile 导入文件
+     */
+    @Override
+    public <T> void importFromFile(T dataVo, DocVO<T> doc, File inputFile) {
+        //0 检验输入数据
+        if (null == doc || null == inputFile) {
+            log.error("配置为空/输入文件为空");
+            throw new RuntimeException("配置为空/输入文件为空");
+        }
+        String title = String.format("导入[%s-%s]", doc.getDocType(), doc.getDocId());
+        log.debug(title);
 
-		//生成文件名
-		String docVersion = doc.getDocVersion();
-		if (null == docVersion || "".equals(docVersion.trim())) {
-			docVersion = DocCommonUtils.getCurrentTimeStr("yyyyMMddHHmmssSSS");
-		}
+        //如果为Excel
+        if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())) {
+            ExcelXlsxService<T> excel = new ExcelXlsxService<>(title);
+            excel.importFromFile(dataVo, doc, inputFile);
+        } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
+            log.warn("{} PDF暂时不支持", title);
+        } else {
+            log.warn("{} 暂不支持的文档类型[{}]", title, doc.getDocType());
+            throw new RuntimeException("暂不支持的文档类型");
+        }
+    }
 
-		StringBuffer filename = new StringBuffer();
-		filename.append(template.getId())
-				.append("_").append(template.getName())
-				.append("_").append(docVersion)
-		;
+    /**
+     * 按输入流解析文件，文件流操作完成后不主动关闭
+     *
+     * @param doc 配置信息
+     * @param is  文件流
+     */
+    @Override
+    public <T> void importFromInputStream(T dataVo, DocVO<T> doc, InputStream is) {
+        //0 检验输入数据
+        if (null == doc || null == is) {
+            log.error("配置为空/文件流为空");
+            throw new RuntimeException("配置为空/文件流为空");
+        }
+        log.debug("docType: {}, docID: {}", doc.getDocType(), doc.getDocId());
+        if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())) {
+            ExcelXlsxService<T> excel = new ExcelXlsxService<>();
+            excel.importFromInputStream(dataVo, doc, is);
+        } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
+            log.debug("PDF暂时不支持");
+        }
+    }
 
-		//如果为Excel
-		if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())){
-			//doc.setDocName(filename.append(".xls").toString());
-			ExcelXlsxService excel = new ExcelXlsxService();
-			excel.exportDoc(doc);
-		}else if(DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())){
-			doc.setDocName(filename.append(".pdf").toString());
-			PdfService excel = new PdfService();
-			excel.exportDoc(doc);
-		}
-
-		log.debug("文件名[" + doc.getFilePath() + "]");
-		return doc;
-	}
-
-	public Object importFromFile(DocVO doc, File inputFile) throws Exception {
-		//0 检验输入数据
-		if (null == doc || null == inputFile) {
-			log.info("输入数据为空");
-			return null;
-		}
-
-		log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
-
-
-		//1 取得文档模板
-		DocumentMeta template = NohiDocServices.getDocumentByDocId(doc.getDocId());
-		if (null == template) {
-			log.error("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
-			throw new Exception("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
-		}
-
-		//如果为Excel
-		if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())){
-			ExcelXlsxService excel = new ExcelXlsxService();
-			return excel.importFromFile(doc,inputFile);
-		}else if(DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())){
-			log.debug("PDF暂时没有");
-		}
-
-
-		return null;
-	}
-
-	public Object importFromInputStream(DocVO doc, InputStream is) throws Exception {
-		// TODO Auto-generated method stub
-		//0 检验输入数据
-		if (null == doc || null == is) {
-			log.info("输入数据为空");
-			return null;
-		}
-
-		log.debug("docType: " + doc.getDocType() + " ,docID:" + doc.getDocId());
-
-
-		//1 取得文档模板
-		DocumentMeta template = NohiDocServices.getDocumentByDocId(doc.getDocId());
-		if (null == template) {
-			log.info("文档模板为空,没有取得文档ID[" + doc.getDocId()+ "]对应的配置文件");
-			return null;
-		}
-
-		//如果为Excel
-		if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())){
-			ExcelXlsxService excel = new ExcelXlsxService();
-			return excel.importFromInputStream(doc,is);
-		}else if(DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())){
-			log.debug("PDF暂时没有");
-		}
-
-
-		return null;
-	}
-
-	public Object importFromInputStream(DocVO doc, InputStream is, boolean _valueFailExit) throws Exception {
-		return importFromInputStream(doc,is);
-	}
+    /**
+     * 导入文件
+     *
+     * @param doc                      配置信息
+     * @param is                       文件流
+     * @param parseFieldValueErrorExit 解析字段值错误,是否退出,默认false-不退出;
+     */
+    @Override
+    public <T> void importFromInputStream(T dataVo, DocVO<T> doc, InputStream is, boolean parseFieldValueErrorExit) {
+        importFromInputStream(dataVo, doc, is);
+    }
 }

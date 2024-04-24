@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nohi.doc.config.meta.excel.ExcelColMeta;
 import nohi.doc.service.CodeEncode;
 import nohi.utils.Clazz;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -11,11 +12,14 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +34,7 @@ public class ExcelUtils {
     // 创建 Pattern 对象
     static Pattern pattern = Pattern.compile("[A-Z]+\\d+");
 
-    //设置样式
+    // 设置样式
     public static Row setRowStyleFromListFirstRow(Row styleRow, Row row) {
         if (null != styleRow && null != row) {
             int styleRowNum = styleRow.getRowNum();
@@ -78,29 +82,44 @@ public class ExcelUtils {
     /**
      * 取得单元格值
      *
-     * @param cell
-     * @return
+     * @param cell 单元格
      */
     public static String getCellValue(Cell cell) {
-        String value = null;
+        return getCellValue(cell, null);
+    }
+
+    /**
+     * 取得单元格值
+     *
+     * @param cell 单元格
+     */
+    public static String getCellValue(Cell cell, String pattern) {
         if (null == cell) {
             return "";
         }
+
+        String subTitle = String.format("sheet[%s][%s-%s]", cell.getSheet().getSheetName(), cell.getRowIndex(), cell.getColumnIndex());
+        String value = null;
         switch (cell.getCellType()) {
-            case NUMERIC: // 数值型
-                // if (HSSFDateUtil.isCellDateFormatted( cell )) {
-                if (false) {
-                    value = DateUtil.getJavaDate(cell.getNumericCellValue()).toString();
+            // 数值型
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    LocalDateTime dateTime = cell.getLocalDateTimeCellValue();
+                    if (null != dateTime) {
+                        if (StringUtils.isNotBlank(pattern)) {
+                            value = dateTime.format(DateTimeFormatter.ofPattern(pattern));
+                        } else {
+                            value = dateTime.toString();
+                        }
+                    }
                 } else {//纯数字
                     value = String.valueOf(cell.getNumericCellValue());
                     //如果数值类型的，如果小数点后只有一个0,取整
-                    if (null != value) {
-                        int index = value.lastIndexOf(".");
-                        if (index >= 1) {
-                            String prefix = value.substring(index);
-                            if (".0".equals(prefix)) {
-                                return value.substring(0, index);
-                            }
+                    int index = value.lastIndexOf(".");
+                    if (index >= 1) {
+                        String prefix = value.substring(index);
+                        if (".0".equals(prefix)) {
+                            return value.substring(0, index);
                         }
                     }
                 }
@@ -110,30 +129,28 @@ public class ExcelUtils {
                 value = cell.getRichStringCellValue().toString();
                 break;
             case FORMULA://公式型
-                //读公式计算值
+                // 读公式计算值
                 try {
                     value = cell.getStringCellValue();
-                    if (value.equals("NaN")) {//如果获取的数据值为非法值,则转换为获取字符串
+                    // 如果获取的数据值为非法值,则转换为获取字符串
+                    if (value.equals("NaN")) {
                         value = cell.getRichStringCellValue().toString();
                     }
                 } catch (Exception e) {
-                    log.error("sheetName:" + cell.getSheet().getSheetName() + ",rowIndex:" + cell.getRowIndex() + ",columnIndex:" + cell.getColumnIndex());
-                    log.error(e.getMessage(), e);
+                    log.warn("{} 获取公式失败:{}", subTitle, e.getMessage(), e);
                     try {
                         value = String.valueOf(cell.getNumericCellValue());
                     } catch (Exception a) {
-                        log.error(a.getMessage(), a);
+                        log.warn("{} 获取数值失败:{}", subTitle, a.getMessage(), a);
                     }
                 }
-
                 break;
-            case BOOLEAN://布尔
+            case BOOLEAN:// 布尔
                 value = " " + cell.getBooleanCellValue();
                 break;
             /* 此行表示该单元格值为空 */
             case BLANK: // 空值
                 value = "";
-                System.out.print(value);
                 break;
             case ERROR: // 故障
                 value = "";
@@ -144,13 +161,14 @@ public class ExcelUtils {
         return value;
     }
 
+
     /**
      * 获取合并单元格的值
      *
-     * @param sheet
-     * @param row
-     * @param column
-     * @return
+     * @param sheet  sheet
+     * @param row    行
+     * @param column 列
+     * @return 字符串
      */
     public static String getMergedRegionValue(Sheet sheet, int row, int column) {
         int sheetMergeCount = sheet.getNumMergedRegions();
@@ -163,7 +181,6 @@ public class ExcelUtils {
             int lastRow = ca.getLastRow();
 
             if (row >= firstRow && row <= lastRow) {
-
                 if (column >= firstColumn && column <= lastColumn) {
                     Row fRow = sheet.getRow(firstRow);
                     Cell fCell = fRow.getCell(firstColumn);
@@ -200,143 +217,89 @@ public class ExcelUtils {
         return false;
     }
 
-    public static void setValue(Object obj, ExcelColMeta col, String temp) throws Exception {
-        //给对象set值
-        String fileName = col.getProperty();
-        String dataType = col.getDataType();
+    /**
+     * 根据单元格配置，给数据对象字段赋值
+     *
+     * @param obj  数据对象
+     * @param col  单元格配置
+     * @param temp 值字符串
+     */
+    public static void setValue(Object obj, ExcelColMeta col, String temp) {
+        // 给对象set
+        String fieldName = col.getProperty();
         String pattern = col.getPattern();
         String codeType = col.getCodeType();
-        Class dateType = null;//类型
-
-        //结果
-        Object rs = null;
-
+        String title = String.format("属性[%s] 值[%s] Code[%s] pattern[%s]", fieldName, temp, codeType, pattern);
         // 格式化字符串
-        log.debug("属性[" + fileName + "],值[" + temp + "]" + ",类型[" + dataType + "]");
-
-        boolean flag = false; //是否该字段属性对应的报文为空
-        if ("int".equalsIgnoreCase(dataType) || "Integer".equalsIgnoreCase(dataType)) {
-            if ("int".equalsIgnoreCase(dataType)) {
-                dateType = int.class;
-            } else {
-                dateType = Integer.class;
-            }
-
-            if (null == temp || "".equals(temp)) {
-                flag = true;
-            } else {
-                BigDecimal bd = new BigDecimal(temp);
-                rs = bd.intValue();
-            }
-
-        } else if ("double".equalsIgnoreCase(dataType) || "double".equalsIgnoreCase(dataType)) {
-            dateType = Double.class;
-            if (null == temp || "".equals(temp)) {
-                flag = true;
-            } else {
-                rs = Double.valueOf(temp);
-            }
-        } else if ("BigDecimal".equalsIgnoreCase(dataType)) {
-            dateType = BigDecimal.class;
-            if (null == temp || "".equals(temp)) {
-                flag = true;
-            } else {
-                rs = new BigDecimal(temp);
-            }
-        } else if ("date".equalsIgnoreCase(dataType)) {
-            dateType = Date.class;
-            if (null == temp || "".equals(temp)) {
-                flag = true;
-            } else {
-                SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "yyyyMMdd" : pattern);
-                try {
-                    rs = sdf.parse(temp);
-                } catch (ParseException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-        } else if ("timestamp".equalsIgnoreCase(dataType)) {
-            dateType = Timestamp.class;
-            if (null == temp || "".equals(temp)) {
-                flag = true;
-            } else {
-                SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "yyyyMMdd" : pattern);
-                try {
-                    rs = new Timestamp(sdf.parse(temp).getTime());
-                } catch (ParseException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-        } else {
-            dateType = String.class;
-            if (null != codeType && !"".equals(codeType)) {
-                //反向取值
-                String s = CodeEncode.getMappingValue(codeType, temp);
-                if (null != s && !"".equals(s)) {
-                    temp = s;
-                }
-            }
-            rs = temp;
-        }
-
-        if (flag) {
+        log.debug("{} pattern:{}", title, pattern);
+        if (StringUtils.isBlank(temp)) {
             return;
         }
-
-
-        //根据value中的值，对对象层层设值
+        // 转换数据字典
+        // TODO 考虑系统接口实例
+        // 接口： Class.static method value2Key(codeType, codeValue) 返回 codeKey
+        // 接口： Class.static method key2Value(codeType, codeKey) 返回 codeValue
+        if (StringUtils.isNotBlank(codeType)) {
+            temp = CodeEncode.getMappingValue(codeType, temp);
+        }
+        // 根据value中的值，对对象层层设值
         try {
-            setValue(obj, fileName, dateType, rs);
+            setValue(obj, fieldName, temp, pattern);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new Exception("解析字段[" + fileName + "]失败", e);
+            throw new RuntimeException("字段[" + fieldName + "]赋值失败", e);
         }
     }
 
     /**
-     * @param obj
-     * @param value
-     * @return
-     * @throws Exception
+     * 通过反射给对象设置值
+     *
+     * @param obj   数据对象
+     * @param value 值
      */
-    public static void setValue(Object obj, String fileName, Class dateType, Object value) throws Exception {
+    public static void setValue(Object obj, String fieldName, String value, String pattern) throws Exception {
+        String title = String.format("属性[%s],值[%s]", fieldName, value);
         if (null == obj) {
-            log.error("对象[" + obj + "] 为空，filename[" + fileName + "]");
+            log.warn("{} 数据对象为空", title);
             return;
         }
-        if (null == fileName) {
-            log.error("对象[" + obj + "] 对应的字段的字段名为空");
+        if (StringUtils.isBlank(fieldName)) {
+            log.warn("{} 对应的字段的字段名为空", title);
             return;
         }
-
         if (null == value) {
-            log.error("对象[" + obj + "] 对应的字段[" + fileName + "]的值为空");
+            log.warn("{} 对应的字段[{}]的值为空", title, fieldName);
             return;
         }
 
-        String[] vm = fileName.split("\\."); //用正则，点是正则的关键字，必须转义
-        int index = fileName.indexOf(".");
+        // 用正则，点是正则的关键字，必须转义
+        String[] vm = fieldName.split("\\.");
+        int index = fieldName.indexOf(".");
 
+        // 没有嵌套对象
         if (index == -1) {
-            Method method = Clazz.getMethod(obj.getClass(), fileName, "set", dateType);
-            method.invoke(obj, value);
+            Field field = obj.getClass().getDeclaredField(fieldName);
+            // 根据属性类型，转换String为对应的类型的值
+            Object fieldValue = Clazz.convertString2FieldType(field, value, pattern);
+            // 获取get方法
+            Method method = Clazz.getMethod(obj.getClass(), field, Clazz.METHOD_TYPE_SET);
+            method.invoke(obj, fieldValue);
         } else {
-            Method method = Clazz.getMethod(obj.getClass(), vm[0], "get", null);
+            // 多层嵌套对象
+            Method method = Clazz.getMethod(obj.getClass(), vm[0], Clazz.METHOD_TYPE_GET, null);
             Object temp = method.invoke(obj);
             if (null == temp) {
                 try {
                     temp = method.getReturnType().newInstance();
                 } catch (InstantiationException e) {
-                    log.error(e.getMessage(), e);
-                    throw new Exception("实例[" + method.getReturnType() + "]失败");
+                    throw new RuntimeException("实例[" + method.getReturnType() + "]失败", e);
                 }
             }
 
-            //循环嵌套调用
-            setValue(temp, fileName.substring(index + 1), dateType, value);
+            // 循环嵌套调用
+            setValue(temp, fieldName.substring(index + 1), value, pattern);
 
-            //该对象的set方法
-            method = Clazz.getMethod(obj.getClass(), vm[0], "set", temp.getClass());
+            // 该对象的set方法
+            method = Clazz.getMethod(obj.getClass(), vm[0], Clazz.METHOD_TYPE_SET, temp.getClass());
             method.invoke(obj, temp);
         }
     }
@@ -583,20 +546,6 @@ public class ExcelUtils {
         } else {
             return rs + String.valueOf((char) ('A' + index));//首字母;
         }
-    }
-
-    public void getCol() {
-//		System.out.println(String.valueOf('A'));
-        int i = 0;
-        System.out.println(getColString(i));
-        i = 25;
-        System.out.println(getColString(i));
-        i = 26;
-        System.out.println(getColString(i));
-        i = 51;
-        System.out.println(getColString(i));
-        i = 52;
-        System.out.println(getColString(i));
     }
 
 }

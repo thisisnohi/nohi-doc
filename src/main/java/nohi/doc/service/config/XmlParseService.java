@@ -1,7 +1,6 @@
-package nohi.doc.service;
+package nohi.doc.service.config;
 
 import com.alibaba.fastjson.JSONObject;
-import jdk.internal.util.xml.impl.Input;
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
 import nohi.doc.config.meta.DocumentMeta;
@@ -24,6 +23,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -34,17 +34,18 @@ import java.util.*;
  * 建立日期 2013-2-7
  */
 @Slf4j
-public class XmlParse {
+public class XmlParseService {
 
     public static Document getDocumentByResourcePath(String confPath) {
         Document doc;
         try ( //1 得到输入流
-              InputStream in = XmlParse.class.getClassLoader().getResourceAsStream(confPath)) {
+              InputStream in = XmlParseService.class.getClassLoader().getResourceAsStream(confPath)) {
             //2 解析XML文件
             SAXBuilder builder = new SAXBuilder();
             doc = builder.build(in);
-        } catch (Exception e1) {
-            throw new RuntimeException("读取配置文件[" + confPath + "]出错", e1);
+        } catch (Exception e) {
+            log.error("解析配置文件异常:{}", e.getMessage(), e);
+            throw new RuntimeException("读取配置文件[" + confPath + "]出错", e);
         }
         return doc;
     }
@@ -59,7 +60,7 @@ public class XmlParse {
             confPath = DocConsts.defaultConf;
         }
 
-        try (InputStream inputStream = XmlParse.class.getClassLoader().getResourceAsStream(confPath);) {
+        try (InputStream inputStream = XmlParseService.class.getClassLoader().getResourceAsStream(confPath);) {
             if (inputStream == null) {
                 throw new RuntimeException("配置文件不存在");
             }
@@ -98,8 +99,29 @@ public class XmlParse {
                         }
                     }
                 } else {
-                    Method method = Clazz.getMethod(clazz, att.getName(), "set", String.class);
-                    method.invoke(obj, att.getValue());
+                    try {
+                        Method method = Clazz.getMethod(clazz, att.getName(), "set", field.getType());
+
+                        if (field.getType() == String.class) {
+                            method.invoke(obj, att.getValue());
+                        } else if (field.getType() == Integer.class || field.getType() == int.class) {
+                            method.invoke(obj, att.getIntValue());
+                        } else if (field.getType() == Double.class || field.getType() == double.class) {
+                            method.invoke(obj, att.getDoubleValue());
+                        } else if (field.getType() == Float.class || field.getType() == float.class) {
+                            method.invoke(obj, att.getFloatValue());
+                        } else if (field.getType() == Boolean.class || field.getType() == boolean.class) {
+                            method.invoke(obj, att.getBooleanValue());
+                        } else if (field.getType() == Date.class) {
+                            method.invoke(obj, att.getValue());
+                        } else if (field.getType() == BigDecimal.class) {
+                            method.invoke(obj, new BigDecimal(att.getValue()));
+                        }
+                    } catch (Exception e) {
+                        log.error("SET[{}] 异常:{}", att.getName(), e.getMessage(), e);
+                        throw new RuntimeException("set" + att.getName() + "异常：" + e.getMessage(), e);
+                    }
+
                 }
             }
         }
@@ -135,7 +157,7 @@ public class XmlParse {
                     documentMeta.setPdfUnitMap(parsePdf(documentElement));
                 }
             } catch (Exception e) {
-                log.error("解析节点:[{}] 异常:{}", documentElement, e.getMessage());
+                log.error("解析节点:[{}] 异常:{}", documentElement, e.getMessage(), e);
                 throw new RuntimeException("解析节点[" + documentElement + "]异常");
             }
 
@@ -208,7 +230,7 @@ public class XmlParse {
             // 解析属性
             parseAttributeToObject(excelBlockMeta, block.getAttributes());
 
-            //如果是列表
+            // 如果是列表
             if (null != block.getChildren()) {
                 Map<String, ExcelColMeta> colMap = new HashMap<>();
 
@@ -219,7 +241,7 @@ public class XmlParse {
                     parseAttributeToObject(excelColMeta, colElement.getAttributes());
 
                     //存放
-                    colMap.put(excelColMeta.getColumn(), excelColMeta);
+                    colMap.put(excelColMeta.getColumn().toString(), excelColMeta);
                 }
                 excelBlockMeta.setCols(colMap);
             }

@@ -70,7 +70,7 @@ public class _01_PDFDocExport {
 			temp.add(pi);
 		}
 		pvo.setTestList(temp);
-		doc.setDataVO(pvo);
+//		doc.setDataVO(pvo);
 
 		doc = docService.exportDoc(doc);
 		System.out.println("filePath: " + doc.getFilePath());

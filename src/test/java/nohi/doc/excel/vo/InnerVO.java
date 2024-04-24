@@ -1,28 +1,31 @@
 package nohi.doc.excel.vo;
 
-public class InnerVO
-{
-	private String	innerStr;
+import lombok.Data;
 
-	private Integer	innerInt;
+import java.util.Date;
 
-	public String getInnerStr()
-	{
-		return innerStr;
-	}
+@Data
+public class InnerVO {
+    // 字符串
+    private String str1;
+    private String str2;
+    // 整形
+    private Integer intV1;
+    private int intV2;
 
-	public void setInnerStr(String innerStr)
-	{
-		this.innerStr = innerStr;
-	}
+    // double
+    private Double double1;
+    private double double2;
 
-	public Integer getInnerInt()
-	{
-		return innerInt;
-	}
+    // float
+    private Float floatV1;
+    private float floatV2;
 
-	public void setInnerInt(Integer innerInt)
-	{
-		this.innerInt = innerInt;
-	}
+    // 日期
+    private Date date1;
+    private Date date2;
+
+    // 布尔
+    private Boolean booleanV1;
+    private boolean booleanV2;
 }

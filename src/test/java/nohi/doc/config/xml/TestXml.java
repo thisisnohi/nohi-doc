@@ -3,7 +3,7 @@ package nohi.doc.config.xml;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.config.meta.DocumentMeta;
-import nohi.doc.service.XmlParse;
+import nohi.doc.service.config.XmlParseService;
 import nohi.utils.FileUtils;
 import nohi.utils.XmlUtils;
 import org.junit.jupiter.api.Assertions;
@@ -67,7 +67,7 @@ public class TestXml {
         // 读取文档模板配置
         String resourcePath = "docconf/excel/excel_test_template.xml";
         // 解析
-        Map<String, DocumentMeta> documentMap = XmlParse.parseTemplateConf(resourcePath);
+        Map<String, DocumentMeta> documentMap = XmlParseService.parseTemplateConf(resourcePath);
         log.debug("documentMap: {}", JSONObject.toJSONString(documentMap));
         // 验证
         Assertions.assertNotNull(documentMap);
