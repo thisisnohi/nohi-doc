@@ -17,7 +17,12 @@
 
 	<doc-excel>
 		<!-- id: 文档唯一标识  name：文档对应的中文名 template：文档对应的模板 conf：文档对应的具体属性配置文件-->
-		<doc id="FIELD_01" name="解析静态块" conf="docconf/excel/excel_field_01.xml" />
+		<doc id="STATIC_FIELD_BLOCK" name="解析静态块" conf="docconf/excel/excel_field_01.xml" />
+		<doc id="TABLE_BLOCK" name="解析列表块" conf="docconf/excel/excel_table_01.xml" />
+		<doc id="MULTI_BLOCK" name="多块" conf="docconf/excel/excel_multi_block.xml" />
+		<doc id="MULTI_SHEET" name="多sheet" conf="docconf/excel/excel_multi_sheet.xml" />
+
+
 		<doc id="TEST" name="测试Excel" conf="docconf/excel/excel_test_template.xml" />
 	</doc-excel>
 

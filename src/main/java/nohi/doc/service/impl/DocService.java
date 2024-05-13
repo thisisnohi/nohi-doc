@@ -27,7 +27,7 @@ public class DocService implements IDocService {
     public <T> DocVO<T> exportDoc(DocVO<T> doc) throws Exception {
         //如果为Excel
         if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())) {
-            ExcelXlsxService<T> excel = new ExcelXlsxService<>();
+            ExcelXlsxService<T> excel = new ExcelXlsxService<>("TODO 导出");
             excel.exportDoc(doc);
         } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
 //            PdfService excel = new PdfService();
@@ -80,7 +80,7 @@ public class DocService implements IDocService {
         }
         log.debug("docType: {}, docID: {}", doc.getDocType(), doc.getDocId());
         if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())) {
-            ExcelXlsxService<T> excel = new ExcelXlsxService<>();
+            ExcelXlsxService<T> excel = new ExcelXlsxService<>(doc.getDocId());
             excel.importFromInputStream(dataVo, doc, is);
         } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
             log.debug("PDF暂时不支持");

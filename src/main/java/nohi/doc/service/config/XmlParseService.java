@@ -224,11 +224,18 @@ public class XmlParseService {
         List<ExcelBlockMeta> blockList = new ArrayList<>();
 
         List<Element> blockElements = sheet.getChildren();
+        // 上一块
+        ExcelBlockMeta lastBlockMeta = null;
         for (Element block : blockElements) {
             ExcelBlockMeta excelBlockMeta = new ExcelBlockMeta();
 
             // 解析属性
             parseAttributeToObject(excelBlockMeta, block.getAttributes());
+
+            // 计算rowIndex addRows
+            if(null == excelBlockMeta.getRowIndex() && null != lastBlockMeta) {
+                excelBlockMeta.setRowIndex(lastBlockMeta.getRowIndex() + excelBlockMeta.getAddRows());
+            }
 
             // 如果是列表
             if (null != block.getChildren()) {
@@ -245,7 +252,8 @@ public class XmlParseService {
                 }
                 excelBlockMeta.setCols(colMap);
             }
-
+            // 赋值上一块
+            lastBlockMeta = excelBlockMeta;
             // 集合
             blockList.add(excelBlockMeta);
         }

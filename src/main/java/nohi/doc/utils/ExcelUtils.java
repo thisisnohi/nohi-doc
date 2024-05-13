@@ -14,14 +14,9 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -229,9 +224,9 @@ public class ExcelUtils {
         String fieldName = col.getProperty();
         String pattern = col.getPattern();
         String codeType = col.getCodeType();
-        String title = String.format("属性[%s] 值[%s] Code[%s] pattern[%s]", fieldName, temp, codeType, pattern);
+        String title = String.format("属性[%s] 值[%s]", fieldName, temp) + (null == codeType ? "" : "CodeType[" + codeType + "]") + (null == pattern ? "" : "Pattern[" + pattern + "]");
         // 格式化字符串
-        log.debug("{} pattern:{}", title, pattern);
+        log.debug("{}", title);
         if (StringUtils.isBlank(temp)) {
             return;
         }
@@ -256,7 +251,17 @@ public class ExcelUtils {
      * @param obj   数据对象
      * @param value 值
      */
-    public static void setValue(Object obj, String fieldName, String value, String pattern) throws Exception {
+    public static void setValue(Object obj, String fieldName, Object value) throws Exception {
+        setValue(obj, fieldName, value, null);
+    }
+
+    /**
+     * 通过反射给对象设置值
+     *
+     * @param obj   数据对象
+     * @param value 值
+     */
+    public static void setValue(Object obj, String fieldName, Object value, String pattern) throws Exception {
         String title = String.format("属性[%s],值[%s]", fieldName, value);
         if (null == obj) {
             log.warn("{} 数据对象为空", title);
@@ -266,10 +271,7 @@ public class ExcelUtils {
             log.warn("{} 对应的字段的字段名为空", title);
             return;
         }
-        if (null == value) {
-            log.warn("{} 对应的字段[{}]的值为空", title, fieldName);
-            return;
-        }
+
 
         // 用正则，点是正则的关键字，必须转义
         String[] vm = fieldName.split("\\.");
@@ -278,11 +280,21 @@ public class ExcelUtils {
         // 没有嵌套对象
         if (index == -1) {
             Field field = obj.getClass().getDeclaredField(fieldName);
-            // 根据属性类型，转换String为对应的类型的值
-            Object fieldValue = Clazz.convertString2FieldType(field, value, pattern);
+
+            if (null == value) {
+                log.warn("{} 对应的字段[{}]的值为空", title, fieldName);
+                return;
+            }
             // 获取get方法
             Method method = Clazz.getMethod(obj.getClass(), field, Clazz.METHOD_TYPE_SET);
-            method.invoke(obj, fieldValue);
+
+            if (value instanceof String) {
+                // 根据属性类型，转换String为对应的类型的值
+                Object fieldValue = Clazz.convertString2FieldType(field, (String) value, pattern);
+                method.invoke(obj, fieldValue);
+            } else {
+                method.invoke(obj, value);
+            }
         } else {
             // 多层嵌套对象
             Method method = Clazz.getMethod(obj.getClass(), vm[0], Clazz.METHOD_TYPE_GET, null);

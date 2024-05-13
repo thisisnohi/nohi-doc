@@ -55,12 +55,12 @@
            addRows 该块导出数据时在上一块最后占用位置的下方几行
            row 当前块的开始位置 = 上一块开始行 + addRows
       -->
-      <block type="field" name="再静态区" rowIndex="5" endRowIndex="2">
+      <block type="field" name="再静态区" rowIndex="5" >
         <col column="1" property="str1">字符串</col>
         <col column="6" property="ivo.innerInt" pattern="" dataType="Integer">内部对象整形值</col>
       </block>
 
-      <block type="field" rowIndex="11" endRowIndex="3">
+      <block type="field" rowIndex="11" >
         <col column="1" property="str1">字符串</col>
         <col column="3" property="intV1" dataType="Integer">整形值</col>
         <col column="5" property="ivo.innerStr">内部对象字符串</col>

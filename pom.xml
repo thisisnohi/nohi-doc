@@ -33,6 +33,11 @@
       <artifactId>poi</artifactId>
       <version>${poi-version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>${poi-version}</version>
+    </dependency>
 
     <!-- xml解析 -->
     <dependency>
@@ -59,6 +64,11 @@
       <version>1.2.3</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.20.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.commons</groupId>

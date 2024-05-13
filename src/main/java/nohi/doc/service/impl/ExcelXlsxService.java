@@ -48,9 +48,6 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
     // 导入数据
     Object dataVO;
 
-    public ExcelXlsxService() {
-    }
-
     public ExcelXlsxService(String title) {
         this.title = title;
     }
@@ -61,7 +58,8 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         template = this.getDocumentMeta(doc.getDocId());
 
         InputStream is = null;
-        dataVO = null;// doc.getDataVO();
+        // doc.getDataVO();
+        dataVO = null;
 
         log.info("template.getTemplate():{}", template.getTemplate());
         //2,读取Excel模板
@@ -425,80 +423,18 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         if (ExcelBlockMeta.BlockType.FIELD.equals(blockMeta.getType())) {
             this.parseBlockField(dataVO, blockMeta, sheet);
         } else if (ExcelBlockMeta.BlockType.TABLE.equals(blockMeta.getType())) {
-            Row row = null;
-            Cell cell = null;
-            // 最后一行行数
-            int lastRow = sheet.getLastRowNum();
-
-            Integer endRowStr = blockMeta.getEndRowIndex();
-            if (null == endRowStr) {
-                endRowStr = 100;
-            }
-
-            Map<String, ExcelColMeta> docCols = blockMeta.getCols();
-            String key = null;
-            String value = null;
-            ExcelColMeta col;
-            List<Object> list = new ArrayList<>();
-            Object item = null;
-            // 列表是很多行的数据，遍历
-            for (int i = blockMeta.getRowIndex(); i <= endRowStr; i++) {
-                if (i > lastRow) {
-                    break;
-                }
-
-                //得到行数据
-                row = sheet.getRow(i);
-                if (null == row) {
-                    continue;
-                }
-                // 每次都得新建对象
-                try {
-                    item = Class.forName(blockMeta.getItemClass()).newInstance();
-                } catch (Exception e) {
-                    log.error("生成VO出错{}", e.getMessage(), e);
-                    throw new RuntimeException("生成VO出错" + e.getMessage(), e);
-                }
-                //解析每行数据
-                for (String s : docCols.keySet()) {
-                    key = s;
-                    col = docCols.get(key);
-                    cell = row.getCell(col.getColumn());
-                    if (null == cell) {
-                        continue;
-                    }
-                    // 判断是否合并单元格
-                    boolean isMerge = ExcelUtils.isMergedRegion(cell.getSheet(), cell.getRowIndex(), cell.getColumnIndex());
-                    if (isMerge) {
-                        value = ExcelUtils.getMergedRegionValue(cell.getSheet(), cell.getRowIndex(), cell.getColumnIndex());
-                    } else {
-                        // 获取单元格值
-                        value = ExcelUtils.getCellValue(cell);
-                    }
-
-                    try {
-                        ExcelUtils.setValue(item, col, value);
-                    } catch (Exception e) {
-                        log.error(e.getMessage(), e);
-                        if (valueFailExit) {
-                            throw new RuntimeException("行[" + (i + 1) + "]列[" + (Integer.valueOf(col.getColumn()) + 1) + "],属性[" + col.getProperty() + "],值[" + value + "]" + ",类型[" + col.getDataType() + "],错误:" + e);
-                        }
-                    }
-                }
-                list.add(item);
-            }
-
-            //把List放入对象中
-            try {
-                // ExcelUtils.setValue(dataVO, blockMeta.getList(), List.class, list);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                throw new RuntimeException(e.getMessage());
-            }
+            this.parseBlockTable(dataVO, blockMeta, sheet);
         }
     }
 
 
+    /**
+     * 解析静态埠
+     *
+     * @param dataVO    数据对象
+     * @param blockMeta 块配置
+     * @param sheet     表格
+     */
     private void parseBlockField(Object dataVO, ExcelBlockMeta blockMeta, Sheet sheet) {
         // 得到行数据
         int startIndex = blockMeta.getRowIndex() + (null == blockMeta.getLastModifyRowIndex() ? 0 : blockMeta.getLastModifyRowIndex());
@@ -509,6 +445,11 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
 
         log.info("{} 块[{}]解析开始行[{}] 列数[{}]", title, blockMeta.getName(), startIndex, docCols.size());
 
+        // 解析所有列表
+        this.parseAllCell(dataVO, docCols, row, startIndex);
+    }
+
+    private void parseAllCell(Object dataObject, Map<String, ExcelColMeta> docCols, Row row, int startIndex) {
         // 循环解析列
         docCols.forEach((key, col) -> {
             //取得单元格
@@ -525,12 +466,12 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 value = ExcelUtils.getMergedRegionValue(cell.getSheet(), cell.getRowIndex(), cell.getColumnIndex());
             } else {
                 // 取值
-                value = ExcelUtils.getCellValue(cell);
+                value = ExcelUtils.getCellValue(cell, col.getPattern());
             }
 
             // 对象赋值
             try {
-                ExcelUtils.setValue(dataVO, col, value);
+                ExcelUtils.setValue(dataObject, col, value);
             } catch (Exception e) {
                 String msg = String.format("解析单元格[%s,%s]异常:%s", startIndex, col.getColumn(), e.getMessage());
                 if (valueFailExit) {
@@ -541,6 +482,57 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 }
             }
         });
+    }
+
+    /**
+     * 解析列表块
+     *
+     * @param dataVO    数据对象
+     * @param blockMeta 块配置
+     * @param sheet     表格
+     */
+    private void parseBlockTable(Object dataVO, ExcelBlockMeta blockMeta, Sheet sheet) {
+        String subTitle = String.format("%s 列表块[%s]", title, blockMeta.getName());
+        int startIndex = blockMeta.getRowIndex() + (null == blockMeta.getLastModifyRowIndex() ? 0 : blockMeta.getLastModifyRowIndex());
+        // 最后一行行数
+        int lastRow = sheet.getLastRowNum();
+        // TODO 表格导入时，最后的行索引(防止表格下方有静态块，出现解析问题)
+        Integer endRowIndex = blockMeta.getEndRowIndex();
+        // 列表是很多行的数据，遍历
+        if (null != endRowIndex) {
+            lastRow = endRowIndex;
+        }
+        Map<String, ExcelColMeta> docCols = blockMeta.getCols();
+
+        List<Object> list = new ArrayList<>();
+        for (int i = blockMeta.getRowIndex(); i <= lastRow; i++) {
+            //得到行数据
+            Row row = sheet.getRow(i);
+            if (null == row) {
+                continue;
+            }
+            // 每次都得新建对象: 列表中每行为一个对象
+            Object dataObject = null;
+            try {
+                dataObject = Class.forName(blockMeta.getItemClass()).newInstance();
+            } catch (Exception e) {
+                log.error("{} 实例行对象失败:{}", subTitle, e.getMessage(), e);
+                throw new RuntimeException("生成VO出错" + e.getMessage(), e);
+            }
+            // 解析所有列表
+            this.parseAllCell(dataObject, docCols, row, startIndex);
+
+            // 添加到列表中
+            list.add(dataObject);
+        }
+
+        // 把List放入对象中
+        try {
+            ExcelUtils.setValue(dataVO, blockMeta.getList(), list);
+        } catch (Exception e) {
+            String msg = String.format("块[%s]赋值异常:%s", blockMeta.getName(), e.getMessage());
+            throw new RuntimeException(msg, e);
+        }
     }
 
     @Override
