@@ -233,7 +233,7 @@ public class XmlParseService {
             parseAttributeToObject(excelBlockMeta, block.getAttributes());
 
             // 计算rowIndex addRows
-            if(null == excelBlockMeta.getRowIndex() && null != lastBlockMeta) {
+            if (null == excelBlockMeta.getRowIndex() && null != lastBlockMeta) {
                 excelBlockMeta.setRowIndex(lastBlockMeta.getRowIndex() + excelBlockMeta.getAddRows());
             }
 

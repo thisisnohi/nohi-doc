@@ -6,6 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Doc常量
+ * @author NOHI
+ * @date 2024/5/16
+ */
 @Slf4j
 public class DocConsts {
 
@@ -45,25 +50,12 @@ public class DocConsts {
 	 */
 	public static final String DOC_TYPE_PDF = "PDF";
 
-	/**
-	 * EXCEL块类型: TABLE　列表
-	 */
-	public static final String BLOCK_TYPE_TABLE = "TABLE";
-
-	/**
-	 * EXCEL块类型: FIELD　字段
-	 */
-	public static final String BLOCK_TYPE_FIELD = "field";
-
-	/**
-	 * PDF表格类型: TABLE　列表
-	 */
 	public static final String PDF_UNIT_TYPE_TABLE = "TABLE";
 
 	/**
-	 * PDF单元格类型: FIELD　字段
+	 * 文档备份后缀
 	 */
-	public static final String PDF_UNIT_TYPE_TEXT = "text";
+	public static final String BACKUP_SUFFIX = "_BAK";
 
 
 }

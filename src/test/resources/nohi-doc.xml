@@ -12,7 +12,7 @@
              	  LOCAL时不需要配置ftp-server
         -->
 		<storeFileType>LOCAL</storeFileType>
-		<localPath>D:/tmpFile/local</localPath>
+		<localPath>/Users/nohi/Downloads</localPath>
     </store-file>
 
 	<doc-excel>

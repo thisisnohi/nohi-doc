@@ -14,9 +14,13 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -560,4 +564,58 @@ public class ExcelUtils {
         }
     }
 
+    /**
+     * 设置单元格值
+     */
+    public static void setExcelCellValue(Cell cell, ExcelColMeta colMeta, Object data) {
+        // 设置单元格值
+        String dataType = colMeta.getDataType();
+        String pattern = colMeta.getPattern();
+        String codeType = colMeta.getCodeType();
+
+        if (null == data) {
+            return;
+        }
+        // 如果设置了字段类型，按字段类型设置单元格的值
+        if ("int".equalsIgnoreCase(dataType) || "Integer".equalsIgnoreCase(dataType) || data instanceof Integer) {
+            Integer in = (Integer) data;
+            cell.setCellValue(in);
+        } else if ("double".equalsIgnoreCase(dataType) || data instanceof Double) {
+            Double d = (Double) data;
+            cell.setCellValue(d);
+        } else if ("float".equalsIgnoreCase(dataType) || data instanceof Float) {
+            Float d = (Float) data;
+            cell.setCellValue(d);
+        }else if ("BigDecimal".equalsIgnoreCase(dataType) || data instanceof BigDecimal) {
+            BigDecimal bd = (BigDecimal) data;
+            cell.setCellValue(bd.doubleValue());
+        } else if ("timestamp".equalsIgnoreCase(dataType) || data instanceof Timestamp) {
+            Timestamp bd = (Timestamp) data;
+            // 如果单元格为字符串，则转换单元格值为字符串
+            if (cell.getCellType().equals(CellType.STRING)) {
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "yyyyMMdd" : pattern);
+                cell.setCellValue(sdf.format(bd));
+            } else {
+                cell.setCellValue(bd);
+            }
+        } else if ("date".equalsIgnoreCase(dataType) || data instanceof Date) {
+            Date bd = (Date) data;
+            // 如果单元格为字符串，则转换单元格值为字符串
+            if (cell.getCellType().equals(CellType.STRING)) {
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern == null ? "yyyyMMdd" : pattern);
+                cell.setCellValue(sdf.format(bd));
+            } else {
+                cell.setCellValue(bd);
+            }
+        } else {
+            cell.setCellValue(data.toString());
+            if (StringUtils.isNotBlank(codeType)) {
+                String s = CodeEncode.getMappingValue(codeType, data.toString());
+                if (StringUtils.isNotBlank(s)) {
+                    cell.setCellValue(s);
+                }
+            }
+        }
+    }
 }
+

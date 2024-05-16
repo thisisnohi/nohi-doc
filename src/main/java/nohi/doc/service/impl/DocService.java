@@ -25,9 +25,11 @@ public class DocService implements IDocService {
      */
     @Override
     public <T> DocVO<T> exportDoc(DocVO<T> doc) throws Exception {
+        String title = String.format("导出[%s-%s]", doc.getDocType(), doc.getDocId());
+        log.debug(title);
         //如果为Excel
         if (DocConsts.DOC_TYPE_EXCEL.equals(doc.getDocType())) {
-            ExcelXlsxService<T> excel = new ExcelXlsxService<>("TODO 导出");
+            ExcelXlsxService<T> excel = new ExcelXlsxService<>(title);
             excel.exportDoc(doc);
         } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
 //            PdfService excel = new PdfService();

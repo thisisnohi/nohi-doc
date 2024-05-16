@@ -50,7 +50,12 @@ public class Clazz {
      */
     public static Method getMethod(Class obj, String fieldName, String methodType, Class parameterTypes) {
         Method method;
+        String title = "获取对象[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法";
         try {
+            Field field = obj.getDeclaredField(fieldName);
+            if (field.getType() == boolean.class) {
+                return obj.getMethod("is" + covertFirstChar2Upper(fieldName));
+            }
             if ("set".equals(methodType)) {
                 method = obj.getMethod("set" + covertFirstChar2Upper(fieldName), parameterTypes);
             } else if ("other".equals(methodType)) {
@@ -59,8 +64,8 @@ public class Clazz {
                 method = obj.getMethod("get" + covertFirstChar2Upper(fieldName));
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException("获取对象[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法异常", e);
+            log.error("{} 获取方法异常:{}", title, e.getMessage(), e);
+            throw new RuntimeException(title + "异常", e);
         }
         return method;
     }
@@ -86,8 +91,9 @@ public class Clazz {
     /**
      * 取得对象中，对应属性的值
      */
-    public static Object getValue(Object obj, String property) throws Exception {
-        String[] vm = property.split("\\."); //用正则，点是正则的关键字，必须转义
+    public static Object getValue(Object obj, String property) {
+        // 用正则，点是正则的关键字，必须转义
+        String[] vm = property.split("\\.");
         int index = property.indexOf(".");
 
         try {
@@ -113,7 +119,7 @@ public class Clazz {
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            throw new Exception("取类[" + obj.getClass() + "]的属性[" + property + "] 错误", e);
+            throw new RuntimeException("取类[" + obj.getClass() + "]的属性[" + property + "] 错误", e);
         }
     }
 

@@ -2,10 +2,10 @@ package nohi.doc.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.DocConsts;
+import nohi.doc.config.meta.DocumentMeta;
 import nohi.doc.config.meta.excel.ExcelBlockMeta;
 import nohi.doc.config.meta.excel.ExcelColMeta;
 import nohi.doc.config.meta.excel.ExcelSheetMeta;
-import nohi.doc.config.meta.DocumentMeta;
 import nohi.doc.service.IDocService;
 import nohi.doc.utils.ExcelUtils;
 import nohi.doc.vo.DocVO;
@@ -18,6 +18,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +43,6 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
     // value解析异常是否退出
     private boolean valueFailExit = true;
 
-    Workbook hwb = null;
     String key = null;
     // 模板文件
     DocumentMeta template;
@@ -53,38 +54,36 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
     }
 
     @Override
-    public <T> DocVO<T> exportDoc(DocVO<T> doc) throws Exception {
+    public <T> DocVO<T> exportDoc(DocVO<T> doc) {
         //1 取得文档模板
         template = this.getDocumentMeta(doc.getDocId());
+        // 数据对象
+        dataVO = doc.getDataVo();
+        log.info("{} 模板:{}", title, template.getTemplate());
 
-        InputStream is = null;
-        // doc.getDataVO();
-        dataVO = null;
-
-        log.info("template.getTemplate():{}", template.getTemplate());
         //2,读取Excel模板
-        is = this.getClass().getClassLoader().getResourceAsStream(template.getTemplate());
+        InputStream is = ExcelXlsxService.class.getClassLoader().getResourceAsStream(template.getTemplate());
+        Assertions.assertNotNull(is, "获取文档[" + doc.getDocId() + "]模板失败");
+
         try {
             templateBook = WorkbookFactory.create(is);
         } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new Exception("读取模板文件[" + template.getTemplate() + "]失败", e);
+            log.error("{} 获取模板失败:{}", title, e.getMessage(), e);
+            throw new RuntimeException("读取模板文件[" + template.getTemplate() + "]失败", e);
         }
 
-        //创建新的EXCEL
-        hwb = templateBook;
+        // 备份模板
+        int templateSheetSize = templateBook.getNumberOfSheets();
+        log.debug("template.getTemplateSheetSize():" + templateSheetSize);
+        for (int i = 1; i <= templateSheetSize; i++) {
+            templateBook.setSheetName(i - 1, templateBook.getSheetName(i - 1) + DocConsts.BACKUP_SUFFIX);
+        }
+        repeatSheet = null;
+        log.debug("RepeatSheet ? :" + repeatSheet);
 
-        //导出数据
+        // 导出数据
         try {
-            int templateSheetSize = templateBook.getNumberOfSheets();
-            log.debug("template.getTemplateSheetSize():" + templateSheetSize);
-
-            for (int i = 1; i <= templateSheetSize; i++) {
-                hwb.setSheetName(i - 1, hwb.getSheetName(i - 1) + "_bak");
-            }
-            repeatSheet = null;
-            log.debug("RepeatSheet ? :" + repeatSheet);
-            if (DocConsts.EXCEL_SHEET_REPEAT.equals(repeatSheet)) {
+            if (dataVO instanceof List || DocConsts.EXCEL_SHEET_REPEAT.equals(repeatSheet)) {
                 if (dataVO instanceof List) {
                     for (Object obj : (List) dataVO) {
                         exportToSheet(obj);
@@ -94,118 +93,122 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 exportToSheet(dataVO);
             }
 
-            //删除备份的模板
+            // 删除备份的模板
             for (int i = 1; i <= templateSheetSize; i++) {
-                hwb.removeSheetAt(0);
+                templateBook.removeSheetAt(0);
             }
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new Exception("生成数据失败", e);
+            log.error("{} 导出异常:{}", title, e.getMessage(), e);
+            throw new RuntimeException("导出数据失败", e);
         }
 
-
-        //生成文件名
-        if (null == doc.getDocName() || "".equals(doc.getDocName().trim())) {
+        // 生成文件名
+        if (StringUtils.isBlank(doc.getDocName())) {
             String docVersion = doc.getDocVersion();
-            if (null == docVersion || "".equals(docVersion.trim())) {
+            if (StringUtils.isBlank(docVersion)) {
                 docVersion = DocCommonUtils.getCurrentTimeStr("yyyyMMddHHmmssSSS");
             }
-
-            StringBuffer filename = new StringBuffer();
-            filename.append(template.getId()).append("_").append(template.getName()).append(docVersion);
+            StringBuilder fileName = new StringBuilder();
+            fileName.append(template.getId()).append("_").append(template.getName()).append(docVersion);
 
             if (template.getTemplate().endsWith("xlsx")) {
-                filename.append(".xlsx");
+                fileName.append(".xlsx");
             } else {
-                filename.append(".xls");
+                fileName.append(".xls");
             }
-
-            ;
-            doc.setDocName(filename.toString());
+            doc.setDocName(fileName.toString());
         }
 
         //保存文件
         OutputStream os = null;
         try {
             doc.setFilePath(getStoreFileName(doc));
-            os = new FileOutputStream(doc.getFilePath());
-            hwb.write(os);
+            os = Files.newOutputStream(Paths.get(doc.getFilePath()));
+            templateBook.write(os);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new Exception("保存数据失败", e);
+            log.error("{} 生成文件[{}]失败:{}", title, doc.getFilePath(), e.getMessage(), e);
+            throw new RuntimeException("保存数据失败", e);
         } finally {
             IOUtils.closeQuietly(is);
             IOUtils.closeQuietly(os);
-            closeFtp();
         }
 
         return doc;
     }
 
-    private void exportToSheet(Object data) throws Exception {
-        //解析每一个sheet
-//		Map<String, DocSheetMeta> sheets = template.getSheetMap();
-        List<ExcelSheetMeta> sheetList = template.getSheetList();
-        int i = 0;
-        for (Iterator<ExcelSheetMeta> it = sheetList.iterator(); it.hasNext(); ) {
-            ExcelSheetMeta sheet = it.next();
-            key = sheet.getName();
-            String sheetName = sheet.getExportSheetName();
-            //设置sheet名称
-            if (null != sheetName && !"".equals(sheetName.trim())) {
-                sheetName = (String) Clazz.getValue(data, sheetName);
+    /**
+     * 生成sheet名称
+     */
+    private String sheetName(ExcelSheetMeta sheet, Object data, int index) {
+        String key = sheet.getName();
+        String sheetName = sheet.getExportSheetName();
+        // 设置sheet名称
+        if (StringUtils.isNotBlank(sheetName)) {
+            sheetName = (String) Clazz.getValue(data, sheetName);
+        } else {
+            sheetName = key;
+        }
+        if (StringUtils.isBlank(sheetName)) {
+            if (DocConsts.EXCEL_SHEET_REPEAT.equals(repeatSheet)) {
+                sheetName = sheetName + "_" + index;
             } else {
                 sheetName = key;
             }
+        }
+        return sheetName;
+    }
 
-            if (null == sheetName || "".equals(sheetName.trim())) {
-                if (DocConsts.EXCEL_SHEET_REPEAT.equals(repeatSheet)) {
-                    sheetName = sheetName + "_" + i;
-                } else {
-                    sheetName = key;
-                }
-            }
+    private void exportToSheet(Object data) throws Exception {
+        // 解析每一个sheet
+        List<ExcelSheetMeta> sheetList = template.getSheetList();
+        int i = 0;
+        for (ExcelSheetMeta sheet : sheetList) {
+            key = sheet.getName();
+            String sheetName = this.sheetName(sheet, data, i);
+            log.debug("{}, sheetName:{}", title, sheetName);
             i++;
 
-            log.debug("sheetName:{}", sheetName);
             //2,取得sheet
-            Sheet excelSheet = hwb.createSheet(sheetName);
-            templateSheet = templateBook.getSheet(key + "_bak");
+            Sheet excelSheet = templateBook.createSheet(sheetName);
+            templateSheet = templateBook.getSheet(key + DocConsts.BACKUP_SUFFIX);
 
             if (null == templateSheet) {
-                log.error("没有找到[" + key + "]对应的sheet");
-                throw new Exception("没有找到[" + key + "]对应的sheet");
+                log.error("{} 没有找到[{}]对应的sheet", title, key);
+                throw new RuntimeException("没有找到[" + key + "]对应的sheet");
             }
 
-            //根据模板设置每一列的宽
+            // 根据模板设置每一列的宽
             for (int cellIndex = 0; cellIndex < ExcelUtils.getRow(templateSheet, 0).getLastCellNum(); cellIndex++) {
                 excelSheet.setColumnWidth(cellIndex, templateSheet.getColumnWidth(cellIndex));
             }
 
-            //解析每一个块
+            // 解析每一个块
             List<ExcelBlockMeta> blockList = sheet.getBlockList();
-            Integer lastRowIndex = 0; // 保存上一个块占用的最后一行index
+
+            // 保存上一个块占用的最后一行index
+            Integer lastRowIndex = 0;
             for (ExcelBlockMeta block : blockList) {
-                //放入上一次修改行index
+                // 放入上一次修改行index
                 block.setLastModifyRowIndex(lastRowIndex);
                 Integer startRow = block.getRowIndex();
-
-                //拷贝所有操作行的数据、及格式
-                if (Integer.valueOf(startRow).compareTo(Integer.valueOf(lastRowIndex) + 1) > 0 || "0".equals(lastRowIndex)) {
-                    //copy模板中未用到的行
-                    int start = Integer.valueOf(lastRowIndex) + 1;
-                    if (Integer.valueOf(lastRowIndex) == 0) {
+                log.debug("{} 开始导出行[{}] lastRowIndex[{}]", title, startRow, lastRowIndex);
+                // 拷贝所有操作行的数据、及格式
+                if (startRow.compareTo(lastRowIndex + 1) >= 0) {
+                    // copy模板中未用到的行
+                    int start = lastRowIndex + 1;
+                    if (lastRowIndex == 0) {
                         start = 0;
                     }
-                    for (; start < Integer.valueOf(startRow); start++) {
+                    log.debug("{} 开始拷贝样式[{}-{}]", title, start, startRow);
+                    for (; start < startRow; start++) {
                         ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start));
-                        block.setLastModifyRowIndex(startRow);
+                        block.setLastModifyRowIndex(start);
                     }
                 }
 
                 //导入数据到块中
                 exportToBlock(data, block, excelSheet);
-                //导入数据完成后，最后修改行index
+                // 导入数据完成后，最后修改行index
                 if (null != block.getThisModifyRowIndex()) {
                     lastRowIndex = block.getThisModifyRowIndex();
                 }
@@ -221,8 +224,6 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
 
     /**
      * 导入数据到每一个块中
-     *
-     * @throws Exception
      */
     private void exportToBlock(Object dataVO, ExcelBlockMeta block, Sheet mHSSFSheet) throws Exception {
         Row row = null;
@@ -244,47 +245,47 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             addRows = 1;
         }
         // 相对位置: 计算开始位置
-        startRow = Integer.valueOf(lastModifyRowIndex) + Integer.valueOf(addRows);
+        startRow = lastModifyRowIndex + addRows;
 
-        //System.out.println("startRow:" + startRow);
         Map<String, ExcelColMeta> colsMap = block.getCols();
 
-        //字段属性
+        // 字段属性
         if (ExcelBlockMeta.BlockType.FIELD.equals(type)) {
-            row = ExcelUtils.getRow(mHSSFSheet, Integer.valueOf(startRow));
+            row = ExcelUtils.getRow(mHSSFSheet, startRow);
             block.setThisModifyRowIndex(startRow);
 
             //设置样式
             row = ExcelUtils.setRowStyle(rowStyle, row);
 
             String key = null;
-            //遍历配置文件中块对应的所有列属性
+            // 遍历配置文件中块对应的所有列属性
             for (Iterator<String> it = colsMap.keySet().iterator(); it.hasNext(); ) {
                 key = it.next();
-                ExcelColMeta col = colsMap.get(key);//每一列属性
-                String property = col.getProperty();//属性字段
-//    			System.out.println("property:" + property);
+                // 每一列属性
+                ExcelColMeta col = colsMap.get(key);
+                // 属性字段
+                String property = col.getProperty();
 
-                //取得属性对应的字段值
+                // 取得属性对应的字段值
                 Object rs = null;
                 try {
                     rs = Clazz.getValue(dataVO, property);
                 } catch (Exception e) {
-                    log.error("取[" + property + "]属性值报错", e);
+                    log.error("{} 取[{}]属性值报错", title, property, e);
                     throw new Exception("取[" + property + "]属性值报错", e);
                 }
 
-                cell = ExcelUtils.getCell(row, Integer.valueOf(col.getColumn()));
-
-                //设置单元格值
-                String dataType = col.getDataType();
-                String pattern = col.getPattern();
-                String codeType = col.getCodeType();
-
-                String value = Clazz.getFieldStrValue(rs, dataType, pattern, codeType);
-//    			System.out.println("value:" + value);
-                //取得单元格，设置值
-                cell.setCellValue(null == value ? "" : value);
+                cell = ExcelUtils.getCell(row, col.getColumn());
+                // 设置单元格值
+                ExcelUtils.setExcelCellValue(cell, col, rs);
+                // 设置单元格值
+//                String dataType = col.getDataType();
+//                String pattern = col.getPattern();
+//                String codeType = col.getCodeType();
+//
+//                String value = Clazz.getFieldStrValue(rs, dataType, pattern, codeType);
+//                // 取得单元格，设置值
+//                cell.setCellValue(null == value ? "" : value);
             }
         } else if (ExcelBlockMeta.BlockType.TABLE.equals(type)) {
             //取得属性对应的字段值
