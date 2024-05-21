@@ -7,7 +7,7 @@
         docType:文档类型EXCEL
   -->
   <document id="MULTI_BLOCK" name="多块"
-            template="template/excel/excel_静态块.xls"
+            template="template/excel/excel_多块.xlsx"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >

@@ -72,7 +72,7 @@ public class TestExcelExport {
             item.setAge(18 + i);
             item.setAmt(2000.012d + i);
             item.setTest("156");
-            item.setBd(new BigDecimal(1000 + i));
+            item.setBd(new BigDecimal(1000.012 + i));
             item.setDate(new Date());
             item.setAbcMap(map);
 
@@ -125,6 +125,28 @@ public class TestExcelExport {
         doc.setDataVo(data);
         doc.setFilePath("/Users/nohi/Downloads");
         doc.setDocName("table.xls");
+
+        doc = docService.exportDoc(doc);
+        log.debug("doc:{}", JSONObject.toJSONString(doc));
+    }
+
+    /**
+     * 导出：
+     * 多个块，先静态块，再列表块
+     */
+    @Test
+    @Order(3)
+    @DisplayName("导出列表块")
+    public void exportMultiBlock() throws Exception {
+        TestDocVO data = getData();
+        IDocService docService = new DocService();
+
+        DocVO<TestDocVO> doc = new DocVO<>();
+        doc.setDocId("MULTI_BLOCK");
+        doc.setDocType("EXCEL");
+        doc.setDataVo(data);
+        doc.setFilePath("/Users/nohi/Downloads");
+        doc.setDocName("多块.xlsx");
 
         doc = docService.exportDoc(doc);
         log.debug("doc:{}", JSONObject.toJSONString(doc));

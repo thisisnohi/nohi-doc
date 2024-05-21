@@ -64,12 +64,11 @@ public class ExcelBlockMeta {
 
     /*** ===================运行时变量：非配置项=================== ***/
     /**
-     * 上一块最后占用的行
+     * 该块占用最后行的index
      */
     private Integer lastModifyRowIndex;
     /**
-     * 该块占用最后行的index
+     * 上一块战胜最后一行index
      */
-    private Integer thisModifyRowIndex;
-
+    private Integer lastBlockLastModifyRowIndex;
 }
