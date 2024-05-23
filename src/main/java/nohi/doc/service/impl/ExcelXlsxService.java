@@ -207,9 +207,10 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                     if (0 == lastBlockRowIndex) {
                         start = 0;
                     }
-                    log.debug("{} [{}]开始拷贝样式[{}-{})", title, block.getName(), start, blockRowIndex);
+                    int offset = block.getLastBlockLastModifyRowIndex() - lastBlockRowIndex;
+                    log.debug("{} [{}]开始拷贝样式[{}-{}) offset:{}", title, block.getName(), start, blockRowIndex, offset);
                     for (; start < blockRowIndex; start++) {
-                        ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start));
+                        ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start + offset));
                     }
                 }
 

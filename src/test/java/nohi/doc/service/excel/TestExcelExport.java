@@ -151,4 +151,26 @@ public class TestExcelExport {
         doc = docService.exportDoc(doc);
         log.debug("doc:{}", JSONObject.toJSONString(doc));
     }
+
+    /**
+     * 导出：
+     * 多个块，多列表块
+     */
+    @Test
+    @Order(4)
+    @DisplayName("导出多列表块")
+    public void exportMultiTableBlock() throws Exception {
+        TestDocVO data = getData();
+        IDocService docService = new DocService();
+
+        DocVO<TestDocVO> doc = new DocVO<>();
+        doc.setDocId("MULTI_TABLE_BLOCK");
+        doc.setDocType("EXCEL");
+        doc.setDataVo(data);
+        doc.setFilePath("/Users/nohi/Downloads");
+        doc.setDocName("多列表块.xlsx");
+
+        doc = docService.exportDoc(doc);
+        log.debug("doc:{}", JSONObject.toJSONString(doc));
+    }
 }

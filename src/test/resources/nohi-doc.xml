@@ -20,6 +20,7 @@
 		<doc id="STATIC_FIELD_BLOCK" name="解析静态块" conf="docconf/excel/excel_field_01.xml" />
 		<doc id="TABLE_BLOCK" name="解析列表块" conf="docconf/excel/excel_table_01.xml" />
 		<doc id="MULTI_BLOCK" name="多块" conf="docconf/excel/excel_multi_block.xml" />
+		<doc id="MULTI_TABLE_BLOCK" name="多列表块" conf="docconf/excel/excel_multi_table_block.xml" />
 		<doc id="MULTI_SHEET" name="多sheet" conf="docconf/excel/excel_multi_sheet.xml" />
 
 
