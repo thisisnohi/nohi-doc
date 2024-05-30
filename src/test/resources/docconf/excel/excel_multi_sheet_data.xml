@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <documents>
-  <document id="MULTI_SHEET" name="多sheet"
+  <document id="MULTI_SHEET_DATA" name="多sheet页及sheetData"
             template="template/excel/excel_多sheet.xlsx"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
-    <sheet type="single" name="静态页" exportSheetName="sheetName">
+    <sheet type="single" name="静态页" sheetData="sheetObject" exportSheetName="sheetName">
       <!-- type：该块类型，field-字段类型  TABLE－列表类型
            row：行 , 从0开始
            name: 只是标识，可省略
@@ -63,7 +63,7 @@
 
     </sheet>
 
-    <sheet type="single" name="列表页" exportSheetName="sheetName">
+    <sheet type="single" name="列表页" sheetData="tableSheetObject" exportSheetName="sheetName">
       <block type="TABLE" name="列表块" rowIndex="1" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
         <col column="0" property="id">序号</col>
         <col column="1" property="name">姓名</col>

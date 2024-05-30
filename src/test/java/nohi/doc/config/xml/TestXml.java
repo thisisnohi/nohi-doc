@@ -65,7 +65,7 @@ public class TestXml {
     @Test
     public void testExcelXml() throws Exception {
         // 读取文档模板配置
-        String resourcePath = "docconf/excel/excel_test_template.xml";
+        String resourcePath = "docconf/excel/excel_docconf_template.xml";
         // 解析
         Map<String, DocumentMeta> documentMap = XmlParseService.parseTemplateConf(resourcePath);
         log.debug("documentMap: {}", JSONObject.toJSONString(documentMap));

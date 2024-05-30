@@ -22,9 +22,10 @@
 		<doc id="MULTI_BLOCK" name="多块" conf="docconf/excel/excel_multi_block.xml" />
 		<doc id="MULTI_TABLE_BLOCK" name="多列表块" conf="docconf/excel/excel_multi_table_block.xml" />
 		<doc id="MULTI_SHEET" name="多sheet" conf="docconf/excel/excel_multi_sheet.xml" />
+		<doc id="MULTI_SHEET_DATA" name="多sheet页及sheetData" conf="docconf/excel/excel_multi_sheet_data.xml" />
 
-
-		<doc id="TEST" name="测试Excel" conf="docconf/excel/excel_test_template.xml" />
+		<!-- 配置解析测试 -->
+		<doc id="TEST" name="测试Excel" conf="docconf/excel/excel_docconf_template.xml" />
 	</doc-excel>
 
 	<doc-pdf>

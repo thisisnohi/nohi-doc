@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <documents>
-  <!--  id 同nohi-doc中doc
-        template 对应excel模板
-        data: 对应数据的存取对象
-        docType:文档类型EXCEL
-  -->
   <document id="MULTI_TABLE_BLOCK" name="多列表块"
             template="template/excel/excel_多列表块.xlsx"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
 
-    <!--
-         sheet
-             type　目前没有用到
-             name 对应Excel中sheet的名称，一定要对应，否则找不到相应的sheet
-             exportSheetName　只有在导出sheet时才会用到
-     -->
     <sheet type="single" name="多块" exportSheetName="sheetName">
       <!-- type：该块类型，field-字段类型  TABLE－列表类型
            row：行 , 从0开始

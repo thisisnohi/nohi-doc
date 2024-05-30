@@ -1,76 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <documents>
-  <!--  id 同nohi-doc中doc
-        template 对应excel模板
-        data: 对应数据的存取对象
-        docType:文档类型EXCEL
-  -->
   <document id="STATIC_FIELD_BLOCK" name="解析静态块"
             template="template/excel/excel_静态块.xls"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
-
-    <!--
-         sheet
-             type　目前没有用到
-             name 对应Excel中sheet的名称，一定要对应，否则找不到相应的sheet
-             exportSheetName　只有在导出sheet时才会用到
-     -->
     <sheet type="single" name="测试sheet" exportSheetName="sheetName">
-      <!-- type：该块类型，field-字段类型  TABLE－列表类型
-           row：行 , 从0开始
-           name: 只是标识，可省略
-       -->
       <block type="field" name="静态区-字符串(可省略)" rowIndex="1">
-        <!--
-           column: 列，从０开始。合并的单元格算开始位置即可
-           property: 存取值对应的字段属性，例str1定是nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
-           dataType:　数据类型 String(默认) int Integer Double BigDecimal date
-           pattern: 格式化类型，导入时读取的格式，导出数据时，导出的格式
-                       例：日期pattern="yyyy-MM-dd",数值:pattern="#,###.00"
-           codeType: 代码值类型 CurrencyCd对应nohi_encode_conf.xml中的类型
-             -->
         <col column="1" property="str1">字符串</col>
         <col column="3" property="str2">字符串</col>
         <col column="5" property="innerObject.str1">内部对象字符串</col>
-        <col column="7" property="innerObject.str2" >内部对象内部对象字符串整形值</col>
+        <col column="7" property="innerObject.str2">内部对象内部对象字符串整形值</col>
       </block>
 
       <block type="field" name="静态区-整形" rowIndex="2">
         <col column="1" property="intV1">整形</col>
         <col column="3" property="intV2">整形</col>
-        <col column="5" property="innerObject.intV1" />
-        <col column="7" property="innerObject.intV2" />
+        <col column="5" property="innerObject.intV1"/>
+        <col column="7" property="innerObject.intV2"/>
       </block>
 
       <block type="field" name="静态区-DOUBLE" rowIndex="3">
-        <col column="1" property="double1" />
-        <col column="3" property="double2" />
+        <col column="1" property="double1"/>
+        <col column="3" property="double2"/>
         <col column="5" property="innerObject.double1">内部对象字符串</col>
-        <col column="7" property="innerObject.double2" >内部对象内部对象字符串整形值</col>
+        <col column="7" property="innerObject.double2">内部对象内部对象字符串整形值</col>
       </block>
 
       <block type="field" name="静态区-FLOAT" rowIndex="4">
-        <col column="1" property="floatV1" />
-        <col column="3" property="floatV2" />
-        <col column="5" property="innerObject.floatV1" />
-        <col column="7" property="innerObject.floatV2" />
+        <col column="1" property="floatV1"/>
+        <col column="3" property="floatV2"/>
+        <col column="5" property="innerObject.floatV1"/>
+        <col column="7" property="innerObject.floatV2"/>
       </block>
 
       <block type="field" name="静态区-日期" rowIndex="5">
-        <col column="1" property="date1" dataType="date" pattern="yyyy/MM/dd" />
-        <col column="3" property="date2" dataType="date" pattern="yyyy-MM-dd" />
+        <col column="1" property="date1" dataType="date" pattern="yyyy/MM/dd"/>
+        <col column="3" property="date2" dataType="date" pattern="yyyy-MM-dd"/>
         <col column="5" property="innerObject.date1" dataType="date" pattern="yyyy/MM/dd"/>
-        <col column="7" property="innerObject.date2" dataType="date" pattern="yyyy-MM-dd" />
+        <col column="7" property="innerObject.date2" dataType="date" pattern="yyyy-MM-dd"/>
       </block>
 
       <block type="field" name="静态区-boolean" rowIndex="6">
-        <col column="1" property="booleanV1" />
-        <col column="3" property="booleanV2" />
-        <col column="5" property="innerObject.booleanV1" />
-        <col column="7" property="innerObject.booleanV2" />
+        <col column="1" property="booleanV1"/>
+        <col column="3" property="booleanV2"/>
+        <col column="5" property="innerObject.booleanV1"/>
+        <col column="7" property="innerObject.booleanV2"/>
       </block>
 
     </sheet>

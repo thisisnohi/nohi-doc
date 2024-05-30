@@ -202,14 +202,10 @@ public class XmlParseService {
         if (null != sheetElements) {
             for (Element sheet : sheetElements) {
                 ExcelSheetMeta excelSheetMeta = new ExcelSheetMeta();
-                String name = sheet.getAttributeValue("name");
-                String exportSheetName = sheet.getAttributeValue("exportSheetName");
-
+                // 解析 <document> 元素属性
+                parseAttributeToObject(excelSheetMeta, sheet.getAttributes());
                 // 解析块
                 excelSheetMeta.setBlockList(parseBlock(sheet));
-                excelSheetMeta.setName(name);
-                excelSheetMeta.setExportSheetName(exportSheetName);
-
                 // 集合
                 sheetList.add(excelSheetMeta);
             }

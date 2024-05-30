@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -401,6 +402,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         for (ExcelSheetMeta excelSheetMeta : sheetList) {
             sheet = excelSheetMeta;
             key = sheet.getName();
+            log.info("{} 解析sheet[{}]", title, key);
             // 2,取得sheet
             Sheet sheetData = hwb.getSheet(key);
             if (null == sheetData) {
@@ -409,9 +411,16 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             }
             // 3, 解析每一个块
             List<ExcelBlockMeta> blockList = sheet.getBlockList();
+            Object sheetDataObject = null;
+            try {
+                sheetDataObject = ExcelUtils.getSheetDataVo(dataVo,sheet.getSheetData());
+            } catch (Exception e) {
+                log.error("{} 获取sheet数据对象[{}]失败：{}", title, sheet.getSheetData(), e.getMessage(), e);
+                throw new RuntimeException("获取sheet数据对象[" + sheet.getSheetData() + "]失败");
+            }
             for (ExcelBlockMeta block : blockList) {
                 // 解析每一个块
-                parseBlock(dataVo, block, sheetData);
+                parseBlock(sheetDataObject, block, sheetData);
             }
         }
     }

@@ -36,4 +36,8 @@ public class TestDocVO {
 
     private String sheetName;
     private List<TestListVO> list;// 列表
+
+    // sheetData
+    private TestDocVO sheetObject;
+    private TestDocVO tableSheetObject;
 }

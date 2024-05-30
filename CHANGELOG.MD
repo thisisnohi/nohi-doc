@@ -6,3 +6,7 @@
 * 解决目前已有报错
 * 重新规划模块
 * 定义配置模块
+
+## 20240529
+* sheet配置，增加type=repeat
+* sheet配置，增加sheetData属性

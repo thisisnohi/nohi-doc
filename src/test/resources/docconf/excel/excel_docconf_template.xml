@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <documents>
-  <document id="MULTI_SHEET" name="多sheet"
+  <!--  id 同nohi-doc中doc
+        template 对应excel模板
+        data: 对应数据的存取对象
+        docType:文档类型EXCEL
+  -->
+  <document id="TEST" name="多sheet"
             template="template/excel/excel_多sheet.xlsx"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
-    <sheet type="single" name="静态页" exportSheetName="sheetName">
+
+    <!--
+         sheet
+             type　single-单页 repeat-可重复导出页
+             name 对应Excel中sheet的名称，一定要对应，否则找不到相应的sheet
+             sheetData: sheet页数据对象，可为空。如果为空，则取document数据对象. 不可为基本类型和集合类型。
+
+             导入：不支持type=repeat方式
+             导出：
+              type=repeat时，可配合sheetData使用
+              exportSheetName　只有在导出sheet时才会用到
+     -->
+    <sheet type="single" name="静态页" sheetData="sheetObject" exportSheetName="sheetName">
       <!-- type：该块类型，field-字段类型  TABLE－列表类型
            row：行 , 从0开始
            name: 只是标识，可省略
@@ -64,6 +81,11 @@
     </sheet>
 
     <sheet type="single" name="列表页" exportSheetName="sheetName">
+      <!-- 列表块
+          endRow 只有导入时用到，导入数据列表截止行,从０开始
+          list:　列表对应属性,如　list对应nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
+          itemClass: list值类型
+     -->
       <block type="TABLE" name="列表块" rowIndex="1" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
         <col column="0" property="id">序号</col>
         <col column="1" property="name">姓名</col>

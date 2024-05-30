@@ -1,29 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <documents>
-  <!--  id 同nohi-doc中doc
-        template 对应excel模板
-        data: 对应数据的存取对象
-        docType:文档类型EXCEL
-  -->
   <document id="TABLE_BLOCK" name="解析列表块"
             template="template/excel/excel_列表区.xls"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
 
-    <!--
-         sheet
-             type　目前没有用到
-             name 对应Excel中sheet的名称，一定要对应，否则找不到相应的sheet
-             exportSheetName　只有在导出sheet时才会用到
-     -->
     <sheet type="single" name="测试sheet" exportSheetName="sheetName">
-      <!-- 列表块
-          endRow 只有导入时用到，导入数据列表截止行,从０开始
-          list:　列表对应属性,如　list对应nohi.doc.excel.vo.TestDocVO中的字段属性，并有get set方法
-          itemClass: list值类型
-     -->
       <block type="TABLE" name="列表块" rowIndex="2" endRowIndex="7" list="list"
              itemClass="nohi.doc.excel.vo.TestListVO">
         <col column="0" property="id">序号</col>

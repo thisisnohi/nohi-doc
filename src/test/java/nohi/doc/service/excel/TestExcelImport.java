@@ -62,6 +62,7 @@ public class TestExcelImport {
         Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getDate1()));
         Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getDate2()));
 
+
         // 嵌套对象
         Assertions.assertEquals("内部对象字符串,AAA", docVO.getInnerObject().getStr1());
         Assertions.assertEquals("222", docVO.getInnerObject().getStr2());
@@ -222,6 +223,70 @@ public class TestExcelImport {
         Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getInnerObject().getDate2()));
 
 
+        Assertions.assertEquals(5, docVO.getList().size(), "列表size不相等");
+
+        TestListVO data = docVO.getList().get(0);
+        Assertions.assertEquals(1, data.getId());
+        Assertions.assertEquals("张三", data.getName());
+        Assertions.assertEquals(18, data.getAge());
+        Assertions.assertEquals("2024-01-01", DateUtils.format(data.getDate()));
+        Assertions.assertTrue(data.getAmt() - 10000.12 < 0.01);
+        Assertions.assertEquals(new BigDecimal("123456789.12"), data.getBd());
+        Assertions.assertEquals("人民币", data.getTest());
+    }
+
+    /**
+     * 导入多sheet页及sheetData
+     */
+    @Test
+    @DisplayName("导入多sheet页及sheetData")
+    @Order(5)
+    public void importMultiSheetData() {
+        // 文件路径, 根据项目路径加载
+        Path filePath = Paths.get(new File("").getAbsolutePath(), "src/test/resources/importfile/excel/excel_多sheet.xlsx");
+        Assertions.assertTrue(filePath.toFile().exists(), "文件不存在");
+        Assertions.assertTrue(filePath.toFile().isFile(), "文件是目录");
+
+        // 解析文件
+        TestDocVO docVO = new TestDocVO();
+        DocVO<TestDocVO> vo = new DocVO<>();
+        vo.setDocId("MULTI_SHEET_DATA");
+        vo.setDocType(DocConsts.DOC_TYPE_EXCEL);
+
+        DocService docService = new DocService();
+        docService.importFromFile(docVO, vo, filePath.toFile());
+
+        log.debug("docVO:{}", JSONObject.toJSONString(docVO, true));
+
+
+        TestDocVO filedVo = docVO.getSheetObject();
+        TestDocVO tableVo = docVO.getTableSheetObject();
+        docVO = filedVo;
+        Assertions.assertEquals("字符串", docVO.getStr1());
+        Assertions.assertEquals("1111", docVO.getStr2());
+        Assertions.assertEquals(123, docVO.getIntV1());
+        Assertions.assertEquals(1234567890, docVO.getIntV2());
+        Assertions.assertTrue(docVO.getDouble1() - 12345678.1234567 < 0.01);
+        Assertions.assertTrue(docVO.getDouble2() - 12345678.1234567 < 0.01);
+        Assertions.assertTrue(docVO.getFloatV1() - 0.01 < 0.01);
+        Assertions.assertTrue(docVO.getFloatV2() - 123 < 0.01);
+        Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getDate1()));
+        Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getDate2()));
+
+        // 嵌套对象
+        Assertions.assertEquals("内部对象字符串,AAA", docVO.getInnerObject().getStr1());
+        Assertions.assertEquals("222", docVO.getInnerObject().getStr2());
+        Assertions.assertEquals(123, docVO.getInnerObject().getIntV1());
+        Assertions.assertEquals(1234567890, docVO.getInnerObject().getIntV2());
+        Assertions.assertTrue(docVO.getInnerObject().getDouble1() - 12345678.1234567 < 0.01);
+        Assertions.assertTrue(docVO.getInnerObject().getDouble2() - 12345678.1234567 < 0.01);
+        Assertions.assertTrue(docVO.getInnerObject().getFloatV1() - 0.01 < 0.01);
+        Assertions.assertTrue(docVO.getInnerObject().getFloatV2() - 123 < 0.01);
+        Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getInnerObject().getDate1()));
+        Assertions.assertEquals("2024-04-15", DateUtils.format(docVO.getInnerObject().getDate2()));
+
+
+        docVO = tableVo;
         Assertions.assertEquals(5, docVO.getList().size(), "列表size不相等");
 
         TestListVO data = docVO.getList().get(0);

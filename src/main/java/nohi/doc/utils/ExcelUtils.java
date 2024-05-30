@@ -13,6 +13,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellRangeAddressList;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -265,7 +266,7 @@ public class ExcelUtils {
      * @param obj   数据对象
      * @param value 值
      */
-    public static void setValue(Object obj, String fieldName, Object value, String pattern) throws Exception {
+    public static void setValue(Object obj, String fieldName, Object value, String pattern) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
         String title = String.format("属性[%s],值[%s]", fieldName, value);
         if (null == obj) {
             log.warn("{} 数据对象为空", title);
@@ -556,11 +557,13 @@ public class ExcelUtils {
 
         System.out.println("first:" + first + ",index:" + index);
 
-        String rs = String.valueOf((char) ('A' + (first - 1)));//首字母
+        // 首字母
+        String rs = String.valueOf((char) ('A' + (first - 1)));
         if (colIndex < 26) {
             return String.valueOf((char) ('A' + index));
         } else {
-            return rs + String.valueOf((char) ('A' + index));//首字母;
+            // 首字母;
+            return rs + String.valueOf((char) ('A' + index));
         }
     }
 
@@ -616,6 +619,33 @@ public class ExcelUtils {
                 }
             }
         }
+    }
+
+    /**
+     * 获取sheet对象
+     *  如果sheetData配置为空，则取原对象
+     * @param obj  document对象
+     * @param sheetFiled sheetData配置
+     *
+     */
+    public static Object getSheetDataVo(Object obj, String sheetFiled) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        if (StringUtils.isBlank(sheetFiled)) {
+            return obj;
+        }
+        // 多层嵌套对象
+        Method method = Clazz.getMethod(obj.getClass(), sheetFiled, Clazz.METHOD_TYPE_GET, null);
+        // 获取对象类sheetFiled值
+        Object temp = method.invoke(obj);
+        // 值为空，则实例化
+        if (null == temp) {
+            try {
+                temp = method.getReturnType().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException("实例[" + method.getReturnType() + "]失败", e);
+            }
+            setValue(obj, sheetFiled, temp, null);
+        }
+        return temp;
     }
 }
 
