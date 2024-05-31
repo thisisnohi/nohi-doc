@@ -25,8 +25,9 @@
      -->
     <sheet type="single" name="静态页" sheetData="sheetObject" exportSheetName="sheetName">
       <!-- type：该块类型，field-字段类型  TABLE－列表类型
-           row：行 , 从0开始
-           name: 只是标识，可省略
+           rowIndex：行 , 从0开始
+           name: 块名称，做标识、打日志用
+           addRows：相对上一块行数   本行rowIndex = 上一块rowIndex + addRows
        -->
       <block type="field" name="静态区-字符串(可省略)" rowIndex="1">
         <!--
@@ -76,6 +77,17 @@
         <col column="3" property="booleanV2" />
         <col column="5" property="innerObject.booleanV1" />
         <col column="7" property="innerObject.booleanV2" />
+      </block>
+
+      <!-- addRows：相对上一块行数   本行rowIndex = 上一块rowIndex + addRows -->
+      <block type="TABLE" name="列表块" addRows="3" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+        <col column="0" property="id">序号</col>
+        <col column="1" property="name">姓名</col>
+        <col column="2" property="age">年龄</col>
+        <col column="3" property="date" pattern="yyyy-MM-dd" dataType="date">日期</col> <!-- codeType -->
+        <col column="4" property="amt">金额</col>
+        <col column="5" property="bd" pattern="#,###.00" dataType="BigDecimal">大金额</col>
+        <col column="6" property="test" >测试代码值</col>
       </block>
 
     </sheet>

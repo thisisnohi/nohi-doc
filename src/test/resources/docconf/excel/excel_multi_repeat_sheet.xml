@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <documents>
-  <document id="MULTI_SHEET_DATA" name="多sheet页及sheetData"
-            template="template/excel/excel_多sheet.xlsx"
+  <document id="MULTI_REPEAT_SHEET" name="多sheet页及sheetData"
+            template="template/excel/excel_repeat_sheet.xlsx"
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
@@ -48,11 +48,52 @@
         <col column="5" property="innerObject.booleanV1" />
         <col column="7" property="innerObject.booleanV2" />
       </block>
-
     </sheet>
 
-    <sheet type="single" name="列表页" sheetData="tableSheetObject" exportSheetName="sheetName">
-      <block type="TABLE" name="列表块" rowIndex="1" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+    <sheet type="repeat" name="列表页" sheetData="repeatSheetObject" exportSheetName="sheetName">
+      <block type="field" name="静态区-字符串(可省略)" rowIndex="1">
+        <col column="1" property="str1">字符串</col>
+        <col column="3" property="str2">字符串</col>
+        <col column="5" property="innerObject.str1">内部对象字符串</col>
+        <col column="7" property="innerObject.str2" >内部对象内部对象字符串整形值</col>
+      </block>
+
+      <block type="field" name="静态区-整形" addRows="1">
+        <col column="1" property="intV1">整形</col>
+        <col column="3" property="intV2">整形</col>
+        <col column="5" property="innerObject.intV1" />
+        <col column="7" property="innerObject.intV2" />
+      </block>
+
+      <block type="field" name="静态区-DOUBLE" addRows="1">
+        <col column="1" property="double1" />
+        <col column="3" property="double2" />
+        <col column="5" property="innerObject.double1">内部对象字符串</col>
+        <col column="7" property="innerObject.double2" >内部对象内部对象字符串整形值</col>
+      </block>
+
+      <block type="field" name="静态区-FLOAT" addRows="1">
+        <col column="1" property="floatV1" />
+        <col column="3" property="floatV2" />
+        <col column="5" property="innerObject.floatV1" />
+        <col column="7" property="innerObject.floatV2" />
+      </block>
+
+      <block type="field" name="静态区-日期" addRows="1">
+        <col column="1" property="date1" dataType="date" pattern="yyyy/MM/dd" />
+        <col column="3" property="date2" dataType="date" pattern="yyyy-MM-dd" />
+        <col column="5" property="innerObject.date1" dataType="date" pattern="yyyy/MM/dd"/>
+        <col column="7" property="innerObject.date2" dataType="date" pattern="yyyy-MM-dd" />
+      </block>
+
+      <block type="field" name="静态区-boolean" addRows="1">
+        <col column="1" property="booleanV1" />
+        <col column="3" property="booleanV2" />
+        <col column="5" property="innerObject.booleanV1" />
+        <col column="7" property="innerObject.booleanV2" />
+      </block>
+
+      <block type="TABLE" name="列表块" addRows="3" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
         <col column="0" property="id">序号</col>
         <col column="1" property="name">姓名</col>
         <col column="2" property="age">年龄</col>

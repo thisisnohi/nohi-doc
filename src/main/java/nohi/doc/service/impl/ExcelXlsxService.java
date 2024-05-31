@@ -18,13 +18,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -40,7 +36,6 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
     private Workbook templateBook = null;
     // 模板文件Sheet
     private Sheet templateSheet = null;
-    private String repeatSheet;
     // value解析异常是否退出
     private boolean valueFailExit = true;
 
@@ -75,20 +70,15 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
 
         // 备份模板
         int templateSheetSize = templateBook.getNumberOfSheets();
-        log.debug("template.getTemplateSheetSize():" + templateSheetSize);
+        log.debug("{} template.getTemplateSheetSize(): {}", title, templateSheetSize);
         for (int i = 1; i <= templateSheetSize; i++) {
             templateBook.setSheetName(i - 1, templateBook.getSheetName(i - 1) + DocConsts.BACKUP_SUFFIX);
         }
-        repeatSheet = null;
-        log.debug("RepeatSheet ? :" + repeatSheet);
-
         // 导出数据
         try {
-            if (dataVO instanceof List || DocConsts.EXCEL_SHEET_REPEAT.equals(repeatSheet)) {
-                if (dataVO instanceof List) {
-                    for (Object obj : (List) dataVO) {
-                        exportToSheet(obj);
-                    }
+            if (dataVO instanceof List) {
+                for (Object obj : (List) dataVO) {
+                    exportToSheet(obj);
                 }
             } else {
                 exportToSheet(dataVO);
@@ -146,12 +136,11 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         // 设置sheet名称
         if (StringUtils.isNotBlank(sheetName)) {
             sheetName = (String) Clazz.getValue(data, sheetName);
-        } else {
-            sheetName = key;
         }
+
         if (StringUtils.isBlank(sheetName)) {
-            if (DocConsts.EXCEL_SHEET_REPEAT.equals(repeatSheet)) {
-                sheetName = sheetName + "_" + index;
+            if (index >= 0) {
+                sheetName = key + "_" + index;
             } else {
                 sheetName = key;
             }
@@ -164,85 +153,103 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         List<ExcelSheetMeta> sheetList = template.getSheetList();
         int i = 0;
         for (ExcelSheetMeta sheet : sheetList) {
+            // 根据配置，获取模板sheet
             key = sheet.getName();
+            templateSheet = templateBook.getSheet(key + DocConsts.BACKUP_SUFFIX);
+            if (null == templateSheet) {
+                log.error("{} 没有找到[{}]sheet页", title, key);
+                throw new RuntimeException("没有找到[" + key + "]sheet页");
+            }
+
             // sheet页数据对象字段
             String sheetDataField = sheet.getSheetData();
+            String sheetType = sheet.getType();
             // sheet页数据对象，如果sheetDataField为空(未配置)，则sheetData对象同document对象
             Object sheetData = ExcelUtils.getSheetDataVo(data, sheetDataField);
-            String sheetName = this.sheetName(sheet, sheetData, i);
-            log.debug("{}, sheetName:{} sheetData:{}", title, sheetName, sheetDataField);
-            i++;
+            log.debug("{}, sheetType:{} sheetDataField:{} sheetData:{}", title, sheetType, sheetDataField, sheetData);
 
-            //2,取得sheet
-            Sheet excelSheet = templateBook.createSheet(sheetName);
-            templateSheet = templateBook.getSheet(key + DocConsts.BACKUP_SUFFIX);
 
-            if (null == templateSheet) {
-                log.error("{} 没有找到[{}]对应的sheet", title, key);
-                throw new RuntimeException("没有找到[" + key + "]对应的sheet");
-            }
 
-            // 根据模板设置每一列的宽
-            for (int cellIndex = 0; cellIndex < ExcelUtils.getRow(templateSheet, 0).getLastCellNum(); cellIndex++) {
-                excelSheet.setColumnWidth(cellIndex, templateSheet.getColumnWidth(cellIndex));
-            }
-
-            // 解析每一个块
-            List<ExcelBlockMeta> blockList = sheet.getBlockList();
-
-            // 上一块
-            ExcelBlockMeta lastBlock = null;
-            // 上一块，行索引
-            Integer lastBlockRowIndex = null;
-
-            for (ExcelBlockMeta block : blockList) {
-                Integer blockRowIndex = block.getRowIndex();
-                lastBlockRowIndex = (null == lastBlock || null == lastBlock.getRowIndex()) ? Integer.valueOf(0) : lastBlock.getRowIndex();
-                block.setLastBlockLastModifyRowIndex((null == lastBlock || null == lastBlock.getLastModifyRowIndex()) ? Integer.valueOf(0) : lastBlock.getLastModifyRowIndex());
-
-                if (block.getAddRows() == null) {
-                    block.setAddRows(blockRowIndex - lastBlockRowIndex);
+            // 重复sheet页, 且数据对象为集合，重复导出数据
+            if (DocConsts.EXCEL_SHEET_REPEAT.equalsIgnoreCase(sheetType) && sheetData instanceof Collection) {
+                // 循环导出数据到sheet页
+                int sheetIndex = 0;
+                for (Object obj : (Collection) sheetData) {
+                    String sheetName = this.sheetName(sheet, obj, sheetIndex++);
+                    log.debug("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
+                    this.exportSheet(sheet, sheetName, obj);
                 }
+            } else {
+                String sheetName = this.sheetName(sheet, sheetData, -1);
+                log.info("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
+                // 导出数据到sheet页
+                this.exportSheet(sheet, sheetName, sheetData);
+            }
+        }
+    }
 
-                log.debug("{} 开始导出[{}]行[{}] lastRowIndex[{}]", title, block.getName(), blockRowIndex, lastBlockRowIndex);
-                // 拷贝所有操作行的数据、及格式
-                if (null == lastBlock || blockRowIndex.compareTo(lastBlockRowIndex + 1) > 0) {
-                    // copy模板中未用到的行
-                    int start = lastBlockRowIndex + 1;
-                    if (0 == lastBlockRowIndex) {
-                        start = 0;
-                    }
-                    int offset = block.getLastBlockLastModifyRowIndex() - lastBlockRowIndex;
-                    log.debug("{} [{}]开始拷贝样式[{}-{}) offset:{}", title, block.getName(), start, blockRowIndex, offset);
-                    for (; start < blockRowIndex; start++) {
-                        ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start + offset));
-                    }
-                }
+    private void exportSheet(ExcelSheetMeta sheet, String sheetName, Object sheetData) throws Exception {
+        //2 创建sheet页
+        Sheet excelSheet = templateBook.createSheet(sheetName);
 
-                //导入数据到块中
-                exportToBlock(sheetData, block, excelSheet);
-                // 保留最后块
-                lastBlock = block;
+        // 根据模板设置每一列的宽
+        for (int cellIndex = 0; cellIndex < ExcelUtils.getRow(templateSheet, 0).getLastCellNum(); cellIndex++) {
+            excelSheet.setColumnWidth(cellIndex, templateSheet.getColumnWidth(cellIndex));
+        }
+
+        // 解析每一个块
+        List<ExcelBlockMeta> blockList = sheet.getBlockList();
+
+        // 上一块
+        ExcelBlockMeta lastBlock = null;
+        // 上一块，行索引
+        Integer lastBlockRowIndex = null;
+
+        for (ExcelBlockMeta block : blockList) {
+            Integer blockRowIndex = block.getRowIndex();
+            lastBlockRowIndex = (null == lastBlock || null == lastBlock.getRowIndex()) ? Integer.valueOf(0) : lastBlock.getRowIndex();
+            block.setLastBlockLastModifyRowIndex((null == lastBlock || null == lastBlock.getLastModifyRowIndex()) ? Integer.valueOf(0) : lastBlock.getLastModifyRowIndex());
+
+            if (block.getAddRows() == null) {
+                block.setAddRows(blockRowIndex - lastBlockRowIndex);
             }
 
-            // 导入数据完成后，最后修改行index
-            lastBlockRowIndex = (null == lastBlock ? 0 : lastBlock.getRowIndex());
-
-            // 拷贝模板最后的样式
-            if (lastBlockRowIndex.compareTo(templateSheet.getLastRowNum()) < 0) {
-                int offset = null == lastBlock || null == lastBlock.getLastModifyRowIndex() ? 0 : (lastBlock.getLastModifyRowIndex() - lastBlockRowIndex);
+            log.debug("{} 开始导出[{}]行[{}] lastRowIndex[{}]", title, block.getName(), blockRowIndex, lastBlockRowIndex);
+            // 拷贝所有操作行的数据、及格式
+            if (null == lastBlock || blockRowIndex.compareTo(lastBlockRowIndex + 1) > 0) {
+                // copy模板中未用到的行
                 int start = lastBlockRowIndex + 1;
-                int templateLastRowIndex = templateSheet.getLastRowNum();
-                log.debug("{} 最后拷贝样式[{} - {}] offset:{}", title, start, templateLastRowIndex, offset);
-                for (; start <= templateLastRowIndex; start++) {
-                    log.debug("{} 最后拷贝样式[{} to {}]", title, start, start + offset);
+                if (0 == lastBlockRowIndex) {
+                    start = 0;
+                }
+                int offset = block.getLastBlockLastModifyRowIndex() - lastBlockRowIndex;
+                log.debug("{} [{}]开始拷贝样式[{}-{}) offset:{}", title, block.getName(), start, blockRowIndex, offset);
+                for (; start < blockRowIndex; start++) {
                     ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start + offset));
                 }
             }
 
+            //导入数据到块中
+            exportToBlock(sheetData, block, excelSheet);
+            // 保留最后块
+            lastBlock = block;
+        }
+
+        // 导入数据完成后，最后修改行index
+        lastBlockRowIndex = (null == lastBlock ? 0 : lastBlock.getRowIndex());
+
+        // 拷贝模板最后的样式
+        if (lastBlockRowIndex.compareTo(templateSheet.getLastRowNum()) < 0) {
+            int offset = null == lastBlock || null == lastBlock.getLastModifyRowIndex() ? 0 : (lastBlock.getLastModifyRowIndex() - lastBlockRowIndex);
+            int start = lastBlockRowIndex + 1;
+            int templateLastRowIndex = templateSheet.getLastRowNum();
+            log.debug("{} 最后拷贝样式[{} - {}] offset:{}", title, start, templateLastRowIndex, offset);
+            for (; start <= templateLastRowIndex; start++) {
+                log.debug("{} 最后拷贝样式[{} to {}]", title, start, start + offset);
+                ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start + offset));
+            }
         }
     }
-
     /**
      * 导入数据到每一个块中
      */
@@ -417,7 +424,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             List<ExcelBlockMeta> blockList = sheet.getBlockList();
             Object sheetDataObject = null;
             try {
-                sheetDataObject = ExcelUtils.getSheetDataVo(dataVo,sheet.getSheetData());
+                sheetDataObject = ExcelUtils.getSheetDataVo(dataVo, sheet.getSheetData());
             } catch (Exception e) {
                 log.error("{} 获取sheet数据对象[{}]失败：{}", title, sheet.getSheetData(), e.getMessage(), e);
                 throw new RuntimeException("获取sheet数据对象[" + sheet.getSheetData() + "]失败");

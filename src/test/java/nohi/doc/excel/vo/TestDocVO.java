@@ -40,4 +40,7 @@ public class TestDocVO {
     // sheetData
     private TestDocVO sheetObject;
     private TestDocVO tableSheetObject;
+
+    // repeat -> 导出多sheet
+    private List<TestDocVO> repeatSheetObject;
 }

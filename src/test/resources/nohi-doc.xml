@@ -16,6 +16,9 @@
     </store-file>
 
 	<doc-excel>
+		<!-- 配置解析测试 -->
+		<doc id="TEST" name="测试Excel" conf="docconf/excel/excel_docconf_template.xml" />
+
 		<!-- id: 文档唯一标识  name：文档对应的中文名 template：文档对应的模板 conf：文档对应的具体属性配置文件-->
 		<doc id="STATIC_FIELD_BLOCK" name="解析静态块" conf="docconf/excel/excel_field_01.xml" />
 		<doc id="TABLE_BLOCK" name="解析列表块" conf="docconf/excel/excel_table_01.xml" />
@@ -24,8 +27,11 @@
 		<doc id="MULTI_SHEET" name="多sheet" conf="docconf/excel/excel_multi_sheet.xml" />
 		<doc id="MULTI_SHEET_DATA" name="多sheet页及sheetData" conf="docconf/excel/excel_multi_sheet_data.xml" />
 
-		<!-- 配置解析测试 -->
-		<doc id="TEST" name="测试Excel" conf="docconf/excel/excel_docconf_template.xml" />
+		<!-- 导出重复sheet页
+		     所有导出都可能通过传递dataVo值为List方式，导出重复sheet页数据
+		-->
+		<doc id="MULTI_REPEAT_SHEET" name="多sheet页及sheetData" conf="docconf/excel/excel_multi_repeat_sheet.xml" />
+
 	</doc-excel>
 
 	<doc-pdf>

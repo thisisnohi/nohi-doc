@@ -200,4 +200,120 @@ public class TestExcelExport {
         doc = docService.exportDoc(doc);
         log.debug("doc:{}", JSONObject.toJSONString(doc));
     }
+
+    /**
+     * 导出：
+     *   单页 -> 导出多sheet
+     *   所有单页配置都可通过datvo传递List,导出多sheet页
+     */
+    @Test
+    @Order(6)
+    @DisplayName("单页导出重复sheet")
+    public void exportSingle2RepeatSheet() throws Exception {
+
+        List<TestDocVO> list = Lists.newLinkedList();
+        for (int i = 0; i < 20; i++) {
+            TestDocVO sheetObj1 = getData();
+            sheetObj1.setStr1("第[" + (i+1) + "]页字符串");
+            sheetObj1.setSheetName("第" + (i+1) + "页");
+            list.add(sheetObj1);
+        }
+
+        IDocService docService = new DocService();
+
+        // 单页 -> 导出多sheet
+        // 所有单页配置都可通过datvo传递List,导出多sheet页
+        DocVO<List<TestDocVO>> doc = new DocVO<>();
+        doc.setDocId("MULTI_TABLE_BLOCK");
+        doc.setDocType("EXCEL");
+        doc.setDataVo(list);
+        doc.setFilePath("/Users/nohi/Downloads");
+        doc.setDocName("单页导出重复sheet.xlsx");
+
+        doc = docService.exportDoc(doc);
+        log.debug("doc:{}", JSONObject.toJSONString(doc));
+    }
+
+    /**
+     * 导出：
+     *   多页 -> 导出重复的多页
+     */
+    @Test
+    @Order(7)
+    @DisplayName("多页导出重复sheet")
+    public void exportMultiSheet2RepeatSheet() throws Exception {
+
+        List<TestDocVO> list = Lists.newLinkedList();
+        for (int i = 0; i < 20; i++) {
+            TestDocVO sheetObj1 = getData();
+            sheetObj1.setStr1("第[" + (i+1) + "]页字符串");
+            sheetObj1.setSheetName("第" + (i+1) + "页");
+            list.add(sheetObj1);
+        }
+
+        IDocService docService = new DocService();
+
+        // 多页 -> 导出重复的多页
+        list = Lists.newLinkedList();
+        for (int i = 0; i < 5; i++) {
+            TestDocVO sheetObj1 = getData();
+            TestDocVO sheetObj2 = getData();
+            TestDocVO data = new TestDocVO();
+            data.setSheetObject(sheetObj1);
+            data.setTableSheetObject(sheetObj2);
+            sheetObj1.setStr1("第[" + (i+1) + "]页字符串");
+            // 注意excel中sheet页名称不能重复
+            sheetObj1.setSheetName("静态列" + (i+1) + "页");
+            sheetObj2.setSheetName("列表页" + (i+1) + "页");
+
+            list.add(data);
+        }
+
+        DocVO<List<TestDocVO>> doc = new DocVO<>();
+        doc.setDocId("MULTI_SHEET_DATA");
+        doc.setDocType("EXCEL");
+        doc.setDataVo(list);
+        doc.setFilePath("/Users/nohi/Downloads");
+        doc.setDocName("多页导出重复sheet.xlsx");
+
+        doc = docService.exportDoc(doc);
+        log.debug("doc:{}", JSONObject.toJSONString(doc));
+    }
+
+    /**
+     * 导出：
+     *   通过repeat 导出多sheet页
+     */
+    @Test
+    @Order(8)
+    @DisplayName("repeat属性导出重复页")
+    public void exportRepeatSheet() throws Exception {
+        TestDocVO docVO = new TestDocVO();
+        TestDocVO sheetObj1 = getData();
+        docVO.setSheetObject(sheetObj1);
+
+        // 设置列表页
+        List<TestDocVO> list = Lists.newLinkedList();
+        for (int i = 0; i < 20; i++) {
+            sheetObj1 = getData();
+            sheetObj1.setStr1("第[" + (i+1) + "]页字符串");
+            sheetObj1.setSheetName("第" + (i+1) + "页");
+            list.add(sheetObj1);
+        }
+        docVO.setRepeatSheetObject(list);
+
+        IDocService docService = new DocService();
+
+        // 单页 -> 导出多sheet
+        // 所有单页配置都可通过datvo传递List,导出多sheet页
+        DocVO<TestDocVO> doc = new DocVO<>();
+        doc.setDocId("MULTI_REPEAT_SHEET");
+        doc.setDocType("EXCEL");
+        doc.setDataVo(docVO);
+        doc.setFilePath("/Users/nohi/Downloads");
+        doc.setDocName("repeat属性导出重复页.xlsx");
+
+        doc = docService.exportDoc(doc);
+        log.debug("doc:{}", JSONObject.toJSONString(doc));
+    }
 }
