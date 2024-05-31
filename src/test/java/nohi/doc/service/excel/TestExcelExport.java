@@ -182,15 +182,20 @@ public class TestExcelExport {
     @Order(5)
     @DisplayName("导出多sheet")
     public void exportMultiSheet() throws Exception {
-        TestDocVO data = getData();
+        TestDocVO sheetObj1 = getData();
+        TestDocVO sheetObj2 = getData();
+        TestDocVO data = new TestDocVO();
+        data.setSheetObject(sheetObj1);
+        data.setTableSheetObject(sheetObj2);
+
         IDocService docService = new DocService();
 
         DocVO<TestDocVO> doc = new DocVO<>();
-        doc.setDocId("MULTI_TABLE_BLOCK");
+        doc.setDocId("MULTI_SHEET_DATA");
         doc.setDocType("EXCEL");
         doc.setDataVo(data);
         doc.setFilePath("/Users/nohi/Downloads");
-        doc.setDocName("多列表块.xlsx");
+        doc.setDocName("多sheet页.xlsx");
 
         doc = docService.exportDoc(doc);
         log.debug("doc:{}", JSONObject.toJSONString(doc));

@@ -165,8 +165,12 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         int i = 0;
         for (ExcelSheetMeta sheet : sheetList) {
             key = sheet.getName();
-            String sheetName = this.sheetName(sheet, data, i);
-            log.debug("{}, sheetName:{}", title, sheetName);
+            // sheet页数据对象字段
+            String sheetDataField = sheet.getSheetData();
+            // sheet页数据对象，如果sheetDataField为空(未配置)，则sheetData对象同document对象
+            Object sheetData = ExcelUtils.getSheetDataVo(data, sheetDataField);
+            String sheetName = this.sheetName(sheet, sheetData, i);
+            log.debug("{}, sheetName:{} sheetData:{}", title, sheetName, sheetDataField);
             i++;
 
             //2,取得sheet
@@ -216,7 +220,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 }
 
                 //导入数据到块中
-                exportToBlock(data, block, excelSheet);
+                exportToBlock(sheetData, block, excelSheet);
                 // 保留最后块
                 lastBlock = block;
             }
@@ -226,7 +230,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
 
             // 拷贝模板最后的样式
             if (lastBlockRowIndex.compareTo(templateSheet.getLastRowNum()) < 0) {
-                int offset = lastBlock.getLastModifyRowIndex() - lastBlockRowIndex;
+                int offset = null == lastBlock || null == lastBlock.getLastModifyRowIndex() ? 0 : (lastBlock.getLastModifyRowIndex() - lastBlockRowIndex);
                 int start = lastBlockRowIndex + 1;
                 int templateLastRowIndex = templateSheet.getLastRowNum();
                 log.debug("{} 最后拷贝样式[{} - {}] offset:{}", title, start, templateLastRowIndex, offset);
