@@ -53,15 +53,15 @@ public class Clazz {
         String title = "获取对象[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法";
         try {
             Field field = obj.getDeclaredField(fieldName);
-            if (field.getType() == boolean.class) {
-                return obj.getMethod("is" + covertFirstChar2Upper(fieldName));
-            }
-            if ("set".equals(methodType)) {
-                method = obj.getMethod("set" + covertFirstChar2Upper(fieldName), parameterTypes);
+            if (METHOD_TYPE_SET.equalsIgnoreCase(methodType)) {
+                method = obj.getMethod(METHOD_TYPE_SET + covertFirstChar2Upper(fieldName), parameterTypes);
             } else if ("other".equals(methodType)) {
                 method = obj.getMethod(fieldName, parameterTypes);
             } else {
-                method = obj.getMethod("get" + covertFirstChar2Upper(fieldName));
+                if (field.getType() == boolean.class) {
+                    return obj.getMethod("is" + covertFirstChar2Upper(fieldName));
+                }
+                method = obj.getMethod(METHOD_TYPE_GET + covertFirstChar2Upper(fieldName));
             }
         } catch (Exception e) {
             log.error("{} 获取方法异常:{}", title, e.getMessage(), e);

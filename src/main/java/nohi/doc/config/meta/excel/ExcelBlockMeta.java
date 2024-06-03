@@ -54,6 +54,10 @@ public class ExcelBlockMeta {
      */
     private String list;
     /**
+     * copyStyle: 是否拷贝样式-true(默认拷贝，拷贝样式增加时间、CPU资源消耗，大数据量时，建议关闭)
+     */
+    private boolean copyStyle = true;
+    /**
      * 列表项Java对象
      */
     private String itemClass;

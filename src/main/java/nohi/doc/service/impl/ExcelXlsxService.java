@@ -166,7 +166,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             String sheetType = sheet.getType();
             // sheet页数据对象，如果sheetDataField为空(未配置)，则sheetData对象同document对象
             Object sheetData = ExcelUtils.getSheetDataVo(data, sheetDataField);
-            log.debug("{}, sheetType:{} sheetDataField:{} sheetData:{}", title, sheetType, sheetDataField, sheetData);
+            log.debug("{}, sheetType:{} sheetDataField:{} sheetData:{}", title, sheetType, sheetDataField, sheetData.getClass());
 
 
 
@@ -176,7 +176,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 int sheetIndex = 0;
                 for (Object obj : (Collection) sheetData) {
                     String sheetName = this.sheetName(sheet, obj, sheetIndex++);
-                    log.debug("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
+                    log.info("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
                     this.exportSheet(sheet, sheetName, obj);
                 }
             } else {
@@ -275,7 +275,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         }
         // 相对位置: 计算开始位置
         startRow = lastModifyRowIndex + addRows;
-        log.debug("startRow:{}, lastModifyRowIndex:{} addRows:{}", startRow, lastModifyRowIndex, addRows);
+        log.debug("{}, type[{}],startRow:{}, lastModifyRowIndex:{} addRows:{} copyStyle:{}", title,type, startRow, lastModifyRowIndex, addRows, block.isCopyStyle());
 
         Map<String, ExcelColMeta> colsMap = block.getCols();
 
@@ -332,13 +332,18 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 block.setLastModifyRowIndex(rowIndex);
 
                 //设置样式
-                if (i == 0) {
-                    ExcelUtils.setRowStyle(rowStyle, row);
-                } else {
-                    ExcelUtils.setRowStyleFromListFirstRow(ExcelUtils.getRow(mHSSFSheet, startRow), row);
+                if (block.isCopyStyle()) {
+                    if (i == 0) {
+                        ExcelUtils.setRowStyle(rowStyle, row);
+                    } else {
+                        ExcelUtils.setRowStyleFromListFirstRow(ExcelUtils.getRow(mHSSFSheet, startRow), row);
+                    }
                 }
-                i++;
 
+                i++;
+                if (i % 1000 == 0) {
+                    log.debug("{} 第[{}]条数据", title, i);
+                }
                 // 遍历配置文件中块对应的所有列属性
                 for (Iterator<String> it = colsMap.keySet().iterator(); it.hasNext(); ) {
                     String key = it.next();

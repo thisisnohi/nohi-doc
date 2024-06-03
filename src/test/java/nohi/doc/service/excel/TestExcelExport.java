@@ -30,8 +30,10 @@ import java.util.Map;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("Excel导出测试")
 public class TestExcelExport {
-
     private TestDocVO getData() {
+        return getData(20);
+    }
+    private TestDocVO getData(int listSize) {
         TestDocVO data = new TestDocVO();
         data.setStr1("字符串");
         data.setStr2("12345678.90123");
@@ -64,7 +66,7 @@ public class TestExcelExport {
 
         List<TestListVO> list = Lists.newLinkedList();
         data.setList(list);
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < listSize; i++) {
             TestListVO item = new TestListVO();
             Map<String, String> map = new HashMap<String, String>();
             item.setId(i+1);
@@ -315,5 +317,46 @@ public class TestExcelExport {
 
         doc = docService.exportDoc(doc);
         log.debug("doc:{}", JSONObject.toJSONString(doc));
+    }
+
+    /**
+     * 导出：
+     *   通过repeat 导出多sheet页
+     */
+    @Test
+    @Order(9)
+    @DisplayName("repeat属性导出重复页-大数据量")
+    public void exportRepeatSheetBigData() throws Exception {
+        long start = System.currentTimeMillis();
+        TestDocVO docVO = new TestDocVO();
+        TestDocVO sheetObj1 = getData();
+        docVO.setSheetObject(sheetObj1);
+
+        // 设置列表页
+        List<TestDocVO> list = Lists.newLinkedList();
+        for (int i = 0; i < 10; i++) {
+            sheetObj1 = getData(10000);
+            sheetObj1.setStr1("第[" + (i+1) + "]页字符串");
+            sheetObj1.setSheetName("第" + (i+1) + "页");
+            list.add(sheetObj1);
+        }
+        docVO.setRepeatSheetObject(list);
+
+        log.info("数据对象创建完成,耗时[{}]", System.currentTimeMillis() - start);
+
+        IDocService docService = new DocService();
+
+        // 单页 -> 导出多sheet
+        // 所有单页配置都可通过datvo传递List,导出多sheet页
+        DocVO<TestDocVO> doc = new DocVO<>();
+        doc.setDocId("MULTI_REPEAT_SHEET");
+        doc.setDocType("EXCEL");
+        doc.setDataVo(docVO);
+        doc.setFilePath("/Users/nohi/Downloads");
+        doc.setDocName("repeat属性导出重复页-大数据量.xlsx");
+        log.info("开始导出,耗时[{}]", System.currentTimeMillis() - start);
+        doc = docService.exportDoc(doc);
+        log.debug("doc:{}", doc.getFilePath());
+        log.info("导出完成,耗时[{}]", System.currentTimeMillis() - start);
     }
 }

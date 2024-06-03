@@ -93,7 +93,7 @@
         <col column="7" property="innerObject.booleanV2" />
       </block>
 
-      <block type="TABLE" name="列表块" addRows="3" list="list" itemClass="nohi.doc.excel.vo.TestListVO">
+      <block type="TABLE" name="列表块" addRows="3" list="list" copyStyle="false" itemClass="nohi.doc.excel.vo.TestListVO">
         <col column="0" property="id">序号</col>
         <col column="1" property="name">姓名</col>
         <col column="2" property="age">年龄</col>
