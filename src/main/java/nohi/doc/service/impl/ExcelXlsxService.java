@@ -489,7 +489,8 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
      */
     private void parseBlockField(Object dataVO, ExcelBlockMeta blockMeta, Sheet sheet) {
         // 得到行数据
-        int startIndex = blockMeta.getRowIndex() + (null == blockMeta.getLastModifyRowIndex() ? 0 : blockMeta.getLastModifyRowIndex());
+        //int startIndex = blockMeta.getRowIndex() + (null == blockMeta.getLastModifyRowIndex() ? 0 : blockMeta.getLastModifyRowIndex());
+        int startIndex = blockMeta.getRowIndex();
         blockMeta.setLastModifyRowIndex(startIndex);
 
         Row row = sheet.getRow(startIndex);
@@ -545,7 +546,8 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
      */
     private void parseBlockTable(Object dataVO, ExcelBlockMeta blockMeta, Sheet sheet) {
         String subTitle = String.format("%s 列表块[%s]", title, blockMeta.getName());
-        int startIndex = blockMeta.getRowIndex() + (null == blockMeta.getLastModifyRowIndex() ? 0 : blockMeta.getLastModifyRowIndex());
+        //int startIndex = blockMeta.getRowIndex() + (null == blockMeta.getLastModifyRowIndex() ? 0 : blockMeta.getLastModifyRowIndex());
+        int startIndex = blockMeta.getRowIndex();
         // 最后一行行数
         int lastRow = sheet.getLastRowNum();
         // TODO 表格导入时，最后的行索引(防止表格下方有静态块，出现解析问题)
