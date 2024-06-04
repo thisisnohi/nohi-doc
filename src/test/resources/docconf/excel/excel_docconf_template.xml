@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- 配置模板说明 -->
 <documents>
   <!--  id 同nohi-doc中doc
         template 对应excel模板
@@ -14,9 +15,11 @@
 
     <!--
          sheet
-             type　single-单页 repeat-可重复导出页
+             type　single-单页 repeat-可重复导出页，导出为多个sheet页
+                   singleRepeat-单页内容重复，即在一个sheet页内，重复导出数据
+                   repeat、singleRepeat区别repeat为多个sheet页，singleRepeat为一个sheet页
              name 对应Excel中sheet的名称，一定要对应，否则找不到相应的sheet
-             sheetData: sheet页数据对象，可为空。如果为空，则取document数据对象. 不可为基本类型和集合类型。
+             sheetData: sheet页数据对象，可为空。如果为空，则取document数据对象. 不可为基本类型
 
              导入：不支持type=repeat方式
              导出：

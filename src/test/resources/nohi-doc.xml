@@ -31,6 +31,7 @@
 		     所有导出都可能通过传递dataVo值为List方式，导出重复sheet页数据
 		-->
 		<doc id="MULTI_REPEAT_SHEET" name="多sheet页及sheetData" conf="docconf/excel/excel_multi_repeat_sheet.xml" />
+		<doc id="SINGLE_REPEAT_MULTI_BLOCK" name="单页重复多块" conf="docconf/excel/excel_repeat_single_repeat_mutl_block.xml" />
 
 	</doc-excel>
 

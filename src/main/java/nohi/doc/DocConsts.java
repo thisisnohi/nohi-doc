@@ -36,9 +36,13 @@ public class DocConsts {
 	}
 
 	/**
-	 * NOHI_DOC  EXCEL 重复生成SHEET
+	 * NOHI_DOC  EXCEL 重复生成SHEET，生成多个sheet页
 	 */
 	public static final String EXCEL_SHEET_REPEAT = "repeat";
+	/**
+	 * NOHI_DOC  EXCEL 重复生成SHEET数据，单页内容重复，不生成多个sheet页
+	 */
+	public static final String EXCEL_SHEET_SINGLE_REPEAT = "singleRepeat";
 
 	/**
 	 * 文档类型: EXCEL

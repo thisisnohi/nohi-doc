@@ -6,7 +6,7 @@
             dataClass="nohi.doc.excel.vo.TestDocVO"
             docType="EXCEL"
   >
-    <sheet type="single" name="多块导入" exportSheetName="sheetName">
+    <sheet type="single" name="多块" exportSheetName="sheetName">
       <block type="field" name="静态区-字符串(可省略)" rowIndex="1">
         <col column="1" property="str1">字符串</col>
         <col column="3" property="str2">字符串</col>

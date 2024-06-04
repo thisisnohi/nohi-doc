@@ -134,7 +134,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         String key = sheet.getName();
         String sheetName = sheet.getExportSheetName();
         // 设置sheet名称
-        if (StringUtils.isNotBlank(sheetName)) {
+        if (StringUtils.isNotBlank(sheetName) && !(data instanceof Collection)) {
             sheetName = (String) Clazz.getValue(data, sheetName);
         }
 
@@ -179,7 +179,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                     log.info("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
                     this.exportSheet(sheet, sheetName, obj);
                 }
-            } else {
+            }else {
                 String sheetName = this.sheetName(sheet, sheetData, -1);
                 log.info("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
                 // 导出数据到sheet页
@@ -202,41 +202,22 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
 
         // 上一块
         ExcelBlockMeta lastBlock = null;
-        // 上一块，行索引
-        Integer lastBlockRowIndex = null;
 
-        for (ExcelBlockMeta block : blockList) {
-            Integer blockRowIndex = block.getRowIndex();
-            lastBlockRowIndex = (null == lastBlock || null == lastBlock.getRowIndex()) ? Integer.valueOf(0) : lastBlock.getRowIndex();
-            block.setLastBlockLastModifyRowIndex((null == lastBlock || null == lastBlock.getLastModifyRowIndex()) ? Integer.valueOf(0) : lastBlock.getLastModifyRowIndex());
-
-            if (block.getAddRows() == null) {
-                block.setAddRows(blockRowIndex - lastBlockRowIndex);
+        // 导出
+        if (sheetData instanceof Collection) {
+            log.info("{} 循环导出", title);
+            int dataIndex = 0;
+            for (Object obj : (Collection) sheetData) {
+                log.info("{} 循环导出,第[{}]份", title, dataIndex);
+                dataIndex++;
+                lastBlock = this.exportBlockList(lastBlock, blockList, excelSheet, obj);
             }
-
-            log.debug("{} 开始导出[{}]行[{}] lastRowIndex[{}]", title, block.getName(), blockRowIndex, lastBlockRowIndex);
-            // 拷贝所有操作行的数据、及格式
-            if (null == lastBlock || blockRowIndex.compareTo(lastBlockRowIndex + 1) > 0) {
-                // copy模板中未用到的行
-                int start = lastBlockRowIndex + 1;
-                if (0 == lastBlockRowIndex) {
-                    start = 0;
-                }
-                int offset = block.getLastBlockLastModifyRowIndex() - lastBlockRowIndex;
-                log.debug("{} [{}]开始拷贝样式[{}-{}) offset:{}", title, block.getName(), start, blockRowIndex, offset);
-                for (; start < blockRowIndex; start++) {
-                    ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start + offset));
-                }
-            }
-
-            //导入数据到块中
-            exportToBlock(sheetData, block, excelSheet);
-            // 保留最后块
-            lastBlock = block;
+        } else {
+            lastBlock = this.exportBlockList(lastBlock, blockList, excelSheet, sheetData);
         }
 
         // 导入数据完成后，最后修改行index
-        lastBlockRowIndex = (null == lastBlock ? 0 : lastBlock.getRowIndex());
+        Integer lastBlockRowIndex = (null == lastBlock ? 0 : lastBlock.getRowIndex());
 
         // 拷贝模板最后的样式
         if (lastBlockRowIndex.compareTo(templateSheet.getLastRowNum()) < 0) {
@@ -250,6 +231,47 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             }
         }
     }
+
+    private ExcelBlockMeta exportBlockList(ExcelBlockMeta lastBlock, List<ExcelBlockMeta> blockList, Sheet excelSheet, Object sheetData) throws Exception {
+        for (ExcelBlockMeta block : blockList) {
+            Integer blockRowIndex = block.getRowIndex();
+            // 从-1开始计算
+            Integer lastBlockRowIndex = null;
+            if (null == lastBlock) {
+                lastBlockRowIndex  = -1;
+                block.setLastBlockLastModifyRowIndex(-1);
+            } else {
+                lastBlockRowIndex  = lastBlock.getRowIndex();
+                block.setLastBlockLastModifyRowIndex(lastBlock.getLastModifyRowIndex());
+            }
+
+            if (block.getAddRows() == null) {
+                block.setAddRows(blockRowIndex - lastBlockRowIndex);
+            }
+
+            log.debug("{} 开始导出[{}]行[{}] lastRowIndex[{}]", title, block.getName(), blockRowIndex, lastBlockRowIndex);
+            // 拷贝所有操作行的数据、及格式
+            if (blockRowIndex.compareTo(lastBlockRowIndex + 1) > 0) {
+                // copy模板中未用到的行
+                int start = lastBlockRowIndex + 1;
+//                if (0 == lastBlockRowIndex) {
+//                    start = 0;
+//                }
+                int offset = block.getLastBlockLastModifyRowIndex() - lastBlockRowIndex;
+                log.debug("{} [{}]开始拷贝样式[{}-{}) offset:{}", title, block.getName(), start, blockRowIndex, offset);
+                for (; start < blockRowIndex; start++) {
+                    ExcelUtils.setRowStyle(ExcelUtils.getRow(templateSheet, start), ExcelUtils.getRow(excelSheet, start + offset));
+                }
+            }
+
+            //导入数据到块中
+            exportToBlock(sheetData, block, excelSheet);
+            // 保留最后块
+            lastBlock = block;
+        }
+        return lastBlock;
+    }
+
     /**
      * 导入数据到每一个块中
      */
@@ -267,7 +289,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         rowStyle = ExcelUtils.getRow(templateSheet, block.getRowIndex());
 
         if (null == lastModifyRowIndex) {
-            lastModifyRowIndex = 0;
+            lastModifyRowIndex = -1;
         }
 
         if (null == addRows) {
