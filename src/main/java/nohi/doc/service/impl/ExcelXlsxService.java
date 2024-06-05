@@ -166,9 +166,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             String sheetType = sheet.getType();
             // sheet页数据对象，如果sheetDataField为空(未配置)，则sheetData对象同document对象
             Object sheetData = ExcelUtils.getSheetDataVo(data, sheetDataField);
-            log.debug("{}, sheetType:{} sheetDataField:{} sheetData:{}", title, sheetType, sheetDataField, sheetData.getClass());
-
-
+            log.debug("{} key:{} sheetType:{} sheetDataField:{} sheetData:{}", title, key, sheetType, sheetDataField, sheetData.getClass());
 
             // 重复sheet页, 且数据对象为集合，重复导出数据
             if (DocConsts.EXCEL_SHEET_REPEAT.equalsIgnoreCase(sheetType) && sheetData instanceof Collection) {
@@ -176,12 +174,12 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 int sheetIndex = 0;
                 for (Object obj : (Collection) sheetData) {
                     String sheetName = this.sheetName(sheet, obj, sheetIndex++);
-                    log.info("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
+                    log.info("{}, sheetName:{} sheetData:{}", title, sheetName, sheetDataField);
                     this.exportSheet(sheet, sheetName, obj);
                 }
             }else {
                 String sheetName = this.sheetName(sheet, sheetData, -1);
-                log.info("{}, sheetType:{} sheetName:{} sheetData:{}", title, sheetType, sheetName, sheetDataField);
+                log.info("{}, sheetName:{} sheetData:{}", title, sheetName, sheetDataField);
                 // 导出数据到sheet页
                 this.exportSheet(sheet, sheetName, sheetData);
             }
@@ -193,7 +191,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         Sheet excelSheet = templateBook.createSheet(sheetName);
 
         // 根据模板设置每一列的宽
-        for (int cellIndex = 0; cellIndex < ExcelUtils.getRow(templateSheet, 0).getLastCellNum(); cellIndex++) {
+        for (int cellIndex = 0; cellIndex <= ExcelUtils.getRow(templateSheet, 0).getLastCellNum(); cellIndex++) {
             excelSheet.setColumnWidth(cellIndex, templateSheet.getColumnWidth(cellIndex));
         }
 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<documents>
+  <document id="XLSM_EXPORT" name="xlsm导出"
+            template="template/excel/excel_xlsm_export.xlsm"
+            dataClass="nohi.doc.excel.db.DbTableVo"
+            docType="EXCEL"
+  >
+    <sheet type="single" name="修订记录">
+    </sheet>
+    <sheet type="single" name="首页">
+    </sheet>
+    <sheet type="single" name="索引">
+    </sheet>
+    <sheet type="single" name="模型" exportSheetName="sheetName">
+      <block type="field" name="表名" rowIndex="0">
+        <col column="1" property="tableName"/>
+        <col column="3" property="tableNameCn"/>
+      </block>
+      <block type="field" name="表名" addRows="1">
+        <col column="1" property="tableDesc"/>
+      </block>
+      <block type="TABLE" name="索引列表" addRows="2" list="indexList" itemClass="nohi.doc.excel.db.IndexItem">
+        <col column="0" property="indexName"/>
+        <col column="2" property="unique"/>
+        <col column="4" property="cols"/>
+      </block>
+
+      <block type="TABLE" name="字段列表" addRows="3" list="fieldList" itemClass="nohi.doc.excel.db.FieldItem">
+        <col column="0" property="fieldName"/>
+        <col column="1" property="fieldNameCn"/>
+        <col column="2" property="dataType"/>
+        <col column="3" property="dataLength"/>
+        <col column="4" property="primaryKey"/>
+        <col column="5" property="notNull"/>
+        <col column="6" property="defaultValue"/>
+        <col column="7" property="comments"/>
+        <col column="8" property="codeType"/>
+      </block>
+      <block type="field" name="空行" addRows="1">
+      </block>
+
+    </sheet>
+  </document>
+</documents>

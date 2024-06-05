@@ -25,6 +25,9 @@
              导出：
               type=repeat时，可配合sheetData使用
               exportSheetName　只有在导出sheet时才会用到
+
+          注意：如果导出模板存在无数据sheet页，需要定义sheet节点，配置name，里面的block可以为空。
+               导出无数据sheet页列宽无法设置，需要保证第一行有单元格设置格式即可。
      -->
     <sheet type="single" name="静态页" sheetData="sheetObject" exportSheetName="sheetName">
       <!-- type：该块类型，field-字段类型  TABLE－列表类型
