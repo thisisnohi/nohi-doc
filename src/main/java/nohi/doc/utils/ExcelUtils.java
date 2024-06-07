@@ -2,7 +2,7 @@ package nohi.doc.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.config.meta.excel.ExcelColMeta;
-import nohi.doc.service.CodeEncode;
+import nohi.doc.service.impl.CodeMappingService;
 import nohi.utils.Clazz;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -33,9 +33,11 @@ import java.util.regex.Pattern;
 public class ExcelUtils {
     // 创建 Pattern 对象
     static Pattern pattern = Pattern.compile("[A-Z]+\\d+");
+    static String NaN = "NaN";
+    static String HSSFWorkbook = "HSSFWorkbook";
 
     // 设置样式
-    public static Row setRowStyleFromListFirstRow(Row styleRow, Row row) {
+    public static void setRowStyleFromListFirstRow(Row styleRow, Row row) {
         if (null != styleRow && null != row) {
             int styleRowNum = styleRow.getRowNum();
             int editRowNum = row.getRowNum();
@@ -64,7 +66,6 @@ public class ExcelUtils {
                 copyCellValue(from, to);
             }
         }
-        return row;
     }
 
 
@@ -133,7 +134,7 @@ public class ExcelUtils {
                 try {
                     value = cell.getStringCellValue();
                     // 如果获取的数据值为非法值,则转换为获取字符串
-                    if (value.equals("NaN")) {
+                    if (value.equals(NaN)) {
                         value = cell.getRichStringCellValue().toString();
                     }
                 } catch (Exception e) {
@@ -195,10 +196,10 @@ public class ExcelUtils {
     /**
      * 判断指定的单元格是否是合并单元格
      *
-     * @param sheet
+     * @param sheet  sheet
      * @param row    行下标
      * @param column 列下标
-     * @return
+     * @return boolean
      */
     public static boolean isMergedRegion(Sheet sheet, int row, int column) {
         int sheetMergeCount = sheet.getNumMergedRegions();
@@ -236,11 +237,8 @@ public class ExcelUtils {
             return;
         }
         // 转换数据字典
-        // TODO 考虑系统接口实例
-        // 接口： Class.static method value2Key(codeType, codeValue) 返回 codeKey
-        // 接口： Class.static method key2Value(codeType, codeKey) 返回 codeValue
         if (StringUtils.isNotBlank(codeType)) {
-            temp = CodeEncode.getMappingValue(codeType, temp);
+            temp = CodeMappingService.getService().getCodeKey(codeType, temp, temp);
         }
         // 根据value中的值，对对象层层设值
         try {
@@ -350,9 +348,9 @@ public class ExcelUtils {
             }
             row.setHeight(styleRow.getHeight());
 
-            Drawing drawing = row.getSheet().createDrawingPatriarch();
+            Drawing<?> drawing = row.getSheet().createDrawingPatriarch();
             Workbook workbook = row.getSheet().getWorkbook();
-            DataValidationHelper helper = row.getSheet().getDataValidationHelper();
+//            DataValidationHelper helper = row.getSheet().getDataValidationHelper();
 
             for (int i = 0; i < styleRow.getLastCellNum(); i++) {
 //				CellStyle style = row.getSheet().getWorkbook().createCellStyle();
@@ -427,7 +425,7 @@ public class ExcelUtils {
 
     }
 
-    private static void copyCell(Cell fromCell, Cell toCell, Drawing drawing, Class<? extends Workbook> clazz) {
+    private static void copyCell(Cell fromCell, Cell toCell, Drawing<?> drawing, Class<? extends Workbook> clazz) {
         //设置下拉框等验证信息
         setValidatation(fromCell, toCell);
 
@@ -456,7 +454,7 @@ public class ExcelUtils {
                 to.setCellValue(from.getNumericCellValue());
                 break;
             case BLANK:
-                to.setCellType(CellType.BLANK);
+                to.setBlank();
                 break;
             case BOOLEAN:
                 to.setCellValue(from.getBooleanCellValue());
@@ -467,10 +465,7 @@ public class ExcelUtils {
             case FORMULA:
                 String formula = from.getCellFormula();
                 if (null != formula) {
-                    int from_row = from.getRowIndex();
-                    int from_col = from.getColumnIndex();
                     int to_row = to.getRowIndex();
-                    int to_col = to.getColumnIndex();
                     Matcher m = pattern.matcher(formula);
                     while (m.find()) {
                         String str = m.group(0);
@@ -482,7 +477,7 @@ public class ExcelUtils {
                             ziMu = str.replaceAll("\\d", "");
                         }
                         if (null != indexStr) {
-                            int index = Integer.valueOf(indexStr);
+                            int index = Integer.parseInt(indexStr);
 
                             if (index < (to_row + 1)) {
                                 formula = formula.replaceAll(str, ziMu + (to_row + 1));
@@ -498,7 +493,7 @@ public class ExcelUtils {
         }
     }
 
-    private static void copyComment(Class<? extends Workbook> clazz, Comment fromComment, Drawing drawing, Cell fromCell, Cell toCell) {
+    private static void copyComment(Class<? extends Workbook> clazz, Comment fromComment, Drawing<?> drawing, Cell fromCell, Cell toCell) {
         Comment newComment = drawing.createCellComment(createClientAnchor(clazz));
         newComment.setAuthor(fromComment.getAuthor());
         newComment.setColumn(fromComment.getColumn());
@@ -511,7 +506,7 @@ public class ExcelUtils {
     private static ClientAnchor createClientAnchor(Class<? extends Workbook> clazz) {
         ClientAnchor aClientAnchor = null;
         String s = clazz.getSimpleName();
-        if (s.equals("HSSFWorkbook")) {
+        if (s.equals(HSSFWorkbook)) {
             aClientAnchor = new HSSFClientAnchor();
 
         } else {
@@ -589,7 +584,7 @@ public class ExcelUtils {
         } else if ("float".equalsIgnoreCase(dataType) || data instanceof Float) {
             Float d = (Float) data;
             cell.setCellValue(d);
-        }else if ("BigDecimal".equalsIgnoreCase(dataType) || data instanceof BigDecimal) {
+        } else if ("BigDecimal".equalsIgnoreCase(dataType) || data instanceof BigDecimal) {
             BigDecimal bd = (BigDecimal) data;
             cell.setCellValue(bd.doubleValue());
         } else if ("timestamp".equalsIgnoreCase(dataType) || data instanceof Timestamp) {
@@ -613,7 +608,7 @@ public class ExcelUtils {
         } else {
             cell.setCellValue(data.toString());
             if (StringUtils.isNotBlank(codeType)) {
-                String s = CodeEncode.getMappingValue(codeType, data.toString());
+                String s = CodeMappingService.getService().getCodeValue(codeType, data.toString(), data.toString());
                 if (StringUtils.isNotBlank(s)) {
                     cell.setCellValue(s);
                 }
@@ -623,10 +618,10 @@ public class ExcelUtils {
 
     /**
      * 获取sheet对象
-     *  如果sheetData配置为空，则取原对象
-     * @param obj  document对象
-     * @param sheetFiled sheetData配置
+     * 如果sheetData配置为空，则取原对象
      *
+     * @param obj        document对象
+     * @param sheetFiled sheetData配置
      */
     public static Object getSheetDataVo(Object obj, String sheetFiled) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         if (StringUtils.isBlank(sheetFiled)) {

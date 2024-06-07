@@ -2,18 +2,13 @@
 <!-- 代码值映射 -->
 <codes>
 	<code-type type-name="CurrencyCd"><!--币种 -->
-		<code loan-code="156" mapping-code="人民币" /><!--人民币 -->
-		<code loan-code="840" mapping-code="美元" /><!--美元 -->
-		<code loan-code="111" mapping-code="啥元" /><!--美元 -->
+		<code codeKey="156" codeValue="人民币" /><!--人民币 -->
+		<code codeKey="840" codeValue="美元" /><!--美元 -->
+		<code codeKey="111" codeValue="啥元" /><!--美元 -->
 	</code-type>
-	
-	<code-type type-name="CurrencyCd2"><!--币种 -->
-		<code loan-code="01" mapping-code="156" /><!--人民币 -->
-		<code loan-code="14" mapping-code="840" /><!--美元 -->
-	</code-type>
-	
+
 	<code-type type-name="TEST"><!-- 中文到代码值映射 -->
-		<code loan-code="TEST1" mapping-code="yes" />
-		<code loan-code="中国" mapping-code="china" />
+		<code codeKey="TEST1" codeValue="yes" />
+		<code codeKey="中国" codeValue="china" />
 	</code-type>
 </codes>

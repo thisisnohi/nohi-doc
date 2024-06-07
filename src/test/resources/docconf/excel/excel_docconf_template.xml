@@ -93,7 +93,7 @@
         <col column="3" property="date" pattern="yyyy-MM-dd" dataType="date">日期</col> <!-- codeType -->
         <col column="4" property="amt">金额</col>
         <col column="5" property="bd" pattern="#,###.00" dataType="BigDecimal">大金额</col>
-        <col column="6" property="test" >测试代码值</col>
+        <col column="6" property="test" codeType="CurrencyCd">测试代码值</col>
       </block>
 
     </sheet>

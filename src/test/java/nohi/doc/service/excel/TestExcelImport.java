@@ -109,7 +109,7 @@ public class TestExcelImport {
         Assertions.assertEquals("2024-01-01", DateUtils.format(data.getDate()));
         Assertions.assertTrue(data.getAmt() - 10000.12 < 0.01);
         Assertions.assertEquals(new BigDecimal("123456789.12"), data.getBd());
-        Assertions.assertEquals("人民币", data.getTest());
+        Assertions.assertEquals("156", data.getTest());
 
     }
 

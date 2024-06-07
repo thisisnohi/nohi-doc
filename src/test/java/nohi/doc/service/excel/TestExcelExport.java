@@ -73,7 +73,13 @@ public class TestExcelExport {
             item.setName("NAME_" + i);
             item.setAge(18 + i);
             item.setAmt(2000.012d + i);
-            item.setTest("156");
+            if (i % 3 == 0) {
+                item.setTest("156");
+            } else if (i % 3 == 1) {
+                item.setTest("084");
+            } else {
+                item.setTest("-1");
+            }
             item.setBd(new BigDecimal(1000.012 + i));
             item.setDate(new Date());
             item.setAbcMap(map);

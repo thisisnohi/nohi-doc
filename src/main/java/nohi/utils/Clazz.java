@@ -1,7 +1,7 @@
 package nohi.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import nohi.doc.service.CodeEncode;
+import nohi.doc.service.impl.CodeMappingService;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
@@ -26,7 +26,7 @@ public class Clazz {
      *
      * @param methodType 方法类型 get / set
      */
-    public static Method getMethod(Class obj, Field field, String methodType) {
+    public static Method getMethod(Class<?> obj, Field field, String methodType) {
         Method method;
         try {
             if (METHOD_TYPE_SET.equals(methodType)) {
@@ -48,7 +48,7 @@ public class Clazz {
      * @param methodType     方法类型 get / set
      * @param parameterTypes 方法的参数
      */
-    public static Method getMethod(Class obj, String fieldName, String methodType, Class parameterTypes) {
+    public static Method getMethod(Class<?> obj, String fieldName, String methodType, Class<?> parameterTypes) {
         Method method;
         String title = "获取对象[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法";
         try {
@@ -140,7 +140,7 @@ public class Clazz {
 
             Object mapObj = method.invoke(obj);
             if (mapObj instanceof Map) {
-                Map m = (Map) mapObj;
+                Map<?, ?> m = (Map<?, ?>) mapObj;
                 return m.get(key);
             }
         }
@@ -150,11 +150,11 @@ public class Clazz {
     /**
      * 取得值
      *
-     * @param rs
-     * @param dataType
-     * @param pattern
-     * @param codeType
-     * @return
+     * @param rs       对象
+     * @param dataType 数据类型
+     * @param pattern  格式
+     * @param codeType 类型
+     * @return 结果
      */
     public static String getFieldStrValue(Object rs, String dataType, String pattern, String codeType) {
         String tempStr = null;
@@ -184,7 +184,7 @@ public class Clazz {
         }
 
         if (StringUtils.isNotBlank(codeType)) {
-            String s = CodeEncode.getMappingValue(codeType, tempStr);
+            String s = CodeMappingService.getService().getCodeValue(codeType, tempStr);
             if (StringUtils.isNotBlank(s)) {
                 tempStr = s;
             }
