@@ -350,24 +350,8 @@ public class ExcelUtils {
 
             Drawing<?> drawing = row.getSheet().createDrawingPatriarch();
             Workbook workbook = row.getSheet().getWorkbook();
-//            DataValidationHelper helper = row.getSheet().getDataValidationHelper();
 
             for (int i = 0; i < styleRow.getLastCellNum(); i++) {
-//				CellStyle style = row.getSheet().getWorkbook().createCellStyle();
-//				Cell cell = ExcelUtils.getCell(styleRow, i);
-//
-//				CellStyle oldStyle = cell.getCellStyle();
-//				style.cloneStyleFrom(oldStyle);
-//				ExcelUtils.getCell(row, i).setCellStyle(style);
-//				System.out.println("cellcomment:" + cell.getCellComment());
-//				ExcelUtils.getCell(row, i).setCellComment( cell.getCellComment() );
-//				if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
-//					ExcelUtils.getCell(row, i).setCellType(Cell.CELL_TYPE_FORMULA);
-//					ExcelUtils.getCell(row, i).setCellFormula( ExcelUtils.getCell(styleRow, i).getCellFormula() );
-//				}
-//
-//				String ss = ExcelUtils.getCellValue(ExcelUtils.getCell(styleRow, i));
-//				ExcelUtils.getCell(row, i).setCellValue(ss == null ? "" : ss.trim());
                 copyCell(ExcelUtils.getCell(styleRow, i), ExcelUtils.getCell(row, i), drawing, workbook.getClass());
             }
         }
