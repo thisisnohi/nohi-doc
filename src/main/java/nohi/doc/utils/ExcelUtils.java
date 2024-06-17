@@ -126,10 +126,10 @@ public class ExcelUtils {
                 }
                 break;
             /* 此行表示单元格的内容为string类型 */
-            case STRING: // 字符串型
+            case STRING:
                 value = cell.getRichStringCellValue().toString();
                 break;
-            case FORMULA://公式型
+            case FORMULA:
                 // 读公式计算值
                 try {
                     value = cell.getStringCellValue();
@@ -146,14 +146,14 @@ public class ExcelUtils {
                     }
                 }
                 break;
-            case BOOLEAN:// 布尔
+            case BOOLEAN:
                 value = " " + cell.getBooleanCellValue();
                 break;
             /* 此行表示该单元格值为空 */
-            case BLANK: // 空值
+            case BLANK:
                 value = "";
                 break;
-            case ERROR: // 故障
+            case ERROR:
                 value = "";
                 break;
             default:
@@ -414,7 +414,8 @@ public class ExcelUtils {
         setValidatation(fromCell, toCell);
 
         fromCell.getSheet().createDrawingPatriarch();
-        if (fromCell.getSheet().getWorkbook() == toCell.getSheet().getWorkbook()) {// 同一个excel可以直接复制cellStyle
+        // 同一个excel可以直接复制cellStyle
+        if (fromCell.getSheet().getWorkbook() == toCell.getSheet().getWorkbook()) {
             toCell.setCellStyle(fromCell.getCellStyle());
         } else {
             // 不同的excel之间，需要调用cloneStyleFrom方法
@@ -468,7 +469,8 @@ public class ExcelUtils {
                             }
                         }
                     }
-                    formula = formula.replaceAll("_bak!", "!");//解决从bak文件解析问题
+                    //解决从bak文件解析问题
+                    formula = formula.replaceAll("_bak!", "!");
                 }
                 to.setCellFormula(formula);
                 break;
@@ -501,7 +503,9 @@ public class ExcelUtils {
     }
 
     public static List<HSSFDataValidation> getDataValidationConstraint(Sheet sheet, int row, int col) {
-        if (null == sheet) return null;
+        if (null == sheet) {
+            return null;
+        }
 
         List<HSSFDataValidation> rs = new ArrayList();
         List<HSSFDataValidation> validations = (List<HSSFDataValidation>) sheet.getDataValidations();

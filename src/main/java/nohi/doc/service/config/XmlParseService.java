@@ -60,7 +60,7 @@ public class XmlParseService {
             confPath = DocConsts.defaultConf;
         }
 
-        try (InputStream inputStream = XmlParseService.class.getClassLoader().getResourceAsStream(confPath);) {
+        try (InputStream inputStream = XmlParseService.class.getClassLoader().getResourceAsStream(confPath)) {
             if (inputStream == null) {
                 throw new RuntimeException("配置文件不存在");
             }
@@ -176,7 +176,8 @@ public class XmlParseService {
      */
     private static Map<String, DocPdfUnitMeta> parsePdf(Element e) throws Exception {
         Map<String, DocPdfUnitMeta> unitMap = new HashMap<>();
-        List<Element> unitList = e.getChildren();//unit对象
+        // unit对象
+        List<Element> unitList = e.getChildren();
         for (Element unit : unitList) {
             DocPdfUnitMeta t = new DocPdfUnitMeta();
 
