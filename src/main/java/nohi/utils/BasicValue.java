@@ -11,8 +11,8 @@ public class BasicValue {
     @Override
     public String toString() {
 
-        StringBuffer sb = new StringBuffer();
-        sb.append("Class:" + this.getClass());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Class:").append(this.getClass());
         sb.append("\n[");
 
         /**
@@ -65,11 +65,11 @@ public class BasicValue {
 
         } else if (obj instanceof Map) {
             Map map = (Map) obj;
-            for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-                String key = (String) it.next();
+            for (Iterator<String> it = map.keySet().iterator(); it.hasNext(); ) {
+                String key = it.next();
                 sb.append("[");
-                sb.append("key=" + key);
-                sb.append(",valeu=" + map.get(key));
+                sb.append("key=").append(key);
+                sb.append(",value=").append(map.get(key));
                 sb.append("],");
             }
         } else if (obj instanceof Set) {
@@ -94,7 +94,7 @@ public class BasicValue {
         Method m = null;
         try {
             m = this.getClass().getMethod("get" + covertFirstChar2Upper(temp));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return m;
     }
@@ -105,7 +105,7 @@ public class BasicValue {
     public Object getObject(Method mMethod) {
         try {
             return mMethod.invoke(this);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -135,7 +135,7 @@ public class BasicValue {
             return null;
         }
         StringBuffer sb = new StringBuffer();
-        sb.append("Class:" + c.getClass());
+        sb.append("Class:").append(c.getClass());
         sb.append("\n[");
 
         /**
@@ -194,8 +194,8 @@ public class BasicValue {
                 for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
                     String key = (String) it.next();
                     sb.append("[");
-                    sb.append("key=" + key);
-                    sb.append(",valeu=" + map.get(key));
+                    sb.append("key=").append(key);
+                    sb.append(",value=").append(map.get(key));
                     sb.append("],");
                 }
             } else if (obj instanceof Set) {
