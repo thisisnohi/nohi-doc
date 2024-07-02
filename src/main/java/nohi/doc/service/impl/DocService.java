@@ -32,6 +32,7 @@ public class DocService implements IDocService {
             ExcelXlsxService<T> excel = new ExcelXlsxService<>(title);
             excel.exportDoc(doc);
         } else if (DocConsts.DOC_TYPE_PDF.equals(doc.getDocType())) {
+            log.warn("PDF暂不支持");
 //            PdfService excel = new PdfService();
 //            excel.exportDoc(doc);
         }

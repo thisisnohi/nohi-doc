@@ -490,7 +490,7 @@ public class ExcelUtils {
     }
 
     private static ClientAnchor createClientAnchor(Class<? extends Workbook> clazz) {
-        ClientAnchor aClientAnchor = null;
+        ClientAnchor aClientAnchor;
         String s = clazz.getSimpleName();
         if (s.equals(HSSFWorkbook)) {
             aClientAnchor = new HSSFClientAnchor();

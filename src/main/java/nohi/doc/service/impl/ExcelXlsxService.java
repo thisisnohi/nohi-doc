@@ -31,7 +31,7 @@ import java.util.*;
  */
 @Slf4j
 public class ExcelXlsxService<T> extends FtpServer implements IDocService {
-    private String title = "";
+    private String title;
     // 模板文件
     private Workbook templateBook = null;
     // 模板文件Sheet
@@ -234,7 +234,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         for (ExcelBlockMeta block : blockList) {
             Integer blockRowIndex = block.getRowIndex();
             // 从-1开始计算
-            Integer lastBlockRowIndex = null;
+            Integer lastBlockRowIndex;
             if (null == lastBlock) {
                 lastBlockRowIndex  = -1;
                 block.setLastBlockLastModifyRowIndex(-1);
@@ -274,12 +274,12 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
      * 导入数据到每一个块中
      */
     private void exportToBlock(Object dataVO, ExcelBlockMeta block, Sheet mHSSFSheet) throws Exception {
-        Row row = null;
-        Row rowStyle = null;
-        Cell cell = null;
+        Row row;
+        Row rowStyle;
+        Cell cell;
 
         ExcelBlockMeta.BlockType type = block.getType();
-        Integer startRow = block.getRowIndex();
+        Integer startRow;
         Integer addRows = block.getAddRows();
         // 上一块占用最后一行索引
         Integer lastModifyRowIndex = block.getLastBlockLastModifyRowIndex();

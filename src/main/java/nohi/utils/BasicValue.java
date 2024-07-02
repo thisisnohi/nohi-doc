@@ -156,7 +156,7 @@ public class BasicValue {
             // 字段属性首字母大写变量
             String temp = covertFirstChar2Upper(f.getName());
 
-            Method m = null;
+            Method m;
 
             try {
                 m = c.getClass().getMethod("get" + temp);

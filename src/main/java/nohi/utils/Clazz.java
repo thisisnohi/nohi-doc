@@ -157,7 +157,7 @@ public class Clazz {
      * @return 结果
      */
     public static String getFieldStrValue(Object rs, String dataType, String pattern, String codeType) {
-        String tempStr = null;
+        String tempStr;
         if (null == rs) {
             tempStr = "";
         } else if ("int".equalsIgnoreCase(dataType) || "Integer".equalsIgnoreCase(dataType)) {

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import nohi.doc.config.meta.ftp.FtpServiceInfo;
 import nohi.doc.vo.DocVO;
 import nohi.utils.DocCommonUtils;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
 
@@ -30,7 +31,7 @@ public class FtpServer {
         if (path != null && !path.endsWith("/")) {
             path += "/";
         }
-        //path += DocCommonUtils.getCurrentTimeStr("yyyyMMdd") + "/" + doc.getDocId() + "/" + DocCommonUtils.getTimeMillis();
+        Assertions.assertNotNull(path, "路径不能为空");
         String fileName = doc.getDocName();
         File file = new File(path);
         if (!file.exists()) {
