@@ -307,7 +307,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             //设置样式
             row = ExcelUtils.setRowStyle(rowStyle, row);
 
-            String key = null;
+            String key;
             // 遍历配置文件中块对应的所有列属性
             for (Iterator<String> it = colsMap.keySet().iterator(); it.hasNext(); ) {
                 key = it.next();
@@ -317,7 +317,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 String property = col.getProperty();
 
                 // 取得属性对应的字段值
-                Object rs = null;
+                Object rs ;
                 try {
                     rs = Clazz.getValue(dataVO, property);
                 } catch (Exception e) {
@@ -331,7 +331,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             }
         } else if (ExcelBlockMeta.BlockType.TABLE.equals(type)) {
             //取得属性对应的字段值
-            List list = null;
+            List list;
             try {
                 list = (List) Clazz.getValue(dataVO, block.getList());
             } catch (Exception e) {
@@ -373,7 +373,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                     String property = col.getProperty();
 
                     //取得属性对应的字段值
-                    Object rs = null;
+                    Object rs;
                     try {
                         rs = Clazz.getValue(item, property);
                     } catch (Exception e) {
@@ -421,7 +421,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
         Assertions.assertNotNull(dataVo, "数据对象参数不能为空");
         // 使用UserModel方式解析文件
         // 缺点为整体解析，大文件内存占用高，可能出现OOM
-        Workbook hwb = null;
+        Workbook hwb;
 
         // 1,读取Excel
         try {
@@ -433,7 +433,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
 
         // 解析每一个sheet
         List<ExcelSheetMeta> sheetList = template.getSheetList();
-        String key = null;
+        String key;
         ExcelSheetMeta sheet;
         for (ExcelSheetMeta excelSheetMeta : sheetList) {
             sheet = excelSheetMeta;
@@ -447,7 +447,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             }
             // 3, 解析每一个块
             List<ExcelBlockMeta> blockList = sheet.getBlockList();
-            Object sheetDataObject = null;
+            Object sheetDataObject;
             try {
                 sheetDataObject = ExcelUtils.getSheetDataVo(dataVo, sheet.getSheetData());
             } catch (Exception e) {
@@ -512,7 +512,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
             // 判断是否合并单元格
             boolean isMerge = ExcelUtils.isMergedRegion(cell.getSheet(), cell.getRowIndex(), cell.getColumnIndex());
             // 判断是否具有合并单元格
-            String value = null;
+            String value;
             if (isMerge) {
                 value = ExcelUtils.getMergedRegionValue(cell.getSheet(), cell.getRowIndex(), cell.getColumnIndex());
             } else {
@@ -564,7 +564,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 continue;
             }
             // 每次都得新建对象: 列表中每行为一个对象
-            Object dataObject = null;
+            Object dataObject;
             try {
                 dataObject = Class.forName(blockMeta.getItemClass()).newInstance();
             } catch (Exception e) {
