@@ -25,7 +25,7 @@ public class DocCommonUtils {
      */
     public static Timestamp getCurrentTime() {
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-        log.debug("CurrentTime: " + currentTime);
+        log.debug("CurrentTime: {}", currentTime);
         return currentTime;
     }
 
@@ -87,13 +87,11 @@ public class DocCommonUtils {
     /**
      * 生成流水号
      * 时间毫秒 + 随机数
-     *
-     * @return
      */
     public static String getFlow() {
         double d = Math.random() * 100000;
         long l = System.currentTimeMillis();
-        log.debug("l: " + l + " ,d:" + d + " , Math.round(d): " + Math.round(d));
+        log.debug("l: {} ,d:{} , Math.round(d): {}", l, d, Math.round(d));
         return "" + l + Math.round(d);
     }
 

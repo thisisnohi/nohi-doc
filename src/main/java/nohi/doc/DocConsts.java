@@ -29,7 +29,7 @@ public class DocConsts {
 				defaultConf = conf;
 			}
 			encodeConf = properties.getProperty("encodeConf");
-			log.debug("defaultConf:" + defaultConf + ",encodeConf:" + encodeConf);
+            log.debug("defaultConf:{},encodeConf:{}", defaultConf, encodeConf);
 		}catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}

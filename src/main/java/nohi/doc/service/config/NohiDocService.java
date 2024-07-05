@@ -25,7 +25,7 @@ public class NohiDocService {
     /**
      * NohiDoc主配置文件
      */
-    private static NohiDocMeta mainDoc;
+    private static volatile NohiDocMeta mainDoc;
 
     /**
      * 所有文档模板配置文件
