@@ -12,3 +12,14 @@
   * 增加pdf导出案例
 
 
+## 2.1.0
+> create by nohi 20240719
+
+增加对PDF支持
+作为2025年申请idea 保留项目，预计从2025年2月开始
+
+* 导出
+  * 根据模板生成PDF
+  * 代码生成PDF
+    参见：https://kb.itextpdf.com/itext/chapter-1-introducing-basic-building-blocks
+  * 根据html生成PDF

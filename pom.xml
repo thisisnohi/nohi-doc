@@ -11,6 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <poi-version>5.2.5</poi-version>
+    <itextpdf-version>8.0.4</itextpdf-version>
   </properties>
   <dependencies>
     <dependency>
@@ -20,8 +21,28 @@
     </dependency>
     <dependency>
       <groupId>com.itextpdf</groupId>
-      <artifactId>itext-asian</artifactId>
-      <version>5.1.1</version>
+      <artifactId>kernel</artifactId>
+      <version>${itextpdf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>layout</artifactId>
+      <version>${itextpdf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>forms</artifactId>
+      <version>${itextpdf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>pdfa</artifactId>
+      <version>${itextpdf-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>pdftest</artifactId>
+      <version>7.1.16</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
