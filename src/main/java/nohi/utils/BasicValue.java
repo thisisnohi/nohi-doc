@@ -78,7 +78,7 @@ public class BasicValue {
                 sb.append(",");
             }
         } else {
-            sb.append(obj == null ? obj : obj.toString());
+            sb.append(obj == null ? "" : obj.toString());
         }
 
         return sb.toString();
