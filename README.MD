@@ -3,6 +3,7 @@
 ## 功能
 * 文档类型
   * excel
+  * pdf
 * 程序技术模型
   * 配置
     * xml
@@ -47,4 +48,14 @@
   2. 创建文本文件(无后缀)： nohi.doc.service.ICodeMappingService
   3. 自定义类的包+类，写入文件[nohi.doc.service.ICodeMappingService]中
   ```
+
+## PDF
+### PDF表单
+#### 制作PDF表单
+* 通过Excel制作表单如： `test/template/pdf/pdf_template.xlsx`
+* Excel 导出 PDF
+  * 注意视图->分页预览，调整成一个完整的，否则导出的表单出现换页的情况
+  * 本机使用mbp电脑，使用上面导出怎么调都换行。可以使用打印预览里的导出PDF
+* 使用Acrobat创建表单
+  * 表单中每个域分配设置不同字段
 
