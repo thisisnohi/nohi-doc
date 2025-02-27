@@ -26,21 +26,29 @@ public class Clazz {
      *
      * @param methodType 方法类型 get / set
      */
-    public static Method getMethod(Class<?> obj, Field field, String methodType) {
+    public static Method getMethod(Class<?> obj, Field field, String methodType) throws NoSuchMethodException {
+        return getMethod(obj, field, methodType, null);
+    }
+
+    /**
+     * 根据属性名，取得Get方法 / set方法
+     *
+     * @param methodType 方法类型 get / set
+     */
+    public static Method getMethod(Class<?> obj, Field field, String methodType, Class<?> parameterTypes) throws NoSuchMethodException {
         Method method;
-        try {
-            if (METHOD_TYPE_SET.equals(methodType)) {
-                method = obj.getMethod(METHOD_TYPE_SET + covertFirstChar2Upper(field.getName()), field.getType());
-            } else {
-                method = obj.getMethod(METHOD_TYPE_GET + covertFirstChar2Upper(field.getName()));
+        if (METHOD_TYPE_SET.equals(methodType)) {
+            method = obj.getMethod(METHOD_TYPE_SET + covertFirstChar2Upper(field.getName()), field.getType());
+        } else if ("other".equals(methodType)) {
+            method = obj.getMethod(field.getName(), parameterTypes);
+        } else {
+            if (field.getType() == boolean.class) {
+                return obj.getMethod("is" + covertFirstChar2Upper(field.getName()));
             }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException("获取对象[" + obj + "]属性[" + field.getName() + "][" + methodType + "]方法异常", e);
+            method = obj.getMethod(METHOD_TYPE_GET + covertFirstChar2Upper(field.getName()));
         }
         return method;
     }
-
 
     /**
      * 取得Get方法 / set方法
@@ -49,25 +57,30 @@ public class Clazz {
      * @param parameterTypes 方法的参数
      */
     public static Method getMethod(Class<?> obj, String fieldName, String methodType, Class<?> parameterTypes) {
-        Method method;
+        return getMethod(obj, fieldName, methodType, parameterTypes, true);
+    }
+
+    /**
+     * 取得Get方法 / set方法
+     *
+     * @param methodType     方法类型 get / set
+     * @param parameterTypes 方法的参数
+     */
+    public static Method getMethod(Class<?> obj, String fieldName, String methodType, Class<?> parameterTypes, boolean fieldNotFoundException) {
         String title = "获取对象[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法";
+        if (!haveField(obj, fieldName)) {
+            log.warn("{} 对象不存在属性[{}]", title, fieldName);
+            if (fieldNotFoundException) {
+                return null;
+            }
+        }
         try {
             Field field = obj.getDeclaredField(fieldName);
-            if (METHOD_TYPE_SET.equalsIgnoreCase(methodType)) {
-                method = obj.getMethod(METHOD_TYPE_SET + covertFirstChar2Upper(fieldName), parameterTypes);
-            } else if ("other".equals(methodType)) {
-                method = obj.getMethod(fieldName, parameterTypes);
-            } else {
-                if (field.getType() == boolean.class) {
-                    return obj.getMethod("is" + covertFirstChar2Upper(fieldName));
-                }
-                method = obj.getMethod(METHOD_TYPE_GET + covertFirstChar2Upper(fieldName));
-            }
+            return getMethod(obj, field, methodType, parameterTypes);
         } catch (Exception e) {
             log.error("{} 获取方法异常:{}", title, e.getMessage(), e);
             throw new RuntimeException(title + "异常", e);
         }
-        return method;
     }
 
     /**
@@ -92,6 +105,14 @@ public class Clazz {
      * 取得对象中，对应属性的值
      */
     public static Object getValue(Object obj, String property) {
+        return getValue(obj, property, true);
+    }
+
+    /**
+     * 取得对象中，对应属性的值
+     */
+    public static Object getValue(Object obj, String property, boolean propertyNotFoundException) {
+        log.debug("[{}] 获取属性[{}] {}", null == obj ? "NULL" : obj.getClass(), property, propertyNotFoundException);
         // 用正则，点是正则的关键字，必须转义
         String[] vm = property.split("\\.");
         int index = property.indexOf(".");
@@ -100,12 +121,15 @@ public class Clazz {
             if (null == obj) {
                 return null;
             }
+            // 没有层级
             if (index == -1) {
-
+                log.debug("第一层级");
                 if (property.contains("[") && property.endsWith("]")) {
                     return getMapValue(obj, property);
+                } else if (obj instanceof Map) {
+                    return ((Map<?, ?>) obj).get(property);
                 } else {
-                    Method method = getMethod(obj.getClass(), property, "get", null);
+                    Method method = getMethod(obj.getClass(), property, METHOD_TYPE_GET, null);
                     if (null == method) {
                         return null;
                     }
@@ -113,8 +137,11 @@ public class Clazz {
                     return method.invoke(obj);
                 }
             } else {
-                Method method = getMethod(obj.getClass(), vm[0], "get", null);
-                Object temp = method.invoke(obj);
+                log.debug("[{}]存在子层级[{}]", vm[0], property.substring(index + 1));
+                // Method method = getMethod(obj.getClass(), vm[0], METHOD_TYPE_GET, null);
+                // Object temp = method.invoke(obj);
+                Object temp = getValue(obj, vm[0]);
+                log.debug("[{}]存在子层级,[{}]", vm[0], temp == null ? "IS NULL" : temp.getClass());
                 return getValue(temp, property.substring(index + 1));
             }
         } catch (Exception e) {
@@ -130,7 +157,7 @@ public class Clazz {
         if (obj instanceof Map) {
             return ((Map<?, ?>) obj).get(key);
         } else if (obj instanceof List) {
-            System.out.println("is list");
+            return ((List) obj).get(Integer.parseInt(key));
         } else {
             String mapProperty = property.substring(0, property.indexOf("["));
             Method method = getMethod(obj.getClass(), mapProperty, "get", null);
@@ -138,10 +165,15 @@ public class Clazz {
                 return null;
             }
 
-            Object mapObj = method.invoke(obj);
-            if (mapObj instanceof Map) {
-                Map<?, ?> m = (Map<?, ?>) mapObj;
+            Object collectionObj = method.invoke(obj);
+            if (collectionObj instanceof Map) {
+                Map<?, ?> m = (Map<?, ?>) collectionObj;
                 return m.get(key);
+            } else if (collectionObj instanceof List) {
+                List<?> list = (List<?>) collectionObj;
+                if (list.size() > Integer.parseInt(key)) {
+                    return list.get(Integer.parseInt(key));
+                }
             }
         }
         return null;
@@ -238,5 +270,14 @@ public class Clazz {
         } else {
             return str;
         }
+    }
+
+    public static boolean haveField(Class<?> clazz, String fieldName) {
+        for (Field declaredField : clazz.getDeclaredFields()) {
+            if (declaredField.getName().equals(fieldName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

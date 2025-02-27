@@ -264,7 +264,7 @@ public class ExcelUtils {
      * @param obj   数据对象
      * @param value 值
      */
-    public static void setValue(Object obj, String fieldName, Object value, String pattern) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException {
+    public static void setValue(Object obj, String fieldName, Object value, String pattern) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         String title = String.format("属性[%s],值[%s]", fieldName, value);
         if (null == obj) {
             log.warn("{} 数据对象为空", title);
@@ -608,7 +608,7 @@ public class ExcelUtils {
      * @param obj        document对象
      * @param sheetFiled sheetData配置
      */
-    public static Object getSheetDataVo(Object obj, String sheetFiled) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    public static Object getSheetDataVo(Object obj, String sheetFiled) throws InvocationTargetException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException {
         if (StringUtils.isBlank(sheetFiled)) {
             return obj;
         }

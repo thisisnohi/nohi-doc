@@ -11,7 +11,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <poi-version>5.2.5</poi-version>
-    <itextpdf-version>8.0.4</itextpdf-version>
+    <itextpdf-version>9.1.0</itextpdf-version>
   </properties>
   <dependencies>
     <dependency>
@@ -41,9 +41,14 @@
     </dependency>
     <dependency>
       <groupId>com.itextpdf</groupId>
+      <artifactId>font-asian</artifactId>
+      <version>${itextpdf-version}</version>
+    </dependency>
+    <!--<dependency>
+      <groupId>com.itextpdf</groupId>
       <artifactId>pdftest</artifactId>
       <version>7.1.16</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
