@@ -67,7 +67,7 @@ public class Clazz {
      * @param parameterTypes 方法的参数
      */
     public static Method getMethod(Class<?> obj, String fieldName, String methodType, Class<?> parameterTypes, boolean fieldNotFoundException) {
-        String title = "获取对象[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法";
+        String title = "[" + obj + "]属性[" + fieldName + "][" + methodType + "]方法";
         if (!haveField(obj, fieldName)) {
             log.warn("{} 对象不存在属性[{}]", title, fieldName);
             if (fieldNotFoundException) {
@@ -123,7 +123,6 @@ public class Clazz {
             }
             // 没有层级
             if (index == -1) {
-                log.debug("第一层级");
                 if (property.contains("[") && property.endsWith("]")) {
                     return getMapValue(obj, property);
                 } else if (obj instanceof Map) {

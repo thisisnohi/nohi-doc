@@ -162,11 +162,19 @@ public class TestPDFExport {
         // 数据对象
         TestDocVO data = getData(10);
 
-        // 循环表单字段
+        /**
+         *  循环表单字段
+         *   // 根据表单域中字段，自动匹配数据对象中的字段，支持列表、map、嵌套对象
+         *   // pdf域字段         数据对象[TestDocVO]字段
+         *   // str1             str1
+         *   // innerObject.str1 innerObject.str1
+         *   // list[0].id       list
+         */
         form.getAllFormFields().forEach((item, field) -> {
+            field.setFont(font).setFontSize(10);
+
             Object value = Clazz.getValue(data, item, false);
             if (null != value) {
-                field.setFont(font).setFontSize(12);
                 if (value instanceof Date) {
                     field.setValue(DateUtils.format((Date) value, DateUtils.HYPHEN_TIME));
                 } else {
@@ -180,9 +188,12 @@ public class TestPDFExport {
 
         // 设置文本域
         form.getField("text1").setValue(text);
-        form.getField("text3").setValue(text);
+
+        // 长文本，自动换行，超过文本域高度的行，被自动隐藏
+        form.getField("text3").setValue(text.replaceAll("[\\r|\\n]", "    "));
         form.getField("text4").setValue(text);
 
+        // 设置图片
         PdfButtonFormField imageField = (PdfButtonFormField) form.getField("image1");
         String imFile = "src/test/resources/assert/images/sirref.png";
         imageField.setImage(imFile);
