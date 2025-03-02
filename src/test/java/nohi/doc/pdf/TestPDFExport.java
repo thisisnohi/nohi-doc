@@ -175,11 +175,14 @@ public class TestPDFExport {
 
             Object value = Clazz.getValue(data, item, false);
             if (null != value) {
+                log.debug("==> [{}] = {}", item, value.toString());
                 if (value instanceof Date) {
                     field.setValue(DateUtils.format((Date) value, DateUtils.HYPHEN_TIME));
                 } else {
                     field.setValue(value.toString());
                 }
+            } else {
+                field.setValue("");
             }
         });
         String projectPath = FileUtils.getProjectPath();
