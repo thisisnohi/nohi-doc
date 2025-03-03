@@ -10,6 +10,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import nohi.doc.excel.vo.InnerVO;
 import nohi.doc.excel.vo.TestDocVO;
@@ -83,7 +84,7 @@ public class TestPDFExport {
         pdf.close();
     }
 
-    private TestDocVO getData(int listSize) {
+    public static TestDocVO getData(int listSize) {
         TestDocVO data = new TestDocVO();
         data.setStr1("字符串");
         data.setStr2("12345678.90123");
@@ -209,13 +210,46 @@ public class TestPDFExport {
         pdf.close();
     }
 
-    @Test
-    public void testGetValue() {
-        // 数据对象
-        TestDocVO data = getData(10);
-        String item = "list[0]";
-        Object value = Clazz.getValue(data, item, false);
-        System.out.println("value:" + value);
 
+    class DataVo2025 {
+        private String flowNo;
+        private int int1;
+        private Integer integer1;
+        private String string1;
+        private Date date1;
+        private double double1;
+        private Double double2;
+        private BigDecimal big;
+        private Map<String, String> map;
+
+        // 内部对象
+        private DataVo2025InnerVO innerObject;
+
+        private int[] intArray;
+        private Integer[] integerArray;
+        private String[] stringArray;
+        private double[] db;
+        private Double[] doubleArray;
+        private BigDecimal[] bigDecimal;
+        private Date[] date;
+        private String[] code;
     }
+
+    @Data
+    class DataVo2025InnerVO {
+        private String innerString;
+        private int innerInt;
+        private Integer innerInteger;
+
+
+        private int id;
+        private Integer integer;
+        private String string;
+        private double double1;
+        private Double double2;
+        private BigDecimal bd;
+        private Date date;
+        private String code;
+    }
+
 }
