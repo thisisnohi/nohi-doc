@@ -1,6 +1,7 @@
 package nohi.doc.pdf;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.itextpdf.forms.PdfAcroForm;
 import com.itextpdf.forms.fields.PdfButtonFormField;
 import com.itextpdf.io.font.CjkResourceLoader;
@@ -17,6 +18,7 @@ import nohi.doc.excel.vo.TestDocVO;
 import nohi.doc.excel.vo.TestListVO;
 import nohi.utils.Clazz;
 import nohi.utils.DateUtils;
+import nohi.utils.DocCommonUtils;
 import nohi.utils.FileUtils;
 import org.junit.jupiter.api.Test;
 
@@ -211,7 +213,8 @@ public class TestPDFExport {
     }
 
 
-    class DataVo2025 {
+    @Data
+    public static class DataVo2025 {
         private String flowNo;
         private int int1;
         private Integer integer1;
@@ -230,13 +233,16 @@ public class TestPDFExport {
         private String[] stringArray;
         private double[] db;
         private Double[] doubleArray;
-        private BigDecimal[] bigDecimal;
+        private BigDecimal[] bigdecimal;
         private Date[] date;
         private String[] code;
+
+        // 列表
+        List<DataVo2025InnerVO> list = Lists.newLinkedList();
     }
 
     @Data
-    class DataVo2025InnerVO {
+    public static class DataVo2025InnerVO {
         private String innerString;
         private int innerInt;
         private Integer innerInteger;
@@ -250,6 +256,131 @@ public class TestPDFExport {
         private BigDecimal bd;
         private Date date;
         private String code;
+    }
+
+
+    public static DataVo2025 initDataVo2025() {
+        DataVo2025 dataVo2025 = new DataVo2025();
+        dataVo2025.setFlowNo(DocCommonUtils.getFlow());
+        dataVo2025.setInt1(10001);
+        dataVo2025.setInteger1(10002);
+        dataVo2025.setString1("this is String");
+        dataVo2025.setDate1(new Date());
+        dataVo2025.setDouble1(10003d);
+        dataVo2025.setDouble2(10004d);
+        dataVo2025.setBig(new BigDecimal(10005));
+        Map<String, String> map = Maps.newHashMap();
+        map.put("aaa", "aaa");
+        map.put("code", "中文");
+        dataVo2025.setMap(map);
+
+        DataVo2025InnerVO innerVO = new DataVo2025InnerVO();
+        dataVo2025.setInnerObject(innerVO);
+
+        innerVO.setInnerString("内部对象，字符串");
+        innerVO.setInnerInt(20006);
+        innerVO.setInnerInteger(20007);
+
+        int[] intArray = new int[10];
+        Integer[] integerArray = new Integer[10];
+        String[] stringArray = new String[10];
+        double[] dbArray = new double[10];
+        Double[] doublesArray = new Double[10];
+        BigDecimal[] bdArray = new BigDecimal[10];
+        Date[] dateArray = new Date[10];
+        String[] codeArray = new String[10];
+        for (int i = 0; i < 10; i++) {
+            intArray[i] = i + 20007;
+            integerArray[i] = i + 20008;
+            stringArray[i] = "字符串_" + i;
+            dbArray[i] = i + 20009;
+            doublesArray[i] = i + 20010D;
+            bdArray[i] = BigDecimal.valueOf(20010 + i);
+            dateArray[i] = DateUtils.addDays(new Date(), i);
+            codeArray[i] = String.valueOf(i);
+
+            DataVo2025InnerVO in = new DataVo2025InnerVO();
+            in.id = i + 1001;
+            in.integer = i + 1002;
+            in.string = "第_" + i;
+            in.double1 = i + 1003;
+            in.double2 = i + 1004d;
+            in.bd = BigDecimal.valueOf(i + 1005);
+            in.date = DateUtils.addDays(new Date(), i);
+            in.code = "0" + i;
+            dataVo2025.getList().add(in);
+        }
+        dataVo2025.setIntArray(intArray);
+        dataVo2025.setIntegerArray(integerArray);
+        dataVo2025.setStringArray(stringArray);
+        dataVo2025.setDb(dbArray);
+        dataVo2025.setDoubleArray(doublesArray);
+        dataVo2025.setDate(dateArray);
+        dataVo2025.setBigdecimal(bdArray);
+        dataVo2025.setCode(codeArray);
+
+        return dataVo2025;
+    }
+
+    /**
+     * 根据模板生成PDF文件
+     */
+    @Test
+    public void exportPdf2025() throws Exception {
+        DataVo2025 dataVo2025 = this.initDataVo2025();
+
+        String fileName = "template/pdf/pdf_template_20250225.pdf";
+        String outPutFileName = "PDF_2025_out.pdf";
+        // 1、创建一个PdfWriter对象，将文档写入到文件中
+        PdfReader reader = new PdfReader(fileName);
+        PdfWriter writer = new PdfWriter(outPutFileName);
+        // 2、初始化一个PdfDocument对象
+        PdfDocument pdf = new PdfDocument(reader, writer);
+        PdfAcroForm form = PdfAcroForm.getAcroForm(pdf, true);
+        // 创建字体
+        PdfFont font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_NOT_EMBEDDED);
+        pdf.addFont(font);
+
+        /**
+         *  循环表单字段
+         *   // 根据表单域中字段，自动匹配数据对象中的字段，支持列表、map、嵌套对象
+         *   // pdf域字段         数据对象[TestDocVO]字段
+         *   // str1             str1
+         *   // innerObject.str1 innerObject.str1
+         *   // list[0].id       list
+         */
+        form.getAllFormFields().forEach((item, field) -> {
+            field.setFont(font).setFontSize(10);
+
+            Object value = Clazz.getValue(dataVo2025, item, false);
+            if (null != value) {
+                log.debug("==> [{}] = {}", item, value);
+                if (value instanceof Date) {
+                    field.setValue(DateUtils.format((Date) value, DateUtils.HYPHEN_TIME));
+                } else {
+                    field.setValue(value.toString());
+                }
+            } else {
+                field.setValue("");
+            }
+        });
+        String projectPath = FileUtils.getProjectPath();
+        Path txt = Paths.get(projectPath, "src/test/java/nohi/doc/pdf/Text.txt");
+        String text = FileUtils.readStringFromPath(txt);
+
+        // 长文本，自动换行，超过文本域高度的行，被自动隐藏
+        form.getField("text").setValue(text.replaceAll("[\\r|\\n]", "    "));
+        // 设置图片
+        PdfButtonFormField imageField = (PdfButtonFormField) form.getField("image1");
+        String imFile = "src/test/resources/assert/images/sirref.png";
+        imageField.setImage(imFile);
+
+        imageField = (PdfButtonFormField) form.getField("image2");
+        imFile = "src/test/resources/assert/images/2.jpeg";
+        imageField.setImage(imFile);
+
+        form.flattenFields();
+        pdf.close();
     }
 
 }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import nohi.doc.service.impl.CodeMappingService;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -165,6 +166,10 @@ public class Clazz {
             }
 
             Object collectionObj = method.invoke(obj);
+            if (null == collectionObj) {
+                log.debug("[{}] [{}] 获取值为空", property, mapProperty);
+                return null;
+            }
             if (collectionObj instanceof Map) {
                 Map<?, ?> m = (Map<?, ?>) collectionObj;
                 return m.get(key);
@@ -172,6 +177,10 @@ public class Clazz {
                 List<?> list = (List<?>) collectionObj;
                 if (list.size() > Integer.parseInt(key)) {
                     return list.get(Integer.parseInt(key));
+                }
+            } else if (collectionObj.getClass().isArray()) {
+                if (Array.getLength(collectionObj) > Integer.parseInt(key)) {
+                    return Array.get(collectionObj, Integer.parseInt(key));
                 }
             }
         }

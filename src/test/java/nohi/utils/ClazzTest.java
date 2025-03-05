@@ -3,6 +3,7 @@ package nohi.utils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import nohi.doc.pdf.TestPDFExport;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -112,6 +113,20 @@ class ClazzTest {
         filed = "list[0].map[bd]";
         value = Clazz.getValue(dataVo, filed, false);
         log.debug("list[0].map[bd]:{}", value);
+
+    }
+
+    @Test
+    void getValueList() {
+        TestPDFExport.DataVo2025 dataVo = TestPDFExport.initDataVo2025();
+        List<DataVo> list = new ArrayList<>();
+        String filed = "intArray[0]";
+        Object value = Clazz.getValue(dataVo, filed, false);
+        log.debug("intArray[0]:{}", value);
+
+        filed = "list[0].innerInt";
+        value = Clazz.getValue(dataVo, filed, false);
+        log.debug("list[0].innerInt:{}", value);
 
     }
 }
