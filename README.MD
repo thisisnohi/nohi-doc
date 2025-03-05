@@ -70,7 +70,7 @@
      <img src="./docs/asserts/images/pdf_reader_pro.png" width = "300" height = "200" alt="图片名称" align=center />
   
 * Java代码
-> `TestPDFExport.exportPdf2024`
+> `TestPDFExport.exportPdf2024 exportPdf2025`
 ```java
 @Test
 public void exportPdf2024() throws Exception {
@@ -116,6 +116,7 @@ public void exportPdf2024() throws Exception {
   form.getField("text1").setValue(text);
 
   // 长文本，自动换行，超过文本域高度的行，被自动隐藏
+  // pdf的文本域需要设置成自动换行
   form.getField("text3").setValue(text.replaceAll("[\\r|\\n]", "    "));
   form.getField("text4").setValue(text);
 
@@ -132,3 +133,8 @@ public void exportPdf2024() throws Exception {
   pdf.close();
 }
 ```
+* 导出效果`pdf_template_20250225`
+
+  <img src="./docs/asserts/images/pdf_template_20250225.png" width = "300" height = "200" alt="图片名称" align=center />
+  <img src="./docs/asserts/images/PDF_template_2024.png" width = "300" height = "200" alt="图片名称" align=center />
+  <img src="./docs/asserts/images/pdf_template_out.png" width = "300" height = "200" alt="图片名称" align=center />
