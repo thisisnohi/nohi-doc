@@ -256,6 +256,9 @@ public class TestPDFExport {
         private BigDecimal bd;
         private Date date;
         private String code;
+
+        // map
+        private Map<String, String> map = Maps.newLinkedHashMap();
     }
 
 
@@ -309,6 +312,8 @@ public class TestPDFExport {
             in.date = DateUtils.addDays(new Date(), i);
             in.code = "0" + i;
             dataVo2025.getList().add(in);
+
+            in.getMap().put("abc", "这是啥啊");
         }
         dataVo2025.setIntArray(intArray);
         dataVo2025.setIntegerArray(integerArray);

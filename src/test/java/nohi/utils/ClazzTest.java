@@ -128,5 +128,8 @@ class ClazzTest {
         value = Clazz.getValue(dataVo, filed, false);
         log.debug("list[0].innerInt:{}", value);
 
+        filed = "list[0].map[abc]";
+        value = Clazz.getValue(dataVo, filed, false);
+        log.debug("list[0].map[abc]:{}", value);
     }
 }
