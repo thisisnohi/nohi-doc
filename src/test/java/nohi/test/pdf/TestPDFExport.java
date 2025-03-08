@@ -1,4 +1,4 @@
-package nohi.doc.pdf;
+package nohi.test.pdf;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -189,7 +189,7 @@ public class TestPDFExport {
             }
         });
         String projectPath = FileUtils.getProjectPath();
-        Path txt = Paths.get(projectPath, "src/test/java/nohi/doc/pdf/Text.txt");
+        Path txt = Paths.get(projectPath, "src/test/java/nohi/test/pdf/Text.txt");
         String text = FileUtils.readStringFromPath(txt);
 
         // 设置文本域
@@ -370,7 +370,7 @@ public class TestPDFExport {
             }
         });
         String projectPath = FileUtils.getProjectPath();
-        Path txt = Paths.get(projectPath, "src/test/java/nohi/doc/pdf/Text.txt");
+        Path txt = Paths.get(projectPath, "src/test/java/nohi/test/pdf/Text.txt");
         String text = FileUtils.readStringFromPath(txt);
 
         // 长文本，自动换行，超过文本域高度的行，被自动隐藏

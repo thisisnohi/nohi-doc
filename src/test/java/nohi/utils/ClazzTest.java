@@ -3,7 +3,7 @@ package nohi.utils;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import nohi.doc.pdf.TestPDFExport;
+import nohi.test.pdf.TestPDFExport;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
