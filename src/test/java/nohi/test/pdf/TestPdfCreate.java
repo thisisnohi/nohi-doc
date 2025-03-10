@@ -1,15 +1,16 @@
 package nohi.test.pdf;
 
 
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.AreaBreak;
-import com.itextpdf.layout.element.List;
-import com.itextpdf.layout.element.ListItem;
-import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -148,15 +149,36 @@ public class TestPdfCreate {
         list.add("二四六八十");
         list.add("OpenCV");
 
-        list.add(new ListItem("Never gonna give you up"))
-                .add(new ListItem("一三五七九"))
-                .add(new ListItem("Never gonna let you down"))
-                .add(new ListItem("Never gonna run around and desert you"))
-                .add(new ListItem("Never gonna make you cry"))
-                .add(new ListItem("Never gonna say goodbye"))
-                .add(new ListItem("Never gonna tell a lie and hurt you"));
+        list.add(new ListItem("Never gonna give you up")).add(new ListItem("一三五七九")).add(new ListItem("Never gonna let you down")).add(new ListItem("Never gonna run around and desert you")).add(new ListItem("Never gonna make you cry")).add(new ListItem("Never gonna say goodbye")).add(new ListItem("Never gonna tell a lie and hurt you"));
 
         document.add(list);
+
+        // 表格
+        // Creating a table
+        float[] pointColumnWidths = {150F, 150F, 150F};
+        Table table = new Table(pointColumnWidths);
+        table.setWidth(UnitValue.createPercentValue(100));
+        table.setFont(font);
+
+        Cell c1 = new Cell();                        // Creating cell 1
+        c1.add(new Paragraph("Name"));                              // Adding name to cell 1
+        c1.setBackgroundColor(ColorConstants.ORANGE);      // Setting background color
+        c1.setBorder(Border.NO_BORDER);              // Setting border
+        c1.setTextAlignment(TextAlignment.CENTER);   // Setting text alignment
+
+        table.addHeaderCell(c1);
+        table.addHeaderCell("ID");
+        table.addHeaderCell("年龄");
+
+        table.addCell("张三");
+        table.addCell("10001");
+        table.addCell("18");
+        table.addCell("李四");
+        table.addCell("1002");
+        table.addCell("19");
+
+        // Adding Table to document
+        document.add(table);
 
         // 5、Closing the document
         document.close();
