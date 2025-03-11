@@ -1,13 +1,16 @@
 package nohi.test.pdf;
 
 
+import com.itextpdf.forms.fields.PdfButtonFormField;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -163,22 +166,120 @@ public class TestPdfCreate {
         Cell c1 = new Cell();                        // Creating cell 1
         c1.add(new Paragraph("Name"));                              // Adding name to cell 1
         c1.setBackgroundColor(ColorConstants.ORANGE);      // Setting background color
+        // 无边框
         c1.setBorder(Border.NO_BORDER);              // Setting border
+        // 红色边框
+        Border b1 = new DashedBorder(ColorConstants.RED, 1);
+        c1.setBorder(b1);
         c1.setTextAlignment(TextAlignment.CENTER);   // Setting text alignment
 
         table.addHeaderCell(c1);
-        table.addHeaderCell("ID");
-        table.addHeaderCell("年龄");
 
-        table.addCell("张三");
-        table.addCell("10001");
-        table.addCell("18");
+        Cell c2 = new Cell();
+        c2.add(new Paragraph("ID"));
+        c2.setBorder(new SolidBorder(ColorConstants.RED, 1));
+        c2.setTextAlignment(TextAlignment.CENTER);
+        table.addHeaderCell(c2);
+
+        Cell c3 = new Cell();
+        c3.add(new Paragraph("年龄"));
+        c3.setBorder(new DottedBorder(ColorConstants.DARK_GRAY, 3));
+        c3.setTextAlignment(TextAlignment.CENTER);
+        table.addHeaderCell(c3);
+
+        Cell c4 = new Cell();
+        c4.add(new Paragraph("张三"));
+        c4.setBorder(new DoubleBorder(ColorConstants.DARK_GRAY, 3));
+        c4.setTextAlignment(TextAlignment.CENTER);
+        table.addCell(c4);
+
+        Cell c5 = new Cell();
+        c5.add(new Paragraph("10001"));
+        c5.setBorder(new RoundDotsBorder(ColorConstants.RED, 3));
+        c5.setTextAlignment(TextAlignment.CENTER);
+        table.addCell(c5);
+
+        Cell c6 = new Cell();
+        c6.add(new Paragraph("18"));
+        c6.setBorder(new RoundDotsBorder(ColorConstants.RED, 3));
+        c6.setTextAlignment(TextAlignment.CENTER);
+        table.addCell(c6);
+
+        /** 添加图片 **/
+        String imFile = "src/test/resources/assert/images/sirref.png";
+        ImageData data = ImageDataFactory.create(imFile);
+        Image img = new Image(data);
+        table.addCell(img.setAutoScale(true));
+
+        /** 嵌套表 **/
+        // Creating nested table for contact
+        float [] pointColumnWidths2 = {150f, 150f};
+        Table nestedTable = new Table(pointColumnWidths2);
+
+        // Populating row 1 and adding it to the nested table
+        Cell nested1 = new Cell();
+        nested1.add(new Paragraph("Phone"));
+        nestedTable.addCell(nested1);
+
+        Cell nested2 = new Cell();
+        nested2.add(new Paragraph("9848022338"));
+        nestedTable.addCell(nested2);
+
+        // Populating row 2 and adding it to the nested table
+        Cell nested3 = new Cell();
+        nested3.add(new Paragraph("email"));
+        nestedTable.addCell(nested3);
+
+        Cell nested4 = new Cell();
+        nested4.add(new Paragraph("Raju123@gmail.com"));
+        nestedTable.addCell(nested4);
+
+        // Populating row 3 and adding it to the nested table
+        Cell nested5 = new Cell();
+        nested5.add(new Paragraph("Address"));
+        nestedTable.addCell(nested5);
+
+        Cell nested6 = new Cell();
+        nested6.add(new Paragraph("Hyderabad"));
+        nestedTable.addCell(nested6);
+
+        table.addCell("联系人：");
+        // 嵌套表
+        table.addCell(nestedTable);
+
         table.addCell("李四");
         table.addCell("1002");
         table.addCell("19");
 
+        /** 列表 **/
+        List list1 = new List();
+        ListItem item1 = new ListItem("JavaFX");
+        ListItem item2 = new ListItem("Java");
+        ListItem item3 = new ListItem("Java Servlets");
+        list1.add(item1);
+        list1.add(item2);
+        list1.add(item3);
+
+        table.addCell(list1);
+
+
+        table.addCell("1003");
+        table.addCell("20");
+
         // Adding Table to document
         document.add(table);
+
+        /** 图像 **/
+        imFile = "src/test/resources/assert/images/sirref.png";
+        data = ImageDataFactory.create(imFile);
+        img = new Image(data);
+        // 设置位置
+        img.setFixedPosition(0, 400);
+        img.setWidth(0.1f);
+        img.setHeight(0.1f);
+//        img.setAutoScale(true);
+        img.setRotationAngle(45);
+        document.add(img);
 
         // 5、Closing the document
         document.close();
