@@ -7,8 +7,15 @@ import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfString;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.action.PdfAction;
+import com.itextpdf.kernel.pdf.annot.PdfAnnotation;
+import com.itextpdf.kernel.pdf.annot.PdfLinkAnnotation;
+import com.itextpdf.kernel.pdf.annot.PdfTextAnnotation;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
@@ -127,9 +134,10 @@ public class TestPdfCreate {
 
         // 2、Creating a PdfDocument
         PdfDocument pdfDoc = new PdfDocument(writer);
-
+        PdfPage page = pdfDoc.addNewPage();
         // 3、Creating a Document
         Document document = new Document(pdfDoc);
+
 
         PdfFont font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_NOT_EMBEDDED);
 
@@ -280,6 +288,27 @@ public class TestPdfCreate {
 //        img.setAutoScale(true);
         img.setRotationAngle(45);
         document.add(img);
+
+        /** 文本注释 **/
+        Rectangle rect = new Rectangle(20,800,0,0);
+        PdfAnnotation annotation = new PdfTextAnnotation(rect);
+        annotation.setColor(ColorConstants.RED);
+        annotation.setTitle(new PdfString("Hello World"));
+        annotation.setContents("Hi 你好，又是一个新的开始...");
+
+        page.addAnnotation(annotation);
+
+        /** 链接注释 **/
+        Rectangle rect2 = new Rectangle(0,0);
+        PdfLinkAnnotation linkAnn = new PdfLinkAnnotation(rect2);
+        PdfAction action = PdfAction.createURI("https://nohi.online");
+        linkAnn.setAction(action);
+        Link link = new Link("Click here", linkAnn);
+
+        Paragraph paragraph = new Paragraph("Hi welcome to NOHI online");
+        paragraph.add(link.setUnderline());
+
+        document.add(paragraph);
 
         // 5、Closing the document
         document.close();
