@@ -1,7 +1,7 @@
 package nohi.test.pdf;
 
 
-import com.itextpdf.forms.fields.PdfButtonFormField;
+import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -13,9 +13,7 @@ import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfString;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
-import com.itextpdf.kernel.pdf.annot.PdfAnnotation;
-import com.itextpdf.kernel.pdf.annot.PdfLinkAnnotation;
-import com.itextpdf.kernel.pdf.annot.PdfTextAnnotation;
+import com.itextpdf.kernel.pdf.annot.*;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
@@ -132,14 +130,16 @@ public class TestPdfCreate {
         String dest = "itext_02_paragraph.pdf";
         PdfWriter writer = new PdfWriter(dest);
 
+        PdfFont font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_NOT_EMBEDDED);
+
         // 2、Creating a PdfDocument
         PdfDocument pdfDoc = new PdfDocument(writer);
+        pdfDoc.addFont(font);
         PdfPage page = pdfDoc.addNewPage();
         // 3、Creating a Document
         Document document = new Document(pdfDoc);
 
 
-        PdfFont font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H", PdfFontFactory.EmbeddingStrategy.PREFER_NOT_EMBEDDED);
 
         String para1 = "Tutorials  这里有中文 Point originated from the idea that there exists a class of readers who respond better to online content and prefer to learn new skills at their own pace from the comforts of their drawing rooms.";
         String para2 = "The journey 这里有中文 commenced with a single tutorial on HTML in 2006  and elated by the response it generated, we worked our way to adding fresh tutorials to our repository which now proudly flaunts a wealth of tutorials and allied articles on topics ranging from programming languages to web designing to academics and much more.";
@@ -221,7 +221,7 @@ public class TestPdfCreate {
 
         /** 嵌套表 **/
         // Creating nested table for contact
-        float [] pointColumnWidths2 = {150f, 150f};
+        float[] pointColumnWidths2 = {150f, 150f};
         Table nestedTable = new Table(pointColumnWidths2);
 
         // Populating row 1 and adding it to the nested table
@@ -290,16 +290,15 @@ public class TestPdfCreate {
         document.add(img);
 
         /** 文本注释 **/
-        Rectangle rect = new Rectangle(20,800,0,0);
+        Rectangle rect = new Rectangle(20, 800, 0, 0);
         PdfAnnotation annotation = new PdfTextAnnotation(rect);
         annotation.setColor(ColorConstants.RED);
         annotation.setTitle(new PdfString("Hello World"));
         annotation.setContents("Hi 你好，又是一个新的开始...");
-
         page.addAnnotation(annotation);
 
         /** 链接注释 **/
-        Rectangle rect2 = new Rectangle(0,0);
+        Rectangle rect2 = new Rectangle(0, 0);
         PdfLinkAnnotation linkAnn = new PdfLinkAnnotation(rect2);
         PdfAction action = PdfAction.createURI("https://nohi.online");
         linkAnn.setAction(action);
@@ -309,6 +308,36 @@ public class TestPdfCreate {
         paragraph.add(link.setUnderline());
 
         document.add(paragraph);
+
+        /**  创建线注释  **/
+        Rectangle rect3 = new Rectangle(0, 0);
+        float[] floatArray  = new float[]{
+                20, 700, page.getPageSize().getWidth() - 20, 700
+        };
+        annotation = new PdfLineAnnotation(rect3, floatArray);
+        annotation.setColor(ColorConstants.BLUE);
+        annotation.setTitle(new PdfString("Hello 创建线注释", PdfEncodings.UNICODE_BIG));
+        annotation.setContents("Hi welcome to NOHI 创建线注释");
+        page.addAnnotation(annotation);
+
+        /** 标记注释 **/
+        rect = new Rectangle(105, 790, 64, 10);
+        floatArray = new float[]{169, 790, 105, 790, 169, 800, 105, 800};
+        annotation = PdfTextMarkupAnnotation.createHighLight(rect,floatArray);
+        annotation.setColor(ColorConstants.YELLOW);
+        annotation.setTitle(new PdfString("Hello 标记注释!", PdfEncodings.UNICODE_BIG));
+        annotation.setContents(new PdfString("Hi welcome to 标记注释", PdfEncodings.UNICODE_BIG));
+        page.addAnnotation(annotation);
+
+        /** 圆形注释 **/
+        rect = new Rectangle(200, 750, 50, 50);
+        annotation = new PdfCircleAnnotation(rect);
+        annotation.setColor(ColorConstants.GREEN);
+        annotation.setTitle(new PdfString("Hello 圆形注释!", PdfEncodings.UNICODE_BIG));
+        annotation.setContents(new PdfString("Hi welcome to 圆形注释", PdfEncodings.UNICODE_BIG));
+        page.addAnnotation(annotation);
+
+
 
         // 5、Closing the document
         document.close();

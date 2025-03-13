@@ -29,3 +29,9 @@
 * 编辑`pdf_template_20250225.pdf`
   * 增加图标、长文本域、图片
   * 修改列表2为list对象
+## 20250313
+* itext9 注释中文乱码
+  使用`PdfEncodings.UNICODE_BIG`
+  `annotation.setTitle(new PdfString("Hello 创建线注释", PdfEncodings.UNICODE_BIG));`
+
+  
