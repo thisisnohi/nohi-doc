@@ -14,6 +14,8 @@ import com.itextpdf.kernel.pdf.PdfString;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.kernel.pdf.annot.*;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
@@ -338,6 +340,11 @@ public class TestPdfCreate {
         page.addAnnotation(annotation);
 
 
+        page = pdfDoc.addNewPage();
+        /** 绘制圆弧 **/
+        PdfCanvas canvas = new PdfCanvas(page);
+        canvas.arc(50, 50, 300, 545, 0, 360);
+        canvas.fill();
 
         // 5、Closing the document
         document.close();
