@@ -5,6 +5,7 @@ import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.Rectangle;
@@ -15,7 +16,6 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.kernel.pdf.annot.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
-import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
@@ -140,7 +140,6 @@ public class TestPdfCreate {
         PdfPage page = pdfDoc.addNewPage();
         // 3、Creating a Document
         Document document = new Document(pdfDoc);
-
 
 
         String para1 = "Tutorials  这里有中文 Point originated from the idea that there exists a class of readers who respond better to online content and prefer to learn new skills at their own pace from the comforts of their drawing rooms.";
@@ -313,7 +312,7 @@ public class TestPdfCreate {
 
         /**  创建线注释  **/
         Rectangle rect3 = new Rectangle(0, 0);
-        float[] floatArray  = new float[]{
+        float[] floatArray = new float[]{
                 20, 700, page.getPageSize().getWidth() - 20, 700
         };
         annotation = new PdfLineAnnotation(rect3, floatArray);
@@ -325,7 +324,7 @@ public class TestPdfCreate {
         /** 标记注释 **/
         rect = new Rectangle(105, 790, 64, 10);
         floatArray = new float[]{169, 790, 105, 790, 169, 800, 105, 800};
-        annotation = PdfTextMarkupAnnotation.createHighLight(rect,floatArray);
+        annotation = PdfTextMarkupAnnotation.createHighLight(rect, floatArray);
         annotation.setColor(ColorConstants.YELLOW);
         annotation.setTitle(new PdfString("Hello 标记注释!", PdfEncodings.UNICODE_BIG));
         annotation.setContents(new PdfString("Hi welcome to 标记注释", PdfEncodings.UNICODE_BIG));
@@ -339,12 +338,79 @@ public class TestPdfCreate {
         annotation.setContents(new PdfString("Hi welcome to 圆形注释", PdfEncodings.UNICODE_BIG));
         page.addAnnotation(annotation);
 
-
+        // 添加新的页
         page = pdfDoc.addNewPage();
         /** 绘制圆弧 **/
         PdfCanvas canvas = new PdfCanvas(page);
-        canvas.arc(50, 50, 300, 545, 0, 360);
+        canvas.arc(50, 750, 150, 800, 0, 100);
         canvas.fill();
+
+        /** 在PDF上画线 **/
+        // 参考：https://www.cnblogs.com/antLaddie/p/18263491
+        canvas = new PdfCanvas(page);
+        // 画直线（普通）
+        canvas.saveState()
+                .moveTo(50, 600)   // 将画笔移到指定位置
+                .setLineWidth(2)          // 线粗
+                .setStrokeColor(new DeviceRgb(255, 0, 0)) // 描边颜色
+                .lineTo(50, 700)   // 画笔在画布上绘制线到指定位置
+                .stroke().restoreState();
+
+        canvas.moveTo(50, 600)
+                .setLineWidth(2)
+                .setStrokeColor(ColorConstants.ORANGE)
+                .lineTo(300, 600)
+                        .stroke();
+
+        canvas.setColor(ColorConstants.BLUE, true);
+        canvas.circle(300, 600, 10);
+
+        canvas.fill();
+
+
+        // 通过PDF页来构建画布
+        PdfCanvas pdfCanvas = new PdfCanvas(page);
+        // 画直线（普通）
+        pdfCanvas.saveState()
+                .moveTo(50, 50)   // 将画笔移到指定位置
+                .setLineWidth(2)          // 线粗
+                .setStrokeColor(new DeviceRgb(255, 0, 0)) // 描边颜色
+                .lineTo(100, 100)   // 画笔在画布上绘制线到指定位置
+                .stroke().restoreState();
+        // 使用画布线条画一个 "L"
+        pdfCanvas.saveState()
+                .moveTo(120, 100)   // 从这个点开始下笔
+                .lineTo(120, 50)    // 画 |
+                .lineTo(150, 50)    // 画 ——
+                .setStrokeColor(new DeviceRgb(255, 0, 255))
+                .stroke().restoreState();
+        // 使用画布线条画一个 "▲"（填充已闭合）
+        pdfCanvas.saveState()
+                .moveTo(200, 50)     // 从这个点开始下笔
+                .setLineWidth(5)     // 设置线粗5磅
+                .lineTo(225, 100)    // 画 /
+                .lineTo(250, 50)     // 画 \
+                // .lineTo(200, 50)     // 画 ——
+                // 最后的 "——" 可以不用画，让closePath()帮我们关闭路径
+                .closePath()            //  关闭路径（结束点连向开始点）
+                .setStrokeColor(new DeviceRgb(0, 0, 255)) // 线条颜色
+                .setFillColor(new DeviceRgb(255, 0, 0))   // 设置填充色
+                .closePathFillStroke()     // 设置路径闭合及轮廓和填充（那些路径属性必须在闭合前设置完）
+                .stroke().restoreState();
+        // 使用画布线条画一个 "▲"（填充未闭合）
+        pdfCanvas.saveState()
+                .moveTo(400, 50)     // 从这个点开始下笔
+                .setLineWidth(5)     // 设置线粗5磅
+                .lineTo(425, 100)    // 画 /
+                .lineTo(450, 50)     // 画 \
+                .lineTo(400, 50)     // 画 ——
+                .setStrokeColor(new DeviceRgb(0, 0, 255))   // 线条颜色
+                .setFillColor(new DeviceRgb(255, 0, 0))     // 设置填充色
+                .fillStroke()     // 设置路径轮廓及填充（那些路径属性必须在闭合前设置完）
+                .stroke().restoreState();
+        // 释放画布。使用完画布后，请使用此方法。
+        pdfCanvas.release();
+
 
         // 5、Closing the document
         document.close();

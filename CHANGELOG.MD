@@ -34,4 +34,8 @@
   使用`PdfEncodings.UNICODE_BIG`
   `annotation.setTitle(new PdfString("Hello 创建线注释", PdfEncodings.UNICODE_BIG));`
 
+## 20250316
+* pdf画图
+  > 参考：https://www.cnblogs.com/antLaddie/p/18263491
+
   
