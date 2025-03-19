@@ -16,11 +16,14 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.action.PdfAction;
 import com.itextpdf.kernel.pdf.annot.*;
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.kernel.pdf.extgstate.PdfExtGState;
+import com.itextpdf.layout.Canvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.*;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -312,9 +315,7 @@ public class TestPdfCreate {
 
         /**  创建线注释  **/
         Rectangle rect3 = new Rectangle(0, 0);
-        float[] floatArray = new float[]{
-                20, 700, page.getPageSize().getWidth() - 20, 700
-        };
+        float[] floatArray = new float[]{20, 700, page.getPageSize().getWidth() - 20, 700};
         annotation = new PdfLineAnnotation(rect3, floatArray);
         annotation.setColor(ColorConstants.BLUE);
         annotation.setTitle(new PdfString("Hello 创建线注释", PdfEncodings.UNICODE_BIG));
@@ -349,18 +350,13 @@ public class TestPdfCreate {
         // 参考：https://www.cnblogs.com/antLaddie/p/18263491
         canvas = new PdfCanvas(page);
         // 画直线（普通）
-        canvas.saveState()
-                .moveTo(50, 600)   // 将画笔移到指定位置
+        canvas.saveState().moveTo(50, 600)   // 将画笔移到指定位置
                 .setLineWidth(2)          // 线粗
                 .setStrokeColor(new DeviceRgb(255, 0, 0)) // 描边颜色
                 .lineTo(50, 700)   // 画笔在画布上绘制线到指定位置
                 .stroke().restoreState();
 
-        canvas.moveTo(50, 600)
-                .setLineWidth(2)
-                .setStrokeColor(ColorConstants.ORANGE)
-                .lineTo(300, 600)
-                        .stroke();
+        canvas.moveTo(50, 600).setLineWidth(2).setStrokeColor(ColorConstants.ORANGE).lineTo(300, 600).stroke();
 
         canvas.setColor(ColorConstants.BLUE, true);
         canvas.circle(300, 600, 10);
@@ -371,22 +367,18 @@ public class TestPdfCreate {
         // 通过PDF页来构建画布
         PdfCanvas pdfCanvas = new PdfCanvas(page);
         // 画直线（普通）
-        pdfCanvas.saveState()
-                .moveTo(50, 50)   // 将画笔移到指定位置
+        pdfCanvas.saveState().moveTo(50, 50)   // 将画笔移到指定位置
                 .setLineWidth(2)          // 线粗
                 .setStrokeColor(new DeviceRgb(255, 0, 0)) // 描边颜色
                 .lineTo(100, 100)   // 画笔在画布上绘制线到指定位置
                 .stroke().restoreState();
         // 使用画布线条画一个 "L"
-        pdfCanvas.saveState()
-                .moveTo(120, 100)   // 从这个点开始下笔
+        pdfCanvas.saveState().moveTo(120, 100)   // 从这个点开始下笔
                 .lineTo(120, 50)    // 画 |
                 .lineTo(150, 50)    // 画 ——
-                .setStrokeColor(new DeviceRgb(255, 0, 255))
-                .stroke().restoreState();
+                .setStrokeColor(new DeviceRgb(255, 0, 255)).stroke().restoreState();
         // 使用画布线条画一个 "▲"（填充已闭合）
-        pdfCanvas.saveState()
-                .moveTo(200, 50)     // 从这个点开始下笔
+        pdfCanvas.saveState().moveTo(200, 50)     // 从这个点开始下笔
                 .setLineWidth(5)     // 设置线粗5磅
                 .lineTo(225, 100)    // 画 /
                 .lineTo(250, 50)     // 画 \
@@ -398,8 +390,7 @@ public class TestPdfCreate {
                 .closePathFillStroke()     // 设置路径闭合及轮廓和填充（那些路径属性必须在闭合前设置完）
                 .stroke().restoreState();
         // 使用画布线条画一个 "▲"（填充未闭合）
-        pdfCanvas.saveState()
-                .moveTo(400, 50)     // 从这个点开始下笔
+        pdfCanvas.saveState().moveTo(400, 50)     // 从这个点开始下笔
                 .setLineWidth(5)     // 设置线粗5磅
                 .lineTo(425, 100)    // 画 /
                 .lineTo(450, 50)     // 画 \
@@ -410,6 +401,63 @@ public class TestPdfCreate {
                 .stroke().restoreState();
         // 释放画布。使用完画布后，请使用此方法。
         pdfCanvas.release();
+
+
+        /** 水印 **/
+        //水印文本
+        String text = "Abcdefg 这里是中文";
+        // 文字大小
+        int size = 32;
+        // 水印旋转的角度
+        float angle = (float) Math.toRadians(45);
+        // 段落
+        Paragraph waterMarkParagraph = new Paragraph(text).setFont(font).setFontSize(size);
+        // 图形状态参数
+        PdfExtGState gs = new PdfExtGState();
+        // 水印自身透明度的设置
+        gs.setFillOpacity(0.1f);
+        // 可以循环每一页设置
+        // for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
+        PdfPage waterMarkPage = pdfDoc.getPage(1);
+        Rectangle pageRectangle = waterMarkPage.getPageSize();
+
+        PdfCanvas over = new PdfCanvas(waterMarkPage);
+        over.setFillColor(ColorConstants.BLACK);
+        over.setExtGState(gs);
+        // Rectangle waterMarkRect = new Rectangle(20, 800, 0, 0);
+        Canvas waterMarkCanvas = new Canvas(over, pageRectangle)
+                .showTextAligned(waterMarkParagraph,
+                        pageRectangle.getWidth() / 2,
+                        pageRectangle.getHeight() / 2, 1,
+                        TextAlignment.CENTER, VerticalAlignment.MIDDLE, angle);
+        waterMarkCanvas.close();
+        // }
+
+        /** 满屏水印 **/
+        // 文本宽度(用于计算间隔)
+        text = "Suc 满城江水";
+        waterMarkParagraph = new Paragraph(text).setFont(font).setFontSize(size);
+        waterMarkPage = pdfDoc.getPage(2);
+        float textWidth = font.getWidth(text, size);
+        // 用正弦定理计算出水印高度
+        float labelHeight = (float) Math.sin(angle) * textWidth;
+        // 用勾股计算出旋转后的水印宽度
+        float labelWidth = (float) Math.sqrt(Math.pow(textWidth, 2) - Math.pow(labelHeight, 2));
+        over = new PdfCanvas(waterMarkPage);
+        over.setFillColor(ColorConstants.BLACK);
+        over.setExtGState(gs);
+        for (int x = 0; x < pageRectangle.getWidth() / labelWidth; x++) {
+            for (int y = 0; y < pageRectangle.getHeight() / labelHeight; y++) {
+                float pX = x * labelWidth * 1.1f;
+                float pY = y * labelHeight * 1.1f;
+                Canvas canvas1 = new Canvas(over, pageRectangle);
+                canvas1.showTextAligned(waterMarkParagraph,
+                        pX, pY, 1,
+                        TextAlignment.CENTER, VerticalAlignment.MIDDLE,
+                        angle);
+                canvas1.close();
+            }
+        }
 
 
         // 5、Closing the document
