@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<head>
+  <title>
+  </title>
+</head>
+<style type="text/css">
+
+    p {
+        margin: 0px;
+    }
+
+    .report {
+        width: 679px;
+        margin: 0 auto;
+        font-family: 'microsoft yahei';
+        color: #333333;
+        font-size: 16px;
+    }
+
+    .head {
+        height: 80px;
+        line-height: 80px;
+        background: #4384FE;
+        color: #fff;
+        /* text-align: center; */
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .head .main_head {
+        font-family: "youshebiaotihei";
+        margin-top: -10px;
+        font-size: 39px;
+    }
+
+    .head span {
+        display: inline-block;
+    }
+
+    .head .report_time {
+        height: 100%;
+        padding-top: 20px;
+        padding-right: 15px;
+        box-sizing: border-box;
+        font-size: 12px;
+    }
+
+    .small_head {
+        margin-top: 18px;
+        height: 20px;
+        line-height: 14px;
+    }
+
+    .small_head .treetop {
+        display: block;
+        font-style: normal;
+        width: 3px;
+        height: 16px;
+        background: #4384FE;
+        margin-right: 5px;
+        float: left;
+    }
+
+    .small_head span {
+        display: block;
+        height: 16px;
+    }
+
+    .bg {
+        background: #F8FAFC;
+        margin-top: 9px;
+    }
+
+    .custom_content {
+        height: 102px;
+    }
+
+    .custom_content .first_storey {
+        height: 100%;
+        padding-top: 14px;
+        padding-left: 9px;
+        box-sizing: border-box;
+    }
+
+    .custom_content .second_storey {
+        height: 100%;
+        padding-top: 14px;
+    }
+
+    .custom_content .second_storey img {
+        width: 155px;
+        height: 41px;
+        margin-right: -4px;
+    }
+
+    .examine_content {
+        height: 87px;
+    }
+
+    .examine_content div {
+        width: 50%;
+    }
+
+    .examine_content .left_01 {
+        margin-top: 14px;
+        padding-left: 9px;
+        box-sizing: border-box;
+    }
+
+    .examine_content .left_01 span {
+        display: block;
+    }
+
+    .examine_content .left_01 span:nth-child(2) {
+        margin-top: 24px;
+    }
+
+    .examine_content .right_01 {
+        line-height: 87px;
+    }
+
+    .examine_content .right_01 span {
+        display: inline-block;
+        color: #08CA85;
+        font-size: 25px;
+    }
+
+    .unified-format {
+        height: 40px;
+    }
+
+    .unified-format .left_01 {
+        margin-top: 16px;
+        padding-left: 10px;
+        box-sizing: border-box;
+    }
+
+    .unified-format .left_01 span {
+        display: block;
+        width: 33%;
+        height: 40px;
+        line-height: 40px;
+    }
+
+    .judicial-content {
+        height: 70px;
+        margin: 0 auto;
+        margin-top: 9px;
+        padding-top: 8px;
+        padding-left: 8px;
+        box-sizing: border-box;
+    }
+
+    .judicial-content div {
+        float: left;
+    }
+
+    .judicial-content div span:nth-child(1) {
+        display: block;
+        width: 130px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 2px;
+        color: #fff;
+        background: linear-gradient(180deg, #7FA1FF 0%, #4384FE 100%);
+        margin-right: 4px;
+        text-align: center;
+    }
+
+
+    .judicial-content div span:nth-child(2) {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 9px 0px;
+    }
+
+    .phone-content {
+        height: 70px;
+        margin: 0 auto;
+        margin-top: 9px;
+        padding-top: 8px;
+        padding-left: 8px;
+        box-sizing: border-box;
+    }
+
+    .phone-content div {
+        float: left;
+    }
+
+    .phone-content div span:nth-child(1) {
+        display: block;
+        width: 164px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 2px;
+        color: #fff;
+        background: linear-gradient(180deg, #7FA1FF 0%, #4384FE 100%);
+        margin-right: 3px;
+        text-align: center;
+    }
+
+    .phone-content div span:nth-child(2) {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 9px 0px;
+    }
+
+    .bull-content {
+        height: 44px;
+        padding: 9px;
+        margin: 0 auto;
+        margin-top: 9px;
+        box-sizing: border-box;
+    }
+
+    .bull-content div span {
+        display: block;
+        width: 330px;
+        height: 26px;
+        line-height: 26px;
+        background: linear-gradient(180deg, #7FA1FF 0%, #4384FE 100%);
+        border-radius: 2px;
+        text-align: center;
+        color: #fff;
+    }
+
+    .bull-content div span:nth-child(2) {
+        background: #DEE9FF;
+        color: #333333;
+    }
+
+    .info-content {
+        height: 71px;
+        padding: 9px;
+        box-sizing: border-box;
+    }
+
+    .info-content div {
+        width: 50%;
+        height: 100%;
+    }
+
+    .info-content div span {
+        display: block;
+    }
+
+    .info-content div span:nth-child(1) {
+        width: 330px;
+        height: 26px;
+        line-height: 26px;
+        background: linear-gradient(180deg, #7FA1FF 0%, #4384FE 100%);
+        border-radius: 2px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .info-content div span:nth-child(2) {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .loan-content {
+        height: 265px;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .loan-content .loan_storey {
+        padding-top: 9px;
+        padding-left: 9px;
+    }
+
+    .loan-content .content {
+        width: 50%;
+    }
+
+    .loan-content .content p:nth-child(1) {
+        width: 330px;
+        height: 26px;
+        line-height: 26px;
+        background: linear-gradient(180deg, #7FA1FF 0%, #4384FE 100%);
+        border-radius: 2px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .loan-content .content p:nth-child(2) {
+        height: 58px;
+        line-height: 58px;
+        text-align: center;
+        /* margin-top: 18px;
+        margin-bottom: 21px; */
+    }
+
+    .query-content {
+        height: 71px;
+        padding: 9px;
+        box-sizing: border-box;
+    }
+
+    .query-content div {
+        width: 50%;
+        height: 100%;
+    }
+
+    .query-content div span {
+        display: block;
+    }
+
+    .query-content div span:nth-child(1) {
+        width: 330px;
+        height: 26px;
+        line-height: 26px;
+        background: linear-gradient(180deg, #7FA1FF 0%, #4384FE 100%);
+        border-radius: 2px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .query-content div span:nth-child(2) {
+        text-align: center;
+        margin-top: 9px;
+    }
+
+    .m24 {
+        margin-bottom: 21px;
+    }
+</style>
+
+<body>
+<div class="report">
+  <div class="container">
+    <div class="head">
+      <span class="main_head" style="padding-left: 120px;float: left;">个人综合风险评估报告</span>
+      <!-- <span class="report_time"
+        style="float:left;">报告时间：${arp_base_006}</span> -->
+      <#if arp_base_006?has_content>
+      <span class="report_time" style="float:left;">报告时间：${arp_base_006}</span>
+      <#else>
+      <span class="report_time" style="float:left;">报告时间：--</span>
+    </#if>
+  </div>
+  <p class="small_head"><span class="treetop"></span><span>客户信息</span></p>
+  <div class="custom_content bg">
+    <div class="first_storey" style="float:left; width: 50%; box-sizing: border-box;">
+      <p>姓名：${pre_apply_con_cert_name}</p>
+      <p style="margin-top: 26px;">身份证号 ：${pre_cert_no} </p>
+    </div>
+    <div class="second_storey" style="float:right; width: 50%; box-sizing: border-box;">
+      <p>客户风险评级 ：</p>
+      <div style="height: 41px; line-height: 41px; margin-top:  14px;">
+        <p style="float:left;">
+          <#if (score_level_up=="A" )>
+          <img src="https://www.carcredit.com.cn/riskreporttemplate/A.png" alt="A">
+          <#elseif (score_level_up=="B" )>
+          <img src="https://www.carcredit.com.cn/riskreporttemplate/B.png" alt="B">
+          <#elseif (score_level_up=="C" )>
+          <img src="https://www.carcredit.com.cn/riskreporttemplate/C.png" alt="C">
+          <#elseif (score_level_up=="D" )>
+          <img src="https://www.carcredit.com.cn/riskreporttemplate/D.png" alt="D">
+        </#if>
+        </p>
+        <p style="float:left; margin-left: 14px;">
+          <span>信用评级为：</span>
+          <#if (score_level_up=="A" )>
+          <span style="color: #03AA3E;">${score_level_up}</span>
+          <#elseif (score_level_up=="B" )>
+          <span style="color: #77D33D;">${score_level_up}</span>
+          <#elseif (score_level_up=="C" )>
+          <span style="color: #FFB84C;">${score_level_up}</span>
+          <#elseif (score_level_up=="D" )>
+          <span style="color: #FE3A41;">${score_level_up}</span>
+          <#else>
+          <span>--</span>
+        </#if>
+        </p>
+      </div>
+    </div>
+  </div>
+  <p class="small_head"><span class="treetop"></span><span>审核结果</span></p>
+  <div class="examine_content bg">
+    <div class="left_01" style="float: left;">
+      <span>通过资方：${apply_con_result_hf} </span>
+      <span>拒绝原因：${apply_con_reject_reason_sales_dw} </span>
+    </div>
+    <div class="right_01" style="float:right;">
+      <#if (apply_con_approve_status_name_dw=="建议通过" )>
+      <span style="color: #08CA85;">${apply_con_approve_status_name_dw}</span>
+      <#elseif (apply_con_approve_status_name_dw=="建议拒绝" )>
+      <span style="color: #E72B49;">${apply_con_approve_status_name_dw}</span>
+      <#else>
+      <span>--</span>
+    </#if>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>身份信息</span></p>
+<div class="unified-format bg">
+  <div class="left_01">
+    <span style="float: left;">婚姻状况：${pre_pboc_belonger_marital_status} </span>
+    <span style="float: left; text-align: center;">学历：${pboc_edu_info_dw}</span>
+    <span style="float: left; text-align: right;">手机号：${pboc_phone_no_lastest}</span>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>司法信息</span></p>
+<div class="judicial-content bg">
+  <div>
+    <span>裁判文书</span>
+    <span>${fahai_cpws_count}</span>
+  </div>
+  <div>
+    <span>执行公告</span>
+    <span>${fahai_zxgg_count}</span>
+  </div>
+  <div>
+    <span>开庭公告</span>
+    <span>${fahai_ktgg_count}</span>
+  </div>
+  <div>
+    <span>法院公告</span>
+    <span>${fahai_fygg_count}</span>
+  </div>
+  <div>
+    <span>案件流程</span>
+    <span>${fahai_ajlc_count}</span>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>手机号验证</span></p>
+<div class="phone-content bg">
+  <div>
+    <span>手机号码</span>
+    <span>${pre_phone}</span>
+  </div>
+  <div>
+    <span>运营商名称</span>
+    <#if (mobile_phone_operator="移动" )>
+    <span style="color: #3062EC;">${mobile_phone_operator}</span>
+    <#elseif (mobile_phone_operator="联通" )>
+    <span style="color: #FFA922;">${mobile_phone_operator}</span>
+    <#elseif (mobile_phone_operator="电信" )>
+    <span style="color: #E40C2F;">${mobile_phone_operator}</span>
+    <#else>
+    <span>--</span>
+  </#if>
+  <!-- <span>${mobile_phone_operator}</span> -->
+</div>
+<div>
+  <span>验证结果</span>
+  <span>${bairong_bankfour_res}</span>
+</div>
+<div>
+  <span>在网时长</span>
+  <span>${bairong_network_time_dw}</span>
+</div>
+
+</div>
+<p class="small_head"><span class="treetop"></span><span>多头查询</span></p>
+<div class="bull-content bg">
+  <div>
+    <span style="float: left;">3个月内申请人在多个平台申请借款</span>
+    <span style="float: right;">${td_3_month_loan_dw}</span>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>信息提示</span></p>
+<div class="info-content bg">
+  <div style="float: left;">
+    <span>月负债</span>
+    <span>${pboc_monthly_pboc_repayments_interval}</span>
+  </div>
+  <div style="float: right;">
+    <span>手机号比对不一致</span>
+    <span>${pboc_phone_compare}</span>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>贷款信息汇总</span></p>
+<div class="loan-content bg">
+  <div class="loan_storey">
+    <div class="content" style="float: left;">
+      <p>贷款账户数</p>
+      <p>${arp_overdue_105_interval}</p>
+    </div>
+    <div class="content" style="float: left;">
+      <p>未结清贷款余额</p>
+      <p>${arp_account_012_interval}</p>
+    </div>
+  </div>
+  <div class="loan_storey">
+    <div class="content" style="float: left;">
+      <p>历史是否有房贷</p>
+      <p>${pboc_house_loan_exists}</p>
+    </div>
+    <div class="content" style="float: left;">
+      <p>未结清房贷贷款总额</p>
+      <p>${arp_account_018_interval}</p>
+    </div>
+  </div>
+  <div class="loan_storey">
+    <div class="content" style="float: left;">
+      <p>历史是否有车贷</p>
+      <p>${pboc_car_loan_exists}</p>
+    </div>
+    <div class="content" style="float: left;">
+      <p>未结清个人汽车贷款总额</p>
+      <p>${arp_account_028_interval}</p>
+    </div>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>查询信息汇总</span></p>
+<div class="query-content bg">
+  <div style="float: left;">
+    <span>客户近1个月查询次数 </span>
+    <span>${pboc_query_count_1_month_interval}</span>
+  </div>
+  <div style="float: right;">
+    <span>客户近3个月查询次数</span>
+    <span>${pboc_query_count_3_months_interval}</span>
+  </div>
+</div>
+<p class="small_head"><span class="treetop"></span><span>配偶信息</span></p>
+<div class="unified-format bg m24">
+  <div class="left_01">
+    <span style="float:left;">姓名：${pboc_partner_name}</span>
+    <span style="float:left; text-align: center;">证件号码：${pboc_partner_phone}</span>
+    <span style="float: left; text-align: right;">联系电话：${pboc_partner_phone}</span>
+  </div>
+</div>
+</div>
+</div>
+</body>
+
+</html>
