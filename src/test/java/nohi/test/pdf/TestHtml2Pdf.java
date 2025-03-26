@@ -65,6 +65,7 @@ public class TestHtml2Pdf {
 //        fp.addDirectory(resources);
         FontProgram fp1 = FontProgramFactory.createFont("ttf/zhanku_cangeryuyangti-W01.ttf");
         fp.addFont(fp1);
+//        fp.addFont("STSongStd-Light", "UniGB-UCS2-H");
         fp.addStandardPdfFonts();
         props.setFontProvider(fp);
         // html中使用的图片等资源目录（图片也可以直接用url或者base64格式而不放到资源里）
