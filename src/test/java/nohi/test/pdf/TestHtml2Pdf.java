@@ -5,7 +5,6 @@ import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.attach.impl.layout.HtmlPageBreak;
 import com.itextpdf.html2pdf.css.apply.impl.DefaultCssApplierFactory;
-import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.font.FontProgram;
 import com.itextpdf.io.font.FontProgramFactory;
 import com.itextpdf.io.font.PdfEncodings;
@@ -20,6 +19,7 @@ import com.itextpdf.layout.element.IElement;
 import com.itextpdf.layout.font.FontProvider;
 import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription;
 import com.itextpdf.styledxmlparser.css.media.MediaType;
+import com.itextpdf.styledxmlparser.resolver.font.BasicFontProvider;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +49,6 @@ public class TestHtml2Pdf {
     public void testHtml2Pdf() throws IOException {
         // 1、Creating a PdfWriter
         String dest = "html_to_pdf.pdf";
-        PdfWriter writer = new PdfWriter(dest);
         // 2、Creating a PdfDocument
         PdfDocument pdf = new PdfDocument(new PdfWriter(dest));
         Document document = new Document(pdf, PageSize.A4.rotate(), false);
@@ -88,8 +88,6 @@ public class TestHtml2Pdf {
      * 使用Freemarker引擎加载HTML模板文件并填充变量值，并将HTML字符串转换为PDF文件
      *
      * @param data 模板要填充的数据
-     * @return
-     * @throws Exception
      */
     public String generatePDF(Map<String, Object> data, String templateDir, String templateName, String pdfPath, String fileName) throws Exception {
         // 使用Freemarker引擎加载HTML模板文件并填充变量值
@@ -109,11 +107,10 @@ public class TestHtml2Pdf {
      *
      * @param htmlString 待转换的HTML字符串
      * @return 返回生成的PDF文件内容
-     * @throws IOException
      */
     private static String convertHtmlToPdf(String htmlString, String path, String fileName) throws IOException {
         File compressedImageFile = new File(path, fileName);
-        OutputStream os = new FileOutputStream(compressedImageFile);
+        OutputStream os = Files.newOutputStream(compressedImageFile.toPath());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdf = new PdfDocument(writer);
@@ -121,7 +118,7 @@ public class TestHtml2Pdf {
         // 设置左、右、上、下四个边距的值，以点（pt）为单位
         document.setMargins(0, 0, 0, 0);
         // 设置中文字体
-        FontProvider fontProvider = new DefaultFontProvider(false, false, false);
+        FontProvider fontProvider = new BasicFontProvider(false, false, false);
         //添加自定义字体，例如微软雅黑
         PdfFont microsoft = PdfFontFactory.createFont(FontProgramFactory.createFont("/Users/nohi/work/workspaces-nohi/nohi-doc/src/main/resources/ttf/zhanku_kuaileti.ttf"));
         fontProvider.addFont(microsoft.getFontProgram(), PdfEncodings.IDENTITY_H);
@@ -142,7 +139,7 @@ public class TestHtml2Pdf {
 
     @Test
     public void testHtml2Pdf2() throws Exception {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("name", "太白金星");
         map.put("gender", "男");
         map.put("nationality", "仙族");
@@ -191,7 +188,8 @@ public class TestHtml2Pdf {
         map.put("update_user", "0");
         map.put("sync_time", "2024/1/18 15:12");
 
-        generatePDF(map, "src/test/resources/template/pdf", "html2pdf_tempate.html", ".", "html2pdf_tempate.pdf");
+        String rs = generatePDF(map, "src/test/resources/template/pdf", "html2pdf_tempate.html", ".", "html2pdf_tempate.pdf");
+        log.info("rs:{}", rs);
     }
 
 }

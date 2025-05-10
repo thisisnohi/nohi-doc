@@ -55,7 +55,7 @@ public class CodeMappingService implements ICodeMappingService {
     @Override
     public String getCodeValue(String codeType, String codeKey, String defaultValue) {
         if (mappingService == null) {
-            log.warn("没有发现ICodeMappingService服务提供者");
+            log.warn("getCodeValue 没有发现ICodeMappingService服务提供者");
             return null;
         }
 
@@ -70,7 +70,7 @@ public class CodeMappingService implements ICodeMappingService {
     @Override
     public String getCodeKey(String codeType, String codeValue, String defaultKey) {
         if (mappingService == null) {
-            log.warn("没有发现ICodeMappingService服务提供者");
+            log.warn("mappingService 没有发现ICodeMappingService服务提供者");
             return null;
         }
         return mappingService.getCodeKey(codeType, codeValue, defaultKey);

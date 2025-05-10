@@ -174,7 +174,7 @@ public class ExcelXlsxService<T> extends FtpServer implements IDocService {
                 int sheetIndex = 0;
                 for (Object obj : (Collection) sheetData) {
                     String sheetName = this.sheetName(sheet, obj, sheetIndex++);
-                    log.info("{}, sheetName:{} sheetData:{}", title, sheetName, sheetDataField);
+                    log.info("{}, [repeat] sheetName:{} sheetData:{}", title, sheetName, sheetDataField);
                     this.exportSheet(sheet, sheetName, obj);
                 }
             }else {
